@@ -1,0 +1,25 @@
+project:
+  type: book
+
+book:
+  title: "Simulation and Optimization"
+  author: "Rubén Ruiz-Torrubiano"
+  date: "25.7.2025"
+  chapters:
+    - index.qmd
+    - intro.qmd
+    - summary.qmd
+    - references.qmd
+
+bibliography: references.bib
+
+format:
+  html:
+    theme:
+      - cosmo
+      - brand
+  pdf:
+    documentclass: scrreprt
+
+
+
