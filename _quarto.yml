@@ -4,7 +4,8 @@ project:
 book:
   title: "Simulation and Optimization"
   author: "Rubén Ruiz-Torrubiano"
-  date: "25.7.2025"
+  date: today
+  date-format: medium
   chapters:
     - index.qmd
     - preface.qmd
