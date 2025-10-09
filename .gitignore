@@ -1,3 +1,13 @@
 /.quarto/
 
 **/*.quarto_ipynb
+
+*.aux
+*.bbl
+*.blg
+*.brf
+*.fls
+*.fdb_latexmk
+*.log
+*.out
+*.synctex.gz

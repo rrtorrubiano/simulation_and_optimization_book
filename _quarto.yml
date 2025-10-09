@@ -9,13 +9,13 @@ book:
     - index.qmd
     - preface.qmd
     - intro.qmd
-    - part: "Simulation"
+    - part: "PART I: SIMULATION"
       chapters:
         - simulation_basics.qmd
         - monte_carlo.qmd
         - discrete_event.qmd
         - agent_based.qmd
-    - part: "Optimization"
+    - part: "PART II: OPTIMIZATION"
       chapters:
         - optimization_basics.qmd
         - gradient_descent.qmd
@@ -27,11 +27,13 @@ bibliography: references.bib
 
 format:
   html:
+    default-image-extension: png
     theme:
       - cosmo
       - brand
   pdf:
     documentclass: scrreprt
+    default-image-extension: pdf
 
 
 

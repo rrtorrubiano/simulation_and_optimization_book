@@ -1,42 +1,22 @@
 [
   {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "Simulation and Optimization",
-    "section": "",
-    "text": "Welcome\nThis is the website for the Simulation and Optimization book that will teach you the basics of simulation approaches and optimization techniques in the context of modern AI systems. The source code of the book and the examples are provided as open-source and free to use Creative Commons Attribution-NonCommercial-NoDerivs 4.0 license.",
-    "crumbs": [
-      "Welcome"
-    ]
-  },
-  {
     "objectID": "intro.html",
     "href": "intro.html",
     "title": "1  Introduction",
     "section": "",
-    "text": "This is a book created from markdown and executable code.\nSee Knuth (1984) for additional discussion of literate programming.\n\n\n\n\nKnuth, Donald E. 1984. “Literate Programming.” Comput. J. 27 (2): 97–111. https://doi.org/10.1093/comjnl/27.2.97.",
+    "text": "1.1 Simulating supermarket dynamics\nSimulation and optimization approaches are present in our everyday lives, albeit most of the time operating in a background plane. For example, when navigating with a GPS, the system simulates different routes and optimizes for the shortest or fastest path. Similarly, supply chains use optimization algorithms to minimize costs and maximize efficiency, while simulations help predict demand and manage inventory. These techniques are fundamental tools in decision-making processes across various industries, from transportation and logistics to finance and healthcare.\nBut what do simulation and optimization approaches have in common, apart from being complementary tools? The answer lies in the concept of a model. In the context of machine learning, we normally refer to a model as a mathematical or computational representation that captures the relationships between input data and output predictions. In simulation and optimization, a model similarly serves as an abstraction of a real-world system or process, allowing us to analyze, predict, and improve its behavior through experimentation and algorithmic techniques.\nIn the following, we will delve deeper into the concept of a model and how models are used in simulation and optimization contexts using some practical examples.\nImagine you are in your favourite grocery store waiting at the checkout queue. For simplicity, let’s assume there is only one open counter. When you arrive at the queue, there might be other customers already waiting, while the first customer at the queue is currently being served. Shortly after you, a new customer arrives, taking the next free spot right behind you. And then another customer arrives, and another one, and another one…\nLet’s try to break down how this system behaves and what are the most important interactions between the parts of the system. In general, we will distinguish between components, states, events, inputs and metrics.\nThe system could be represented by the following Python code as a minimal variant.\nThis code assumes that customers arrive at regular subsequent intervals after each arrival event. The parameter sim_end defines how long (how many steps) we want to simulate in this case. The function service_time returns the time the cashier needs for checking out customer cid. The next customer will arrive after a time given by the function next_interarrival, which can implement different stochastic behaviours.\nIn this figure, \\(s_{ik}\\) denotes the time spent serving customer \\(k\\) by cashier \\(i\\), and \\(a_{ik}\\) denotes the arrival time of customer \\(k\\) at the queue served by cashier \\(i\\).",
     "crumbs": [
       "<span class='chapter-number'>1</span>  <span class='chapter-title'>Introduction</span>"
     ]
   },
   {
-    "objectID": "summary.html",
-    "href": "summary.html",
-    "title": "2  Summary",
+    "objectID": "intro.html#simulating-supermarket-dynamics",
+    "href": "intro.html#simulating-supermarket-dynamics",
+    "title": "1  Introduction",
     "section": "",
-    "text": "In summary, this book has no content whatsoever.",
+    "text": "Components: These are the entities that interact with each other. In our example, we have customers, cashiers and the queue itself.\nStates: The configurations of the system that represent valid combinations of specific properties of the components at a given moment of time. For instance, at each time the queue has a specific length: zero if it’s empty, one customer, two customers, etc. Additionally, the cashier can be busy or idle. We can also count the number of customers currently present in the supermarket which have not yet arrive at the checkout queue.\nEvents: The interactions themselves, like a new customer arriving at the queue, checkout start or checkout completion.\nInputs: Whatever information is fed into the system, e.g. arrival times, service times, etc. These inputs can contain statistical assumptions, like the distribution of arrival times.\nMetrics: How we evaluate the system as a whole in a given time step. For instance, what is the average waiting time? How much time are the cashiers busy? How is the queue length distributed?\n\n\nimport heapq, random\n\n# event = (time, type, customer_id)\nevent_list = []\nheapq.heappush(event_list, (first_arrival_time, 'arrival', 1))\n\nwhile event_list and time &lt; sim_end:\n    time, ev_type, cid = heapq.heappop(event_list)\n    if ev_type == 'arrival':\n        if any_queue_free():\n            start_checkout(cid, time)\n            heapq.heappush(event_list, (time + service_time(cid), 'departure', cid))\n        else:\n            enqueue(cid, time)\n        heapq.heappush(event_list, (time + next_interarrival(), 'arrival', next_id()))\n    elif ev_type == 'departure':\n        finish_service(cid, time)\n        if queue_not_empty():\n            next_cid = dequeue()\n            start_service(next_cid, time)\n            heapq.heappush(event_list, (time + service_time(next_cid), 'departure', next_cid))",
     "crumbs": [
-      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Summary</span>"
-    ]
-  },
-  {
-    "objectID": "references.html",
-    "href": "references.html",
-    "title": "References",
-    "section": "",
-    "text": "Knuth, Donald E. 1984. “Literate Programming.” Comput.\nJ. 27 (2): 97–111. https://doi.org/10.1093/comjnl/27.2.97.",
-    "crumbs": [
-      "References"
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Introduction</span>"
     ]
   },
   {
@@ -47,6 +27,16 @@
     "text": "This book was created as companion material for a semester graduate course on simulation and optimization. It is the author’s opinion that in an age of rapid advances in the field of artificial intelligence, it is of utmost importance to focus not only on machine learning, but to study in detail the techniques that make current advances in AI possible. From those, the areas of simulation and optimization have the highest potential to reveal how intrincate current AI is intertwined with other areas of mathematics, statistics and computer science.\nSimulation techniques are widely used in many scientific disciplines, ranging from climate models, epidemiology, and engineering to finance and logistics. These methods allow researchers and practitioners to analyze complex systems, evaluate scenarios, and make informed decisions when analytical solutions are infeasible or unavailable. Throughout this book, we will explore foundational concepts and practical approaches to simulation and optimization, providing both theoretical background and hands-on examples. In the context of AI, simulation approaches can be used to produce synthetic data for training in situations where these data are scarce, expensive, or simply impossible to collect. Another uses of simulation approaches include stress-testing algorithms, validating models under various hypothetical scenarios, and supporting decision-making in uncertain environments. By leveraging simulation, practitioners can gain insights into system behavior, identify potential risks, and optimize performance before deploying solutions in real-world settings.\nOptimization approaches lie at the core of how machine learning is used in modern AI systems. Foundational algorithms like stochastic gradient descent make it possible to find optimal parameters for machine learning models using training datasets composed of millions of data points. Additionaly, optimization algorithms are used for hyperparameter tuning and can be found at the heart of classical approaches like support vector machines and logistic regression. In this context, both classical and metaheuristic approaches play a pivotal role in finding optimal or near-optimal solutions which are used in the broader context of specific applications in practice.\nThroughout the book, we will assume that the reader has familiarity with linear algebra and calculus and possesses a good command of statistics and the basics of machine learning. Additionally, good background knowledge of the Python programming language is adviced for the practical part of this book.",
     "crumbs": [
       "Preface"
+    ]
+  },
+  {
+    "objectID": "summary.html",
+    "href": "summary.html",
+    "title": "9  Summary",
+    "section": "",
+    "text": "In summary, this book has no content whatsoever.",
+    "crumbs": [
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Summary</span>"
     ]
   }
 ]
