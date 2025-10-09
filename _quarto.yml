@@ -7,7 +7,19 @@ book:
   date: "25.7.2025"
   chapters:
     - index.qmd
+    - preface.qmd
     - intro.qmd
+    - part: "Simulation"
+      chapters:
+        - simulation_basics.qmd
+        - monte_carlo.qmd
+        - discrete_event.qmd
+        - agent_based.qmd
+    - part: "Optimization"
+      chapters:
+        - optimization_basics.qmd
+        - gradient_descent.qmd
+        - evolutionary_algorithms.qmd
     - summary.qmd
     - references.qmd
 
