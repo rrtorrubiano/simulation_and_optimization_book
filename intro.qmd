@@ -43,7 +43,7 @@ heapq.heappush(event_list, (first_arrival_time, 'arrival', 1))
 while event_list and time < sim_end:
     time, ev_type, cid = heapq.heappop(event_list)
     if ev_type == 'arrival':
-        if any_queue_free():
+        if any_cashier_free():
             start_checkout(cid, time)
             heapq.heappush(event_list, (time + service_time(cid), 'departure', cid))
         else:
@@ -62,7 +62,36 @@ how long (how many steps) we want to simulate in this case. The function ``servi
 for checking out customer ``cid``. The next customer will arrive after a time given by the function ``next_interarrival``, which 
 can implement different stochastic behaviours.
 
-![](figures/fig_intro_1_cropped)
+We can represent this system graphically as shown in the following illustration:
 
-In this figure, $s_{ik}$ denotes the time spent serving customer $k$ by cashier $i$, and $a_{ik}$ denotes the arrival time of customer 
-$k$ at the queue served by cashier $i$.
+![](figures/fig_intro_1)
+
+In this figure, customers are denoted by $r_i$, the amount of cashiers is $c$ and the total number 
+of customers in the supermarket at time $t$ is denoted by $N(t)$.
+
+Now let's try to refine the dynamics of this system. We will now write some equations to describe the system'
+dynamics according to the **infinite waiting room** $M/M/c$ model. Let's make the following assumptions:
+
+- Arrivals follow a Poisson distribution with mean $\lambda$ (arrivals per second), which for this case will be assumed to be stationary.
+- The service times are assumed to be exponentially distributed with mean $1/\mu$.
+
+What would be now the *traffic intensity per cashier*? That is, what is the mean customer flow that each cashier 
+experiences from their own point of view? Let's call this number $\rho$ and calculate it as follows:
+
+$$
+\rho=\frac{\lambda}{c\mu}
+$$
+
+In words, if customers arrive at a rate of $\lambda=10$ customers/s and each cashier serves 2 customers/s (yes, it's 
+a fast supermarket). With 5 cashiers, that means that $\rho=10/5\times 2=1$. This means that each cashier has 
+quite a lot to do right now.
+
+We are now interested in the probabilities of the states in this systems. In this case, we define a system by 
+the number of customers currently present in the supermarket. So we can have $N=1$ if there is currently 1 customer 
+present, or any other number of customers (we assume the supermarket is so large, we can accomodate any 
+number of them). Let's denote these probabilities by $p_n=\operatorname{Pr\{N=n\}}$. We have
+
+$$
+p_n=\lim_{t\rightarrow\infty}\int_{0}^t \mathbb{1}_{\{N(s)=n\}} ds
+$$
+

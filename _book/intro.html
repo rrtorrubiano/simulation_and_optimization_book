@@ -328,7 +328,7 @@ window.Quarto = {
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="cf">while</span> event_list <span class="kw">and</span> time <span class="op">&lt;</span> sim_end:</span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    time, ev_type, cid <span class="op">=</span> heapq.heappop(event_list)</span>
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> ev_type <span class="op">==</span> <span class="st">'arrival'</span>:</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> any_queue_free():</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> any_cashier_free():</span>
 <span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>            start_checkout(cid, time)</span>
 <span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>            heapq.heappush(event_list, (time <span class="op">+</span> service_time(cid), <span class="st">'departure'</span>, cid))</span>
 <span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>:</span>
@@ -341,8 +341,23 @@ window.Quarto = {
 <span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>            start_service(next_cid, time)</span>
 <span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>            heapq.heappush(event_list, (time <span class="op">+</span> service_time(next_cid), <span class="st">'departure'</span>, next_cid))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>This code assumes that customers arrive at regular subsequent intervals after each arrival event. The parameter <code>sim_end</code> defines how long (how many steps) we want to simulate in this case. The function <code>service_time</code> returns the time the cashier needs for checking out customer <code>cid</code>. The next customer will arrive after a time given by the function <code>next_interarrival</code>, which can implement different stochastic behaviours.</p>
-<p><img src="figures/fig_intro_1_cropped.png" class="img-fluid"></p>
-<p>In this figure, <span class="math inline">\(s_{ik}\)</span> denotes the time spent serving customer <span class="math inline">\(k\)</span> by cashier <span class="math inline">\(i\)</span>, and <span class="math inline">\(a_{ik}\)</span> denotes the arrival time of customer <span class="math inline">\(k\)</span> at the queue served by cashier <span class="math inline">\(i\)</span>.</p>
+<p>We can represent this system graphically as shown in the following illustration:</p>
+<p><img src="figures/fig_intro_1.png" class="img-fluid"></p>
+<p>In this figure, customers are denoted by <span class="math inline">\(r_i\)</span>, the amount of cashiers is <span class="math inline">\(c\)</span> and the total number of customers in the supermarket at time <span class="math inline">\(t\)</span> is denoted by <span class="math inline">\(N(t)\)</span>.</p>
+<p>Now let’s try to refine the dynamics of this system. We will now write some equations to describe the system’ dynamics according to the <strong>infinite waiting room</strong> <span class="math inline">\(M/M/c\)</span> model. Let’s make the following assumptions:</p>
+<ul>
+<li>Arrivals follow a Poisson distribution with mean <span class="math inline">\(\lambda\)</span> (arrivals per second), which for this case will be assumed to be stationary.</li>
+<li>The service times are assumed to be exponentially distributed with mean <span class="math inline">\(1/\mu\)</span>.</li>
+</ul>
+<p>What would be now the <em>traffic intensity per cashier</em>? That is, what is the mean customer flow that each cashier experiences from their own point of view? Let’s call this number <span class="math inline">\(\rho\)</span> and calculate it as follows:</p>
+<p><span class="math display">\[
+\rho=\frac{\lambda}{c\mu}
+\]</span></p>
+<p>In words, if customers arrive at a rate of <span class="math inline">\(\lambda=10\)</span> customers/s and each cashier serves 2 customers/s (yes, it’s a fast supermarket). With 5 cashiers, that means that <span class="math inline">\(\rho=10/5\times 2=1\)</span>. This means that each cashier has quite a lot to do right now.</p>
+<p>We are now interested in the probabilities of the states in this systems. In this case, we define a system by the number of customers currently present in the supermarket. So we can have <span class="math inline">\(N=1\)</span> if there is currently 1 customer present, or any other number of customers (we assume the supermarket is so large, we can accomodate any number of them). Let’s denote these probabilities by <span class="math inline">\(p_n=\operatorname{Pr\{N=n\}}\)</span>. We have</p>
+<p><span class="math display">\[
+p_n=\lim_{t\rightarrow\infty}\int_{0}^t \mathbb{1}_{\{N(s)=n\}} ds
+\]</span></p>
 
 
 </section>
