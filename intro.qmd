@@ -120,7 +120,7 @@ $\lambda$, and the rate of customers being served (i.e. leaving) when at state $
 each state we can define an *incoming* and an *outgoing flow*. This quantifies the transitions in resp. out of a 
 given state.  
 
-![Transition dynamics between neighboring states](figures/fig_intro_2){#fig-transition-neighboring}
+![Transition dynamics between neighboring states](figures/fig_intro_2){#fig-transition-neighboring width=70%}
 
 As can be seen in the previous figure, transitions flow away from state $n$ in two ways: first, to state 
 $n-1$ when a customer is served with a rate $\mu_n p_n$ and to state $n+1$ when a new customer arrives
@@ -178,7 +178,7 @@ potential customers in cities across your area and, at the end of the day, retur
 your journey. As an environmental conscious employer and in order to save transport costs, your company introduces the restriction that each customer in the route has to be visited *exactly once*. So you need to think 
 carefully before getting into your car and starting your route.
 
-![The traveling salesman has to find a good and practical solution](figures/fig_intro_3){#fig-tsp-1}
+![The traveling salesman has to find a good and practical solution](figures/fig_intro_3){#fig-tsp-1 width=70%}
 
 Now, the traveling salesman needs to consider two things:
 
