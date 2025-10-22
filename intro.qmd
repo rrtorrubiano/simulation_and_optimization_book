@@ -157,6 +157,19 @@ $$
 
 This is also called the *Erlang-C* probability and we will delve deeper into the details in the coming chapters.
 
+We can now write computer code that performs a step-by-step simulation of the system (i.e. in discrete time steps).
+This is specially useful if we are in a situation where there is no closed-form analytical solution, 
+or the analytical solution is too complex to calculate. For instance, we can run the above simulator 
+for a large number of steps (say $T=10^6$) and then calculate specific metrics like:
+
+- Mean queue length.
+- Mean waiting time.
+- Mean time in the system.
+- Total fraction of time that the cashiers were busy.
+- Overall utilization.
+
+We will see examples of such simulators in the first part of the book.
+
 ## Exercises
 
 1. Prove that in the supermarket example the local balance condition follows from the global balance condition
