@@ -222,6 +222,29 @@ The first equality means that, fixed a location $i$, the sum of all *outgoing* e
 Conversely, the second states that for a fixed location $j$, the sum of all *incoming* edges is also 
 exactly one. This ensures that each location is visited exactly once.
 
+We need another technical condition to guarantee that the tour is a single one and not composed 
+of multiple sub-tours. There should be no subset $S \subset N$ such that is self contained, the 
+number of visited cities equals exactly its size. Mathematically:
+
+$$
+\sum_{i\in N}\sum_{j\in N} x_{ij} \le |S|-1\text{ for all subsets }S\subset N
+$$
+
+To sum up, we now have modeled how valid tours should look like. If we find a tour 
+$T=\{x_{ij}\}$ that satisfies the constraints outlined before, we can be sure it is a valid tour.
+
+But surely there are some tours that are better than others? This is where the second issue becomes 
+important: we need an evaluation method to distinguish between good and bad solutions. In the 
+optimization literature, we normally talk about **objective functions**. In our case, 
+the traveling salesman would like the total distance to be *minimized*, meaning the sum of all 
+distances between locations of the tour. Assume that $c_{ij}>0$ is the distance between
+location $i$ and $j$ (for consistency assume $c_{ii}=0$). Now we want to minimize the distance. For this we write:
+
+$$
+\min \sum_{i\in N}\sum_{j\in N} c_{ij}x_{ij}
+$$
+
+
 ## Exercises
 
 1. Prove that in the supermarket example the local balance condition follows from the global balance condition
