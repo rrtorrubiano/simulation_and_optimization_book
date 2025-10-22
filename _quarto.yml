@@ -34,7 +34,7 @@ format:
       - brand
   pdf:
     documentclass: scrreprt
-    default-image-extension: pdf
+    default-image-extension: png
 
 
 

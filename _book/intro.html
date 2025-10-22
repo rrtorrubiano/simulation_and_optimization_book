@@ -278,8 +278,9 @@ window.Quarto = {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#simulating-supermarket-dynamics" id="toc-simulating-supermarket-dynamics" class="nav-link active" data-scroll-target="#simulating-supermarket-dynamics"><span class="header-section-number">1.1</span> Simulating supermarket dynamics</a></li>
-  <li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises"><span class="header-section-number">1.2</span> Exercises</a></li>
+  <li><a href="#example-1-simulating-supermarket-dynamics" id="toc-example-1-simulating-supermarket-dynamics" class="nav-link active" data-scroll-target="#example-1-simulating-supermarket-dynamics"><span class="header-section-number">1.1</span> Example 1: Simulating supermarket dynamics</a></li>
+  <li><a href="#example-2-the-traveling-salesman" id="toc-example-2-the-traveling-salesman" class="nav-link" data-scroll-target="#example-2-the-traveling-salesman"><span class="header-section-number">1.2</span> Example 2: The traveling salesman</a></li>
+  <li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises"><span class="header-section-number">1.3</span> Exercises</a></li>
   </ul>
 </nav>
     </div>
@@ -308,8 +309,8 @@ window.Quarto = {
 <p>Simulation and optimization approaches are present in our everyday lives, albeit most of the time operating in a background plane. For example, when navigating with a GPS, the system simulates different routes and optimizes for the shortest or fastest path. Similarly, supply chains use optimization algorithms to minimize costs and maximize efficiency, while simulations help predict demand and manage inventory. These techniques are fundamental tools in decision-making processes across various industries, from transportation and logistics to finance and healthcare.</p>
 <p>But what do simulation and optimization approaches have in common, apart from being complementary tools? The answer lies in the concept of a <em>model</em>. In the context of machine learning, we normally refer to a model as a mathematical or computational representation that captures the relationships between input data and output predictions. In simulation and optimization, a model similarly serves as an abstraction of a real-world system or process, allowing us to analyze, predict, and improve its behavior through experimentation and algorithmic techniques.</p>
 <p>In the following, we will delve deeper into the concept of a model and how models are used in simulation and optimization contexts using some practical examples.</p>
-<section id="simulating-supermarket-dynamics" class="level2" data-number="1.1">
-<h2 data-number="1.1" class="anchored" data-anchor-id="simulating-supermarket-dynamics"><span class="header-section-number">1.1</span> Simulating supermarket dynamics</h2>
+<section id="example-1-simulating-supermarket-dynamics" class="level2" data-number="1.1">
+<h2 data-number="1.1" class="anchored" data-anchor-id="example-1-simulating-supermarket-dynamics"><span class="header-section-number">1.1</span> Example 1: Simulating supermarket dynamics</h2>
 <p>Imagine you are in your favourite grocery store waiting at the checkout queue. For simplicity, let’s assume there is only one open counter. When you arrive at the queue, there might be other customers already waiting, while the first customer at the queue is currently being served. Shortly after you, a new customer arrives, taking the next free spot right behind you. And then another customer arrives, and another one, and another one…</p>
 <p>Let’s try to break down how this system behaves and what are the most important interactions between the parts of the system. In general, we will distinguish between <em>components</em>, <em>states</em>, <em>events</em>, <em>inputs</em> and <em>metrics</em>.</p>
 <ul>
@@ -361,10 +362,10 @@ p_n=\lim_{t\rightarrow\infty}\int_{0}^t \mathbb{1}_{\{N(s)=n\}} ds
 \]</span></p>
 <p>Intuitively, <span class="math inline">\(p_n\)</span> represents the fraction of time where the supermarket has exactly <span class="math inline">\(n\)</span> customers. As mentioned earlier, we will assume that arrivals do not depend of the current state <span class="math inline">\(n\)</span>, so we write <span class="math inline">\(\lambda_n=\lambda\)</span> for all <span class="math inline">\(n\ge 0\)</span>. However, note that the completion rates <span class="math inline">\(\mu_n\)</span> do <em>indeed</em> depend of the current state. To see this, imagine that there is only one customer in the supermarket (<span class="math inline">\(n=1\)</span>). The completion rate is then <span class="math inline">\(\mu_1=\mu\)</span> since the only one cashier is needed to perform checkout. However, if there are <span class="math inline">\(n=2\)</span> customers in the supermarket, two cashiers can serve those two customers in parallel, increasing the completion rate to <span class="math inline">\(\mu_2 = 2\mu\)</span>. The same reasoning applies until <span class="math inline">\(n=c\)</span>, the total number of cashiers. In this case, <span class="math inline">\(\mu_c=c\mu\)</span> and the next customer will have to wait in the queue. So we have:</p>
 <p><span class="math display">\[
-\begin{align}
-\lambda_n&amp;=\lambda \text{ for all } n\ge 0 \\
-\mu_n&amp;=\operatorname{min}(n,c)\mu
-\end{align}
+\begin{aligned}
+\lambda_n &amp; =\lambda \text{ for all } n\ge 0 \\
+\mu_n &amp; =\min(n,c)\mu
+\end{aligned}
 \]</span></p>
 <p>Now we are going to state our <strong>main modeling assumption</strong>. Consider how we transition <em>between states</em>. Specifically, we transition from state <span class="math inline">\(n\)</span> to state <span class="math inline">\(n+1\)</span> when a new customer enters the supermarket, and there were already <span class="math inline">\(n\)</span> customers in it. Similarly, we transition from state <span class="math inline">\(n\)</span> to state <span class="math inline">\(n-1\)</span> when a customer leaves the supermarket (in this case, all customers are served by the cashiers, so there is no way you leave the supermarket without paying first). Remember that the rate of customers arriving at the supermarket is always <span class="math inline">\(\lambda\)</span>, and the rate of customers being served (i.e.&nbsp;leaving) when at state <span class="math inline">\(n\)</span> is <span class="math inline">\(\mu_n\)</span>. In general, for each state we can define an <em>incoming</em> and an <em>outgoing flow</em>. This quantifies the transitions in resp. out of a given state.</p>
 <p><img src="figures/fig_intro_2.png" class="img-fluid"></p>
@@ -395,8 +396,13 @@ P_W=p_0\frac{(\lambda/\mu)^c}{c!}\frac{1}{1-\rho}
 </ul>
 <p>We will see examples of such simulators in the first part of the book.</p>
 </section>
-<section id="exercises" class="level2" data-number="1.2">
-<h2 data-number="1.2" class="anchored" data-anchor-id="exercises"><span class="header-section-number">1.2</span> Exercises</h2>
+<section id="example-2-the-traveling-salesman" class="level2" data-number="1.2">
+<h2 data-number="1.2" class="anchored" data-anchor-id="example-2-the-traveling-salesman"><span class="header-section-number">1.2</span> Example 2: The traveling salesman</h2>
+<p>Let’s not turn our attention to the other type of problems which are central to this book: <em>optimization problems</em>. Imagine you are a sales representative for a vaccum cleaner manufacturer. Your task is to visit potential customers in cities across your area and, at the end of the day, return to where you started your journey. As an environmental conscious employer and in order to save transport costs, your company introduces the restriction that each customer in the route has to be visited <em>exactly once</em>. So you need to think carefully before getting into your car and starting your route.</p>
+<p><img src="figures/fig_intro_3.png" class="img-fluid"></p>
+</section>
+<section id="exercises" class="level2" data-number="1.3">
+<h2 data-number="1.3" class="anchored" data-anchor-id="exercises"><span class="header-section-number">1.3</span> Exercises</h2>
 <ol type="1">
 <li>Prove that in the supermarket example the local balance condition follows from the global balance condition (Hint: use induction).</li>
 </ol>
