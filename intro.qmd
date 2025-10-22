@@ -89,9 +89,46 @@ quite a lot to do right now.
 We are now interested in the probabilities of the states in this systems. In this case, we define a system by 
 the number of customers currently present in the supermarket. So we can have $N=1$ if there is currently 1 customer 
 present, or any other number of customers (we assume the supermarket is so large, we can accomodate any 
-number of them). Let's denote these probabilities by $p_n=\operatorname{Pr\{N=n\}}$. We have
+number of them). Let's denote these probabilities by $p_n=\operatorname{Pr}\{N=n\}$. We have:
 
 $$
 p_n=\lim_{t\rightarrow\infty}\int_{0}^t \mathbb{1}_{\{N(s)=n\}} ds
 $$
 
+Intuitively, $p_n$ represents the fraction of time where the supermarket has exactly $n$ customers. As mentioned 
+earlier, we will assume that arrivals do not depend of the current state $n$, so we write $\lambda_n=\lambda$ for 
+all $n\ge 0$. However, note that the completion rates $\mu_n$ do *indeed* depend of the current state. To see 
+this, imagine that there is only one customer in the supermarket ($n=1$). The completion rate is then
+$\mu_1=\mu$ since the only one cashier is needed to perform checkout. However, if there are $n=2$ customers 
+in the supermarket, two cashiers can serve those two customers in parallel, increasing the completion rate 
+to $\mu_2 = 2\mu$. The same reasoning applies until $n=c$, the total number of cashiers. In this case, 
+$\mu_c=c\mu$ and the next customer will have to wait in the queue. So we have:
+
+$$
+\begin{align}
+\lambda_n&=\lambda \text{ for all } n\ge 0 \\
+\mu_n&=\operatorname{min}(n,c)\mu 
+\end{align}
+$$
+
+Now we are going to state our **main modeling assumption**. Consider how we transition *between states*. Specifically,
+we transition from state $n$ to state $n+1$ when a new customer enters the supermarket, and there were 
+already $n$ customers in it. Similarly, we transition from state $n$ to state $n-1$ when a customer leaves the 
+supermarket (in this case, all customers are served by the cashiers, so there is no way you leave the 
+supermarket without paying first). Remember that the rate of customers arriving at the supermarket is always
+$\lambda$, and the rate of customers being served (i.e. leaving) when at state $n$ is $\mu_n$. In general, for 
+each state we can define an *incoming* and an *outgoing flow*. This quantifies the transitions in resp. out of a 
+given state.  
+
+![](figures/fig_intro_2)
+
+As can be seen in the previous figure, transitions flow away from state $n$ in two ways: first, to state 
+$n-1$ when a customer is served with a rate $\mu_n p_n$ and to state $n+1$ when a new customer arrives
+with a rate $\lambda p_n$. Similarly, one can transition from the other states to state $n$ either by 
+having a customer served in state $n+1$ with a rate $\mu_{n+1}p_{n+1}$ or when being in state $n-1$ and a 
+new customer arrives with a rate $\lambda p_{n-1}$. Our modeling assumption now is that, for each 
+state $n$, the flow outwards balances out with the flow inwards:
+
+$$
+\lambda p_{n-1} + \mu_{n+1}p_{n+1} = \lambda p_n + \mu_n p_n\text{,   for }n\ge 1
+$$
