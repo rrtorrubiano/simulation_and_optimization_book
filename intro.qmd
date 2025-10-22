@@ -127,8 +127,37 @@ $n-1$ when a customer is served with a rate $\mu_n p_n$ and to state $n+1$ when 
 with a rate $\lambda p_n$. Similarly, one can transition from the other states to state $n$ either by 
 having a customer served in state $n+1$ with a rate $\mu_{n+1}p_{n+1}$ or when being in state $n-1$ and a 
 new customer arrives with a rate $\lambda p_{n-1}$. Our modeling assumption now is that, for each 
-state $n$, the flow outwards balances out with the flow inwards:
+state $n$, the flow outwards balances out with the flow inwards (global balance):
 
 $$
 \lambda p_{n-1} + \mu_{n+1}p_{n+1} = \lambda p_n + \mu_n p_n\text{,   for }n\ge 1
 $$
+
+We can also write that, in the long term, the rate of transitions from $n$ to $n+1$ equals the transitions
+from $n+1$ to $n$, which results in the more simple form (local balance)
+
+$$
+\lambda p_n = \mu_{n+1}p_{n+1} \text{,   for }n\ge 1
+$$
+
+This form follows from the global balance condition when only neighboring states are connected. Now, using 
+this short form, we can provide closed-form expressions for different probabilities, using the following 
+recursion (which directly follows from the above)
+
+$$
+p_{n+1}=\frac{\lambda}{\mu_{n+1}}p_n
+$$
+
+For instance, one can calculate that the probability of a customer having to wait (because all cashiers are
+busy at the moment) is
+
+$$
+P_W=p_0\frac{(\lambda/\mu)^c}{c!}\frac{1}{1-\rho}
+$$
+
+This is also called the *Erlang-C* probability and we will delve deeper into the details in the coming chapters.
+
+## Exercises
+
+1. Prove that in the supermarket example the local balance condition follows from the global balance condition
+(Hint: use induction).

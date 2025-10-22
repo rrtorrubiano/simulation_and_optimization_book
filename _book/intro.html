@@ -279,6 +279,7 @@ window.Quarto = {
    
   <ul>
   <li><a href="#simulating-supermarket-dynamics" id="toc-simulating-supermarket-dynamics" class="nav-link active" data-scroll-target="#simulating-supermarket-dynamics"><span class="header-section-number">1.1</span> Simulating supermarket dynamics</a></li>
+  <li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises"><span class="header-section-number">1.2</span> Exercises</a></li>
   </ul>
 </nav>
     </div>
@@ -367,10 +368,29 @@ p_n=\lim_{t\rightarrow\infty}\int_{0}^t \mathbb{1}_{\{N(s)=n\}} ds
 \]</span></p>
 <p>Now we are going to state our <strong>main modeling assumption</strong>. Consider how we transition <em>between states</em>. Specifically, we transition from state <span class="math inline">\(n\)</span> to state <span class="math inline">\(n+1\)</span> when a new customer enters the supermarket, and there were already <span class="math inline">\(n\)</span> customers in it. Similarly, we transition from state <span class="math inline">\(n\)</span> to state <span class="math inline">\(n-1\)</span> when a customer leaves the supermarket (in this case, all customers are served by the cashiers, so there is no way you leave the supermarket without paying first). Remember that the rate of customers arriving at the supermarket is always <span class="math inline">\(\lambda\)</span>, and the rate of customers being served (i.e.&nbsp;leaving) when at state <span class="math inline">\(n\)</span> is <span class="math inline">\(\mu_n\)</span>. In general, for each state we can define an <em>incoming</em> and an <em>outgoing flow</em>. This quantifies the transitions in resp. out of a given state.</p>
 <p><img src="figures/fig_intro_2.png" class="img-fluid"></p>
-<p>As can be seen in the previous figure, transitions flow away from state <span class="math inline">\(n\)</span> in two ways: first, to state <span class="math inline">\(n-1\)</span> when a customer is served with a rate <span class="math inline">\(\mu_n p_n\)</span> and to state <span class="math inline">\(n+1\)</span> when a new customer arrives with a rate <span class="math inline">\(\lambda p_n\)</span>. Similarly, one can transition from the other states to state <span class="math inline">\(n\)</span> either by having a customer served in state <span class="math inline">\(n+1\)</span> with a rate <span class="math inline">\(\mu_{n+1}p_{n+1}\)</span> or when being in state <span class="math inline">\(n-1\)</span> and a new customer arrives with a rate <span class="math inline">\(\lambda p_{n-1}\)</span>. Our modeling assumption now is that, for each state <span class="math inline">\(n\)</span>, the flow outwards balances out with the flow inwards:</p>
+<p>As can be seen in the previous figure, transitions flow away from state <span class="math inline">\(n\)</span> in two ways: first, to state <span class="math inline">\(n-1\)</span> when a customer is served with a rate <span class="math inline">\(\mu_n p_n\)</span> and to state <span class="math inline">\(n+1\)</span> when a new customer arrives with a rate <span class="math inline">\(\lambda p_n\)</span>. Similarly, one can transition from the other states to state <span class="math inline">\(n\)</span> either by having a customer served in state <span class="math inline">\(n+1\)</span> with a rate <span class="math inline">\(\mu_{n+1}p_{n+1}\)</span> or when being in state <span class="math inline">\(n-1\)</span> and a new customer arrives with a rate <span class="math inline">\(\lambda p_{n-1}\)</span>. Our modeling assumption now is that, for each state <span class="math inline">\(n\)</span>, the flow outwards balances out with the flow inwards (global balance):</p>
 <p><span class="math display">\[
 \lambda p_{n-1} + \mu_{n+1}p_{n+1} = \lambda p_n + \mu_n p_n\text{,   for }n\ge 1
 \]</span></p>
+<p>We can also write that, in the long term, the rate of transitions from <span class="math inline">\(n\)</span> to <span class="math inline">\(n+1\)</span> equals the transitions from <span class="math inline">\(n+1\)</span> to <span class="math inline">\(n\)</span>, which results in the more simple form (local balance)</p>
+<p><span class="math display">\[
+\lambda p_n = \mu_{n+1}p_{n+1} \text{,   for }n\ge 1
+\]</span></p>
+<p>This form follows from the global balance condition when only neighboring states are connected. Now, using this short form, we can provide closed-form expressions for different probabilities, using the following recursion (which directly follows from the above)</p>
+<p><span class="math display">\[
+p_{n+1}=\frac{\lambda}{\mu_{n+1}}p_n
+\]</span></p>
+<p>For instance, one can calculate that the probability of a customer having to wait (because all cashiers are busy at the moment) is</p>
+<p><span class="math display">\[
+P_W=p_0\frac{(\lambda/\mu)^c}{c!}\frac{1}{1-\rho}
+\]</span></p>
+<p>This is also called the <em>Erlang-C</em> probability and we will delve deeper into the details in the coming chapters.</p>
+</section>
+<section id="exercises" class="level2" data-number="1.2">
+<h2 data-number="1.2" class="anchored" data-anchor-id="exercises"><span class="header-section-number">1.2</span> Exercises</h2>
+<ol type="1">
+<li>Prove that in the supermarket example the local balance condition follows from the global balance condition (Hint: use induction).</li>
+</ol>
 
 
 </section>
