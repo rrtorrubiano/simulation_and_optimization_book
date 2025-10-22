@@ -180,6 +180,48 @@ carefully before getting into your car and starting your route.
 
 ![The traveling salesman has to find a good and practical solution](figures/fig_intro_3){#fig-tsp-1}
 
+Now, the traveling salesman needs to consider two things:
+
+- A method for *constructing valid* tours that start and end in the same location.
+- A method for *evaluating* those tours so that we can quantitatively decide if a tour is better 
+than another one.
+
+Let's address each of these considerations in detail. Assume that $N=\{1,2,\dots,n\}$ is our
+set of possible locations. Let's define the following variables:
+
+$$
+\begin{aligned}
+x_{ij}=
+\begin{cases}
+1 & \text{if the tour goes directly to location }i \text{ to location }j \\
+0 & \text{otherwise}
+\end{cases}
+\end{aligned}
+$$
+
+where $i,j\in N$. We call $x_{ij}$ our *decision variables*. So if the traveling salesman specifies
+the value of each $x_{ij}$, we have a candidate route to consider. However, not every 
+assignment of the $x_{ij}$ variables to $\{0,1\}$ will make sense for the traveling salesman.
+For instance, imagine that we have in one assignment both $x_{23}=1$ and $x_{43}=1$. That would 
+mean that location 3 is visited twice, once from location 2 and another time from location 4. That 
+violates the requirement that each location is visited exactly once.
+
+To model this situation, we need to introduce *constraints*.  In optimization problems, 
+constraints take usually the form of equalities or inequalities as functions of the decision
+variables. In our case, the requirement that each location is visited only once can be 
+expressed by the following (linear) equalities:
+
+$$
+\begin{aligned}
+\sum_{j=1}^n x_{ij} & = 1\text{ for all }i\in N \\
+\sum_{i=1}^n x_{ij} & = 1\text{ for all }j\in N 
+\end{aligned}
+$$
+
+The first equality means that, fixed a location $i$, the sum of all *outgoing* edges is exactly one.
+Conversely, the second states that for a fixed location $j$, the sum of all *incoming* edges is also 
+exactly one. This ensures that each location is visited exactly once.
+
 ## Exercises
 
 1. Prove that in the supermarket example the local balance condition follows from the global balance condition
