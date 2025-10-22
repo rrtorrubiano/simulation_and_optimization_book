@@ -344,7 +344,16 @@ window.Quarto = {
 <span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>            heapq.heappush(event_list, (time <span class="op">+</span> service_time(next_cid), <span class="st">'departure'</span>, next_cid))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>This code assumes that customers arrive at regular subsequent intervals after each arrival event. The parameter <code>sim_end</code> defines how long (how many steps) we want to simulate in this case. The function <code>service_time</code> returns the time the cashier needs for checking out customer <code>cid</code>. The next customer will arrive after a time given by the function <code>next_interarrival</code>, which can implement different stochastic behaviours.</p>
 <p>We can represent this system graphically as shown in the following illustration:</p>
-<p><img src="figures/fig_intro_1.png" class="img-fluid"></p>
+<div id="fig-supermarket-dynamics" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-supermarket-dynamics-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="figures/fig_intro_1.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-supermarket-dynamics-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1.1: An illustration of the supermarket dynamics.
+</figcaption>
+</figure>
+</div>
 <p>In this figure, customers are denoted by <span class="math inline">\(r_i\)</span>, the amount of cashiers is <span class="math inline">\(c\)</span> and the total number of customers in the supermarket at time <span class="math inline">\(t\)</span> is denoted by <span class="math inline">\(N(t)\)</span>.</p>
 <p>Now let’s try to refine the dynamics of this system. We will now write some equations to describe the system’ dynamics according to the <strong>infinite waiting room</strong> <span class="math inline">\(M/M/c\)</span> model. Let’s make the following assumptions:</p>
 <ul>
@@ -368,7 +377,16 @@ p_n=\lim_{t\rightarrow\infty}\int_{0}^t \mathbb{1}_{\{N(s)=n\}} ds
 \end{aligned}
 \]</span></p>
 <p>Now we are going to state our <strong>main modeling assumption</strong>. Consider how we transition <em>between states</em>. Specifically, we transition from state <span class="math inline">\(n\)</span> to state <span class="math inline">\(n+1\)</span> when a new customer enters the supermarket, and there were already <span class="math inline">\(n\)</span> customers in it. Similarly, we transition from state <span class="math inline">\(n\)</span> to state <span class="math inline">\(n-1\)</span> when a customer leaves the supermarket (in this case, all customers are served by the cashiers, so there is no way you leave the supermarket without paying first). Remember that the rate of customers arriving at the supermarket is always <span class="math inline">\(\lambda\)</span>, and the rate of customers being served (i.e.&nbsp;leaving) when at state <span class="math inline">\(n\)</span> is <span class="math inline">\(\mu_n\)</span>. In general, for each state we can define an <em>incoming</em> and an <em>outgoing flow</em>. This quantifies the transitions in resp. out of a given state.</p>
-<p><img src="figures/fig_intro_2.png" class="img-fluid"></p>
+<div id="fig-transition-neighboring" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-transition-neighboring-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="figures/fig_intro_2.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-transition-neighboring-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1.2: Transition dynamics between neighboring states
+</figcaption>
+</figure>
+</div>
 <p>As can be seen in the previous figure, transitions flow away from state <span class="math inline">\(n\)</span> in two ways: first, to state <span class="math inline">\(n-1\)</span> when a customer is served with a rate <span class="math inline">\(\mu_n p_n\)</span> and to state <span class="math inline">\(n+1\)</span> when a new customer arrives with a rate <span class="math inline">\(\lambda p_n\)</span>. Similarly, one can transition from the other states to state <span class="math inline">\(n\)</span> either by having a customer served in state <span class="math inline">\(n+1\)</span> with a rate <span class="math inline">\(\mu_{n+1}p_{n+1}\)</span> or when being in state <span class="math inline">\(n-1\)</span> and a new customer arrives with a rate <span class="math inline">\(\lambda p_{n-1}\)</span>. Our modeling assumption now is that, for each state <span class="math inline">\(n\)</span>, the flow outwards balances out with the flow inwards (global balance):</p>
 <p><span class="math display">\[
 \lambda p_{n-1} + \mu_{n+1}p_{n+1} = \lambda p_n + \mu_n p_n\text{,   for }n\ge 1
@@ -399,7 +417,16 @@ P_W=p_0\frac{(\lambda/\mu)^c}{c!}\frac{1}{1-\rho}
 <section id="example-2-the-traveling-salesman" class="level2" data-number="1.2">
 <h2 data-number="1.2" class="anchored" data-anchor-id="example-2-the-traveling-salesman"><span class="header-section-number">1.2</span> Example 2: The traveling salesman</h2>
 <p>Let’s not turn our attention to the other type of problems which are central to this book: <em>optimization problems</em>. Imagine you are a sales representative for a vaccum cleaner manufacturer. Your task is to visit potential customers in cities across your area and, at the end of the day, return to where you started your journey. As an environmental conscious employer and in order to save transport costs, your company introduces the restriction that each customer in the route has to be visited <em>exactly once</em>. So you need to think carefully before getting into your car and starting your route.</p>
-<p><img src="figures/fig_intro_3.png" class="img-fluid"></p>
+<div id="fig-tsp-1" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-tsp-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="figures/fig_intro_3.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-tsp-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1.3: The traveling salesman has to find a good and practical solution
+</figcaption>
+</figure>
+</div>
 </section>
 <section id="exercises" class="level2" data-number="1.3">
 <h2 data-number="1.3" class="anchored" data-anchor-id="exercises"><span class="header-section-number">1.3</span> Exercises</h2>
