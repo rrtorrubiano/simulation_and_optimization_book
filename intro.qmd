@@ -45,16 +45,19 @@ while event_list and time < sim_end:
     if ev_type == 'arrival':
         if any_cashier_free():
             start_checkout(cid, time)
-            heapq.heappush(event_list, (time + service_time(cid), 'departure', cid))
+            heapq.heappush(event_list, (time + service_time(cid), 
+                'departure', cid))
         else:
             enqueue(cid, time)
-        heapq.heappush(event_list, (time + next_interarrival(), 'arrival', next_id()))
+        heapq.heappush(event_list, (time + next_interarrival(), 
+            'arrival', next_id()))
     elif ev_type == 'departure':
         finish_service(cid, time)
         if queue_not_empty():
             next_cid = dequeue()
             start_service(next_cid, time)
-            heapq.heappush(event_list, (time + service_time(next_cid), 'departure', next_cid))
+            heapq.heappush(event_list, (time + service_time(next_cid), 
+                'departure', next_cid))
 ```
 
 This code assumes that customers arrive at regular subsequent intervals after each arrival event. The parameter ``sim_end`` defines 

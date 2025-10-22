@@ -332,16 +332,19 @@ window.Quarto = {
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> ev_type <span class="op">==</span> <span class="st">'arrival'</span>:</span>
 <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> any_cashier_free():</span>
 <span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>            start_checkout(cid, time)</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>            heapq.heappush(event_list, (time <span class="op">+</span> service_time(cid), <span class="st">'departure'</span>, cid))</span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>:</span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>            enqueue(cid, time)</span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>        heapq.heappush(event_list, (time <span class="op">+</span> next_interarrival(), <span class="st">'arrival'</span>, next_id()))</span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    <span class="cf">elif</span> ev_type <span class="op">==</span> <span class="st">'departure'</span>:</span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>        finish_service(cid, time)</span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> queue_not_empty():</span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>            next_cid <span class="op">=</span> dequeue()</span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>            start_service(next_cid, time)</span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>            heapq.heappush(event_list, (time <span class="op">+</span> service_time(next_cid), <span class="st">'departure'</span>, next_cid))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>            heapq.heappush(event_list, (time <span class="op">+</span> service_time(cid), </span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>                <span class="st">'departure'</span>, cid))</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>:</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>            enqueue(cid, time)</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>        heapq.heappush(event_list, (time <span class="op">+</span> next_interarrival(), </span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>            <span class="st">'arrival'</span>, next_id()))</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">elif</span> ev_type <span class="op">==</span> <span class="st">'departure'</span>:</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>        finish_service(cid, time)</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> queue_not_empty():</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>            next_cid <span class="op">=</span> dequeue()</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>            start_service(next_cid, time)</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>            heapq.heappush(event_list, (time <span class="op">+</span> service_time(next_cid), </span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>                <span class="st">'departure'</span>, next_cid))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>This code assumes that customers arrive at regular subsequent intervals after each arrival event. The parameter <code>sim_end</code> defines how long (how many steps) we want to simulate in this case. The function <code>service_time</code> returns the time the cashier needs for checking out customer <code>cid</code>. The next customer will arrive after a time given by the function <code>next_interarrival</code>, which can implement different stochastic behaviours.</p>
 <p>We can represent this system graphically as shown in the following illustration:</p>
 <div id="fig-supermarket-dynamics" class="quarto-float quarto-figure quarto-figure-center anchored">
