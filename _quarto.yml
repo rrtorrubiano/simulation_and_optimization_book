@@ -19,8 +19,9 @@ book:
     - part: "PART II: OPTIMIZATION"
       chapters:
         - optimization_basics.qmd
-        - gradient_descent.qmd
-        - evolutionary_algorithms.qmd
+        - exact_methods.qmd
+        - metaheuristics.qmd
+        - optimization_in_ml.qmd
     - summary.qmd
     - references.qmd
 
