@@ -37,3 +37,92 @@ discrete-event simulation works. After that, we present common statistical techn
 output data of simulations and conclude the chapter with considerations about verification and validation 
 of simulation studies.
 
+## Dealing with Random Numbers
+
+We refer to *random numbers* as realizations of random variables that follow probability distributions. The 
+following elements completely determine the statistical behaviour of randon numbers:
+
+- Their **type**: discrete or continuous?
+- The form of their **probability distribution**: binomial, normal, exponential, Poisson, etc.
+- The **joint** or **conditional** distributions associated with the phenomenon at hand.
+- The specific **parameters** used for each probability distribution.
+
+In this book, we will mainly deal with parametric probability distributions, although everything applies 
+to non-parametric distributions as well. We will hint at specific differences when appropriate.
+
+### Pseudorandom Number Generators
+
+In general, any procedure to generate random numbers is called a *pseudorandom number generator* (PRNB).
+A PRNB can be defined as a deterministic algorithm that, given an initial seed, produces a long sequence of numbers that mimic the statistical properties of truly random samples. Although the sequence is fully determined by the seed (so it is not truly random, hence *pseudorandom*), a good PRNG yields values that are uniformly distributed, have minimal serial correlation, and pass standard statistical tests. Important PRNG properties include period length, equidistribution, independence, speed, and reproducibility (the same seed reproduces the same sequence). For simulation work we typically prefer generators with very long periods and strong statistical quality while cryptographic applications require cryptographically secure PRNGs. PRNGs are used to produce uniform variates that are then transformed into other distributions via methods such as inverse transform sampling, acceptance–rejection, or composition.
+
+Let's explore the properties of a specific PRNG, the Linear Congruential Generator (LCG) using the following Python code.
+
+```{python}
+import numpy as np
+from scipy.stats import chisquare
+from collections import defaultdict
+
+
+class LCG:
+    """
+    X(n+1) = (a * X(n) + c) mod m
+    """
+    def __init__(self, seed, a, c, m):
+        self._state = seed
+        self.a = a
+        self.c = c
+        self.m = m
+        self.seed = seed
+
+    def next_int(self):
+        """Generates the next pseudo-random integer 
+        in the sequence."""
+        self._state = (self.a * self._state + self.c) % self.m
+        return self._state
+
+    def generate(self, size):
+        """Generates a sequence of integers and 
+        normalizes them to [0, 1)."""
+        sequence_int = []
+        sequence_float = []
+        # Reset state to seed for sequence generation
+        self._state = self.seed 
+        
+        for _ in range(size):
+            next_val = self.next_int()
+            sequence_int.append(next_val)
+            # Normalize to a float in [0, 1) by dividing by the modulus
+            sequence_float.append(next_val / self.m)
+            
+        return np.array(sequence_int), np.array(sequence_float)
+
+```
+
+The LCG is one of the oldest and best known PRNG which are used to date. As can be seen in 
+the code, it uses three integer parameters $a$, $c$ and the modulo $m$ and computes the 
+next random number using the recurrence:
+
+$$
+X_{n+1} = (a X_n + c) \operatorname{mod} m
+$$ {#eq-1}
+
+Starting at $n=0$, we initialize $X_0$ to the random seed provided.
+
+We can now use the generator as follows:
+
+```{python}
+# LCG Parameters (a 'poor' LCG to highlight the deterministic nature)
+# A small modulus (m) leads to a short period and visible patterns.
+SEED = 12345
+A = 65  # Multiplier
+C = 1   # Increment
+M = 2**10  # Modulus (1024) - A small M is used for demonstration purposes
+SEQUENCE_SIZE = 1000
+
+# 1. Initialize and Generate Sequence
+prng = LCG(SEED, A, C, M)
+int_sequence, float_sequence = prng.generate(SEQUENCE_SIZE)
+int_sequence[:10]
+```
+
+We have now generated 1000 random numbers using LCG (only first 10 are shown).

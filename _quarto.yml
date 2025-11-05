@@ -2,7 +2,7 @@ project:
   type: book
 
 book:
-  title: "Simulation and Optimization"
+  title: "Simulation and Optimization: A Model-Driven Approach"
   author: "Rubén Ruiz-Torrubiano"
   date: today
   date-format: medium
