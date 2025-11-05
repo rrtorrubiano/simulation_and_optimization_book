@@ -70,6 +70,28 @@
     ]
   },
   {
+    "objectID": "simulation_basics.html",
+    "href": "simulation_basics.html",
+    "title": "2  Simulation basics",
+    "section": "",
+    "text": "2.1 What is Simulation?\nIn science and engineering, it is of paramount importance to develop reliable quantitative models that capture the essential behavior of real systems. Simulation provides a controlled, repeatable, and cost‑effective way to\nA simulation study typically involves the following steps:\nProper validation and uncertainty quantification are critical to ensure that simulation results are trustworthy and useful for engineering practice.\nSimulation can be defined as the methods and procedures to define models of a system of interest and execute it to get raw data (Osais 2017). In normal simulation studies, we are not interested in the raw data by itself, but use it to calculate measures of interest regarding the system’s performance. For instance, in the example shown in Chapter 1, we saw that measures of interest include the average time that a customer has to way in the checkout queue. We sometimes also call these raw data synthetic data, since this is not the actual data that we would collect in the physical world. Synthetic data has by itself sparked interest in recent years due to its potential to enhance how we train and validate machine learning models, especially regarding data privacy and robustness, or when training data is expensive or scarce (Jordon et al. 2022; Breugel, Qian, and Schaar 2023).\nIn the rest of this chapter, we will introduce the basic principles and notions needed to understand how simulation works. We start with a gentle reminder of random numbers and distributions, and introduce standard methods of random number generation. We then move on into stochastic processes and how discrete-event simulation works. After that, we present common statistical techniques to deal with the output data of simulations and conclude the chapter with considerations about verification and validation of simulation studies.",
+    "crumbs": [
+      "PART I: SIMULATION",
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Simulation basics</span>"
+    ]
+  },
+  {
+    "objectID": "simulation_basics.html#what-is-simulation",
+    "href": "simulation_basics.html#what-is-simulation",
+    "title": "2  Simulation basics",
+    "section": "",
+    "text": "predict system behavior under varied conditions,\nexplore “what‑if” scenarios and design alternatives,\nquantify uncertainty and sensitivity to inputs,\nvalidate hypotheses when experiments are impractical or expensive,\nand support optimization and decision making.\n\n\n\nConstruct a mathematical or computational model.\nSpecify inputs and assumptions.\nRun experiments (often many replications with different parameters).\nAnalyze outputs and comparing them with data or theoretical expectations.\n\n\n\n\n\n\n\n\nBreugel, Boris van, Zhaozhi Qian, and Mihaela van der Schaar. 2023. “Synthetic Data, Real Errors: How (Not) to Publish and Use Synthetic Data.” arXiv. https://doi.org/10.48550/arXiv.2305.09235.\n\n\nJordon, James, Lukasz Szpruch, Florimond Houssiau, Mirko Bottarelli, Giovanni Cherubin, Carsten Maple, Samuel N. Cohen, and Adrian Weller. 2022. “Synthetic Data – What, Why and How?” arXiv. https://doi.org/10.48550/arXiv.2205.03257.\n\n\nOsais, Yahya Esmail. 2017. Computer Simulation: A Foundational Approach Using Python. New York: Chapman; Hall/CRC. https://doi.org/10.1201/9781315120294.",
+    "crumbs": [
+      "PART I: SIMULATION",
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Simulation basics</span>"
+    ]
+  },
+  {
     "objectID": "summary.html",
     "href": "summary.html",
     "title": "10  Summary",
@@ -77,6 +99,16 @@
     "text": "In summary, this book has no content whatsoever.",
     "crumbs": [
       "<span class='chapter-number'>10</span>  <span class='chapter-title'>Summary</span>"
+    ]
+  },
+  {
+    "objectID": "references.html",
+    "href": "references.html",
+    "title": "References",
+    "section": "",
+    "text": "Breugel, Boris van, Zhaozhi Qian, and Mihaela van der Schaar. 2023.\n“Synthetic Data, Real Errors: How (Not) to Publish and Use\nSynthetic Data.” arXiv. https://doi.org/10.48550/arXiv.2305.09235.\n\n\nJordon, James, Lukasz Szpruch, Florimond Houssiau, Mirko Bottarelli,\nGiovanni Cherubin, Carsten Maple, Samuel N. Cohen, and Adrian Weller.\n2022. “Synthetic Data – What, Why and How?”\narXiv. https://doi.org/10.48550/arXiv.2205.03257.\n\n\nOsais, Yahya Esmail. 2017. Computer Simulation:\nA Foundational Approach\nUsing Python. New York: Chapman;\nHall/CRC. https://doi.org/10.1201/9781315120294.",
+    "crumbs": [
+      "References"
     ]
   }
 ]

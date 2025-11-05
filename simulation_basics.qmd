@@ -1,1 +1,39 @@
 # Simulation basics {#sec-simulation-basics}
+
+## What is Simulation?
+
+In science and engineering, it is of paramount importance to develop reliable quantitative models
+ that capture the essential behavior of real systems. Simulation provides a 
+ controlled, repeatable, and cost‑effective way to
+
+- predict system behavior under varied conditions,
+- explore "what‑if" scenarios and design alternatives,
+- quantify uncertainty and sensitivity to inputs,
+- validate hypotheses when experiments are impractical or expensive,
+- and support optimization and decision making.
+
+A simulation study typically involves the following steps:
+
+1. Construct a mathematical or computational model.
+2. Specify inputs and assumptions. 
+3. Run experiments (often many replications with different parameters).
+4. Analyze outputs and comparing them with data or theoretical expectations. 
+
+Proper validation and uncertainty quantification are critical to ensure that simulation results are trustworthy and useful for engineering practice.
+
+Simulation can be defined as the methods and procedures to define models of a system of interest and execute it
+to get raw data [@osais_computer_2017]. In normal simulation studies, we are not interested in the raw data by itself, but use it to calculate measures of interest regarding the system's performance. For instance, in the example
+shown in @sec-introduction, we saw that measures of interest include the average time that a customer 
+has to way in the checkout queue. We sometimes also call these raw data *synthetic data*, since this is 
+not the actual data that we would collect in the physical world. Synthetic data has by itself sparked 
+interest in recent years due to its potential to enhance how we train and validate machine learning models, 
+especially regarding data privacy and robustness, or when training data is expensive or scarce
+[@jordon_synthetic_2022; @van_breugel_synthetic_2023].
+
+In the rest of this chapter, we will introduce the basic principles and notions needed to understand
+how simulation works. We start with a gentle reminder of random numbers and distributions, and introduce 
+standard methods of random number generation. We then move on into stochastic processes and how
+discrete-event simulation works. After that, we present common statistical techniques to deal with the
+output data of simulations and conclude the chapter with considerations about verification and validation 
+of simulation studies.
+

@@ -20,7 +20,27 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-</style>
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="site_libs/quarto-nav/quarto-nav.js"></script>
@@ -215,8 +235,14 @@ ul.task-list li input[type="checkbox"] {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#what-is-simulation" id="toc-what-is-simulation" class="nav-link active" data-scroll-target="#what-is-simulation"><span class="header-section-number">2.1</span> What is Simulation?</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -240,8 +266,40 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
+<section id="what-is-simulation" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="what-is-simulation"><span class="header-section-number">2.1</span> What is Simulation?</h2>
+<p>In science and engineering, it is of paramount importance to develop reliable quantitative models that capture the essential behavior of real systems. Simulation provides a controlled, repeatable, and cost‑effective way to</p>
+<ul>
+<li>predict system behavior under varied conditions,</li>
+<li>explore “what‑if” scenarios and design alternatives,</li>
+<li>quantify uncertainty and sensitivity to inputs,</li>
+<li>validate hypotheses when experiments are impractical or expensive,</li>
+<li>and support optimization and decision making.</li>
+</ul>
+<p>A simulation study typically involves the following steps:</p>
+<ol type="1">
+<li>Construct a mathematical or computational model.</li>
+<li>Specify inputs and assumptions.</li>
+<li>Run experiments (often many replications with different parameters).</li>
+<li>Analyze outputs and comparing them with data or theoretical expectations.</li>
+</ol>
+<p>Proper validation and uncertainty quantification are critical to ensure that simulation results are trustworthy and useful for engineering practice.</p>
+<p>Simulation can be defined as the methods and procedures to define models of a system of interest and execute it to get raw data <span class="citation" data-cites="osais_computer_2017">(<a href="references.html#ref-osais_computer_2017" role="doc-biblioref">Osais 2017</a>)</span>. In normal simulation studies, we are not interested in the raw data by itself, but use it to calculate measures of interest regarding the system’s performance. For instance, in the example shown in <a href="intro.html" class="quarto-xref"><span>Chapter 1</span></a>, we saw that measures of interest include the average time that a customer has to way in the checkout queue. We sometimes also call these raw data <em>synthetic data</em>, since this is not the actual data that we would collect in the physical world. Synthetic data has by itself sparked interest in recent years due to its potential to enhance how we train and validate machine learning models, especially regarding data privacy and robustness, or when training data is expensive or scarce <span class="citation" data-cites="jordon_synthetic_2022 van_breugel_synthetic_2023">(<a href="references.html#ref-jordon_synthetic_2022" role="doc-biblioref">Jordon et al. 2022</a>; <a href="references.html#ref-van_breugel_synthetic_2023" role="doc-biblioref">Breugel, Qian, and Schaar 2023</a>)</span>.</p>
+<p>In the rest of this chapter, we will introduce the basic principles and notions needed to understand how simulation works. We start with a gentle reminder of random numbers and distributions, and introduce standard methods of random number generation. We then move on into stochastic processes and how discrete-event simulation works. After that, we present common statistical techniques to deal with the output data of simulations and conclude the chapter with considerations about verification and validation of simulation studies.</p>
 
 
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
+<div id="ref-van_breugel_synthetic_2023" class="csl-entry" role="listitem">
+Breugel, Boris van, Zhaozhi Qian, and Mihaela van der Schaar. 2023. <span>“Synthetic Data, Real Errors: How (Not) to Publish and Use Synthetic Data.”</span> arXiv. <a href="https://doi.org/10.48550/arXiv.2305.09235">https://doi.org/10.48550/arXiv.2305.09235</a>.
+</div>
+<div id="ref-jordon_synthetic_2022" class="csl-entry" role="listitem">
+Jordon, James, Lukasz Szpruch, Florimond Houssiau, Mirko Bottarelli, Giovanni Cherubin, Carsten Maple, Samuel N. Cohen, and Adrian Weller. 2022. <span>“Synthetic <span>Data</span> – What, Why and How?”</span> arXiv. <a href="https://doi.org/10.48550/arXiv.2205.03257">https://doi.org/10.48550/arXiv.2205.03257</a>.
+</div>
+<div id="ref-osais_computer_2017" class="csl-entry" role="listitem">
+Osais, Yahya Esmail. 2017. <em>Computer <span>Simulation</span>: <span>A</span> <span>Foundational</span> <span>Approach</span> <span>Using</span> <span>Python</span></em>. New York: Chapman; Hall/CRC. <a href="https://doi.org/10.1201/9781315120294">https://doi.org/10.1201/9781315120294</a>.
+</div>
+</div>
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
