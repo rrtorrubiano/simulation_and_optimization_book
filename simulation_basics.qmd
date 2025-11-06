@@ -281,3 +281,82 @@ print(f'The lag 1 correlation coefficient is {lag_1_correlation_mt}')
 
 ```
 which is an order of magnitude better than the LCG.
+
+## Sampling Methods
+
+We have now a method for generating *uniformly distributed* random numbers. But what about other 
+widely used distributions, like normal, exponential, Poisson, etc? In this section, we will review 
+three popular methods for this purpose: the **inversion method**, the **rejection sampling** method, the **Box-Muller transform** and 
+the **mixture method**. For all three methods, the general problem is as follows: we start 
+with a random variable $U \sim \text{ Uniform}(0,1)$. We want to convert $U$ into $X \sim f(x)$, 
+where $f$ is the target PDF of $X$.
+
+
+
+**Inversion method**
+
+Suppose that we know the CDF of the target distribution $F(x)=P(X\le x)$, and assume that 
+we can invert it to $F^{-1}(u)$. With this function, we can simply obtain $X$ by
+
+$$
+X=F^{-1}(U)
+$$ {#eq-inv}
+
+For instance, imagine our target distribution is the exponential, with density function
+$f(x)=\lambda e^{-\lambda x}$. Elementary calculus tells us that $F(x)=1-e^{\lambda x}$. 
+It can be shown that the inverse is
+
+$$
+F^{-1}(u)=-\frac{1}{\lambda}\ln(1-u)
+$$ {#eq-example-inv}
+
+Since $U'=1-U$ is also uniform in $[0,1]$, we can simply write $X=-\frac{1}{\lambda}\ln(U')$.
+
+**Rejection-sampling method**
+
+But what if our CDF is not easily invertible, or worse, we don't have any analytical expression
+for it? Suppose that, although we don't have $f$, we have a proposal distribution $g(x)$ so that 
+it "envelopes" the target distribution in the sense that there is a constant $c$ so 
+that $f(x)\le c g(x)$ (i.e., we **do** know the PDF). In this case, we can do the following:
+
+1. Sample $x$ from the proposal distribution $g(x)$.
+2. Sample a uniform $U(0,1)$ random variable $u$.
+3. If $u < \frac{f(x)}{c g(x)}$, the candidate number $x$ is accepted since it follows $f(x)$.
+4. Otherwise, we repeat the procedure until we get a candidate accepted.
+
+The trick now is to take a *bounded* uniform distribution as $g$ that contains our target 
+distribution $f$. Once we have this, we can generate samples from virtually any 
+probability distribution without requiring its CDF or inverse.
+
+**Box-Muller transform**
+
+The next method is specialized towards generating values for the **normal distribution**, and 
+is widely used in practice. We start by generating two uniform random numbers $u_1, u_2 \sim U(-1,1)$.
+
+* First, we calculte the sum of their squares $S=u_1^2+u_2^2$.
+* If $S\ge 1$ or $S=0$, we reject both and return to the first step.
+* Otherwise, we calculate $C=\sqrt{\frac{-2\ln(S)}{S}}$.
+* We output two normally distributed random numbers as $z_1=u_1 C$ and $z_2 = u_2 C$.
+
+The random numbers generated follow a standard normal distribution $N(0,1)$. For an arbitrary
+normal distribution $N(\mu,\sigma^2)$ we just scale using the standard transformation $X=\mu+\sigma Z$.
+
+**Mixture method**
+
+In the case that the target distribution can be expressed as a mixture of $k$ different PDFs
+
+$$
+f(x)=\sum_{i=1}^k p_i f_i(x)\text{, with }p_i\ge 0\text{, and }\sum_{i=1}^k p_i = 1
+$$ {#eq-mixtures}
+
+Then we can use the following methods to sample from $f(x)$:
+
+* Choose randomly an index $i\in I$ from the set of indices $I=\{1,2,\dots,k\}$. This is done by
+generating a random number $u \sim U(0,1)$ and choosing the least index $j$ so that 
+$\sum_{i=1}^j p_i < u$.
+* Generate a random variable $x$ from $f_i(x)$ by using any of the aforementioned methods.
+
+This is a suitable method, for instance, to generate random numbers that follow a 
+**Gaussian Mixture Model (GMM)**. In this case, we just sample an index and generate a 
+random number according to the Box-Muller method, scaling accordingly if necessary.
+
