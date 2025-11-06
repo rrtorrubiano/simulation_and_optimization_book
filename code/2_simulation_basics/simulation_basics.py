@@ -40,7 +40,7 @@ SEED = 42
 A = 65  # Multiplier
 C = 1   # Increment
 M = 2**10  # Modulus (1024) - A small M is used for demonstration purposes
-SEQUENCE_SIZE = 1000
+SEQUENCE_SIZE = 100000
 
 # 1. Initialize and Generate Sequence
 prng = LCG(SEED, A, C, M)
@@ -96,3 +96,34 @@ def chi_squared_uniformity_test(data_float, num_bins=10):
 
 chi2_stat, p_value_uniformity, num_bins = chi_squared_uniformity_test(float_sequence)
 print(f'Chi2 statistic: {chi2_stat}, p-value: {p_value_uniformity}, number of bins: {num_bins}')
+
+
+def serial_correlation_check(data_float):
+    """
+    Characterization: Autocorrelation (Serial Correlation) Check.
+    """
+    # X_n: all values except the last one
+    X_n = data_float[:-1]
+    # X_{n+1}: all values except the first one
+    X_n_plus_1 = data_float[1:]
+    
+    # Calculate the Pearson correlation coefficient (r)
+    # The result is an array, we take the correlation between the two sequences (index 0, 1)
+    correlation_matrix = np.corrcoef(X_n, X_n_plus_1)
+    lag_1_correlation = correlation_matrix[0, 1]
+    
+    return lag_1_correlation
+
+lag_1_correlation = serial_correlation_check(float_sequence)
+print(f'The lag 1 correlation coefficient is {lag_1_correlation}')
+
+import random
+
+random.seed(SEED)
+
+# Generate a sequence of random floats in the range [0.0, 1.0)
+float_sequence_mt = np.array([random.uniform(0, 1) for _ in range(SEQUENCE_SIZE)])
+
+# Serial Correlation Check
+lag_1_correlation_mt = serial_correlation_check(float_sequence_mt)
+print(f'The lag 1 correlation coefficient is {lag_1_correlation_mt}')

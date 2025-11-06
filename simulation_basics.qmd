@@ -117,7 +117,7 @@ SEED = 42
 A = 65  # Multiplier
 C = 1   # Increment
 M = 2**10  # Modulus (1024) - A small M is used for demonstration purposes
-SEQUENCE_SIZE = 1000
+SEQUENCE_SIZE = 100000
 
 # 1. Initialize and Generate Sequence
 prng = LCG(SEED, A, C, M)
@@ -125,7 +125,7 @@ int_sequence, float_sequence = prng.generate(SEQUENCE_SIZE)
 int_sequence[:10]
 ```
 
-We have now generated 1000 random numbers using LCG (only first 10 are shown). But how can we ensure 
+We have now generated 100000 random numbers using LCG (only first 10 are shown). But how can we ensure 
 if this PRNM works well in practice? We will look now at the **period length**, how to check for **uniformity**
 and how to assert if there is **serial correlation**.
 
@@ -212,3 +212,72 @@ print(f'Chi2 statistic: {chi2_stat}, p-value: {p_value_uniformity}, number of bi
 
 In this case, the p-value is much higher than $\alpha=0.05$ and we **cannot** reject $H_0$, so 
 the numbers appear to be uniformly random.
+
+**Serial correlation**
+
+The next possible measure to check is the serial correlation between the numbers generated. 
+The **Serial Correlation Check**, also known as **Autocorrelation at Lag 1**, is a diagnostic measure used to characterize 
+and detect a fundamental weakness in simple Pseudorandom Number Generators (PRNGs), such as the Linear Congruential Generator (LCG).
+The main idea is that the correlation between immediately adjacent numbers (hence lag 1) should be zero.
+
+To calculate this, we form two sequences: the generated numbers and the same sequence moved by one place:
+
+$$
+\begin{aligned}
+S_n & = \{X_1,X_2,X_3,\dots,X_{n-1}\} \\
+S_{n+1} & = \{X_2,X_3,X_4,\dots,X_n\}
+\end{aligned}
+$$
+
+And now we calculate the Pearson correlation coefficient between $S_1$ and $S_2$.
+
+$$
+r=\frac{\sum (S_1-\bar{S_1})(S_2-\bar{S_2})}{\sqrt{\sum (S_1-\bar{S_1})^2(S_2-\bar{S_2})^2}}
+$$
+
+Our goal is that $r$ is as close to zero as possible (note that $r\in[-1,1]$). Let's use 
+the following code:
+
+```{python}
+def serial_correlation_check(data_float):
+    """
+    Characterization: Autocorrelation (Serial Correlation) Check.
+    """
+    # X_n: all values except the last one
+    X_n = data_float[:-1]
+    # X_{n+1}: all values except the first one
+    X_n_plus_1 = data_float[1:]
+    
+    # Calculate the Pearson correlation coefficient (r)
+    # The result is an array, we take the correlation between the two sequences (index 0, 1)
+    correlation_matrix = np.corrcoef(X_n, X_n_plus_1)
+    lag_1_correlation = correlation_matrix[0, 1]
+    
+    return lag_1_correlation
+
+lag_1_correlation = serial_correlation_check(float_sequence)
+print(f'The lag 1 correlation coefficient is {lag_1_correlation}')
+```
+While the value is low, it's not as close to zero as it should, which is a known 
+weakness of the LCG (the generated numbers tend to fall onto a number of parallel 
+hyperplanes). This is the reason why PRNM like the LCG are not normally used in practice.
+The de-facto standard for pseudorandom number generation in practice is the algorithm
+known as the **Mersenne Twister**. This is the default generator used in Python or MATLAB, 
+and the preferred one for simulation purposes (but *not* for cryptographic purposes). The 
+basic idea is to use a highly non-linear twisted generalized feedback shift register. 
+Apart from being much faster than LCG, it passes the serial correlation chek with flying colors:
+
+```{python}
+import random
+
+random.seed(SEED)
+
+# Generate a sequence of random floats in the range [0.0, 1.0)
+float_sequence_mt = np.array([random.uniform(0, 1) for _ in range(SEQUENCE_SIZE)])
+
+# Serial Correlation Check
+lag_1_correlation_mt = serial_correlation_check(float_sequence_mt)
+print(f'The lag 1 correlation coefficient is {lag_1_correlation_mt}')
+
+```
+which is an order of magnitude better than the LCG.

@@ -369,7 +369,7 @@ window.Quarto = {
 <h3 data-number="2.2.1" class="anchored" data-anchor-id="pseudorandom-number-generators"><span class="header-section-number">2.2.1</span> Pseudorandom Number Generators</h3>
 <p>In general, any procedure to generate random numbers is called a <em>pseudorandom number generator</em> (PRNB). A PRNB can be defined as a deterministic algorithm that, given an initial seed, produces a long sequence of numbers that mimic the statistical properties of truly random samples. Although the sequence is fully determined by the seed (so it is not truly random, hence <em>pseudorandom</em>), a good PRNG yields values that are uniformly distributed, have minimal serial correlation, and pass standard statistical tests. Important PRNG properties include period length, equidistribution, independence, speed, and reproducibility (the same seed reproduces the same sequence). For simulation work we typically prefer generators with very long periods and strong statistical quality while cryptographic applications require cryptographically secure PRNGs. PRNGs are used to produce uniform variates that are then transformed into other distributions via methods such as inverse transform sampling, acceptance–rejection, or composition.</p>
 <p>Let’s explore the properties of a specific PRNG, the Linear Congruential Generator (LCG) using the following Python code.</p>
-<div id="07522f29" class="cell" data-execution_count="1">
+<div id="6758c936" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.stats <span class="im">import</span> chisquare</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> collections <span class="im">import</span> defaultdict</span>
@@ -414,27 +414,27 @@ X_{n+1} = (a X_n + c) \operatorname{mod} m
 \tag{2.1}\]</span></span></p>
 <p>Starting at <span class="math inline">\(n=0\)</span>, we initialize <span class="math inline">\(X_0\)</span> to the random seed provided.</p>
 <p>We can now use the generator as follows:</p>
-<div id="6ae5cf1c" class="cell" data-execution_count="2">
+<div id="2f7ec58d" class="cell" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># LCG Parameters (a 'poor' LCG to highlight the deterministic nature)</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co"># A small modulus (m) leads to a short period and visible patterns.</span></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>SEED <span class="op">=</span> <span class="dv">42</span></span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> <span class="dv">65</span>  <span class="co"># Multiplier</span></span>
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>C <span class="op">=</span> <span class="dv">1</span>   <span class="co"># Increment</span></span>
 <span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>M <span class="op">=</span> <span class="dv">2</span><span class="op">**</span><span class="dv">10</span>  <span class="co"># Modulus (1024) - A small M is used for demonstration purposes</span></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>SEQUENCE_SIZE <span class="op">=</span> <span class="dv">1000</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>SEQUENCE_SIZE <span class="op">=</span> <span class="dv">100000</span></span>
 <span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. Initialize and Generate Sequence</span></span>
 <span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>prng <span class="op">=</span> LCG(SEED, A, C, M)</span>
 <span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>int_sequence, float_sequence <span class="op">=</span> prng.generate(SEQUENCE_SIZE)</span>
 <span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>int_sequence[:<span class="dv">10</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="25">
+<div class="cell-output cell-output-display" data-execution_count="71">
 <pre><code>array([683, 364, 109, 942, 815, 752, 753, 818, 947, 116])</code></pre>
 </div>
 </div>
-<p>We have now generated 1000 random numbers using LCG (only first 10 are shown). But how can we ensure if this PRNM works well in practice? We will look now at the <strong>period length</strong>, how to check for <strong>uniformity</strong> and how to assert if there is <strong>serial correlation</strong>.</p>
+<p>We have now generated 100000 random numbers using LCG (only first 10 are shown). But how can we ensure if this PRNM works well in practice? We will look now at the <strong>period length</strong>, how to check for <strong>uniformity</strong> and how to assert if there is <strong>serial correlation</strong>.</p>
 <p><strong>Period length</strong></p>
 <p>The period length assesses the number of values generated before the sequence of states returns to the first value (the starting state) for the first time. Note that in general the longer, the better. Note that in this case, the maximum possible period is <span class="math inline">\(m\)</span>, the modulo of the generator. We can calculate this with a simple Python function as follows:</p>
-<div id="4bd3a4cd" class="cell" data-execution_count="3">
+<div id="83cd1ddd" class="cell" data-execution_count="3">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> calculate_period(lcg_generator):</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co">    Calculates the period (cycle length) of the LCG.</span></span>
@@ -460,7 +460,7 @@ X_{n+1} = (a X_n + c) \operatorname{mod} m
 <span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>period <span class="op">=</span> calculate_period(prng)</span>
 <span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>period</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="26">
+<div class="cell-output cell-output-display" data-execution_count="72">
 <pre><code>1024</code></pre>
 </div>
 </div>
@@ -476,7 +476,7 @@ X_{n+1} = (a X_n + c) \operatorname{mod} m
 \chi^2=\sum_{i=1}^k\frac{(O_i-E_i)^2}{E_i}
 \]</span></p>
 <p>We can use the following Python function:</p>
-<div id="faaac319" class="cell" data-execution_count="4">
+<div id="3c37e680" class="cell" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> chi_squared_uniformity_test(data_float, num_bins<span class="op">=</span><span class="dv">10</span>):</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="co">    Statistical Test: Chi-Squared Goodness-of-Fit Test for Uniformity.</span></span>
@@ -501,10 +501,64 @@ X_{n+1} = (a X_n + c) \operatorname{mod} m
 <span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>chi2_stat, p_value_uniformity, num_bins <span class="op">=</span> chi_squared_uniformity_test(float_sequence)</span>
 <span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f'Chi2 statistic: </span><span class="sc">{</span>chi2_stat<span class="sc">}</span><span class="ss">, p-value: </span><span class="sc">{</span>p_value_uniformity<span class="sc">}</span><span class="ss">, number of bins: </span><span class="sc">{</span>num_bins<span class="sc">}</span><span class="ss">'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Chi2 statistic: 0.18, p-value: 0.9999996506223499, number of bins: 10</code></pre>
+<pre><code>Chi2 statistic: 2.2074, p-value: 0.9877471315220641, number of bins: 10</code></pre>
 </div>
 </div>
 <p>In this case, the p-value is much higher than <span class="math inline">\(\alpha=0.05\)</span> and we <strong>cannot</strong> reject <span class="math inline">\(H_0\)</span>, so the numbers appear to be uniformly random.</p>
+<p><strong>Serial correlation</strong></p>
+<p>The next possible measure to check is the serial correlation between the numbers generated. The <strong>Serial Correlation Check</strong>, also known as <strong>Autocorrelation at Lag 1</strong>, is a diagnostic measure used to characterize and detect a fundamental weakness in simple Pseudorandom Number Generators (PRNGs), such as the Linear Congruential Generator (LCG). The main idea is that the correlation between immediately adjacent numbers (hence lag 1) should be zero.</p>
+<p>To calculate this, we form two sequences: the generated numbers and the same sequence moved by one place:</p>
+<p><span class="math display">\[
+\begin{aligned}
+S_n &amp; = \{X_1,X_2,X_3,\dots,X_{n-1}\} \\
+S_{n+1} &amp; = \{X_2,X_3,X_4,\dots,X_n\}
+\end{aligned}
+\]</span></p>
+<p>And now we calculate the Pearson correlation coefficient between <span class="math inline">\(S_1\)</span> and <span class="math inline">\(S_2\)</span>.</p>
+<p><span class="math display">\[
+r=\frac{\sum (S_1-\bar{S_1})(S_2-\bar{S_2})}{\sqrt{\sum (S_1-\bar{S_1})^2(S_2-\bar{S_2})^2}}
+\]</span></p>
+<p>Our goal is that <span class="math inline">\(r\)</span> is as close to zero as possible (note that <span class="math inline">\(r\in[-1,1]\)</span>). Let’s use the following code:</p>
+<div id="e64ead64" class="cell" data-execution_count="5">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> serial_correlation_check(data_float):</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="co">    Characterization: Autocorrelation (Serial Correlation) Check.</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    <span class="co"># X_n: all values except the last one</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    X_n <span class="op">=</span> data_float[:<span class="op">-</span><span class="dv">1</span>]</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    <span class="co"># X_{n+1}: all values except the first one</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    X_n_plus_1 <span class="op">=</span> data_float[<span class="dv">1</span>:]</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Calculate the Pearson correlation coefficient (r)</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>    <span class="co"># The result is an array, we take the correlation between the two sequences (index 0, 1)</span></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>    correlation_matrix <span class="op">=</span> np.corrcoef(X_n, X_n_plus_1)</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>    lag_1_correlation <span class="op">=</span> correlation_matrix[<span class="dv">0</span>, <span class="dv">1</span>]</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> lag_1_correlation</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>lag_1_correlation <span class="op">=</span> serial_correlation_check(float_sequence)</span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f'The lag 1 correlation coefficient is </span><span class="sc">{</span>lag_1_correlation<span class="sc">}</span><span class="ss">'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>The lag 1 correlation coefficient is 0.008943629579226285</code></pre>
+</div>
+</div>
+<p>While the value is low, it’s not as close to zero as it should, which is a known weakness of the LCG (the generated numbers tend to fall onto a number of parallel hyperplanes). This is the reason why PRNM like the LCG are not normally used in practice. The de-facto standard for pseudorandom number generation in practice is the algorithm known as the <strong>Mersenne Twister</strong>. This is the default generator used in Python or MATLAB, and the preferred one for simulation purposes (but <em>not</em> for cryptographic purposes). The basic idea is to use a highly non-linear twisted generalized feedback shift register. Apart from being much faster than LCG, it passes the serial correlation chek with flying colors:</p>
+<div id="ca270bf8" class="cell" data-execution_count="6">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> random</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>random.seed(SEED)</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate a sequence of random floats in the range [0.0, 1.0)</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>float_sequence_mt <span class="op">=</span> np.array([random.uniform(<span class="dv">0</span>, <span class="dv">1</span>) <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(SEQUENCE_SIZE)])</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Serial Correlation Check</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>lag_1_correlation_mt <span class="op">=</span> serial_correlation_check(float_sequence_mt)</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f'The lag 1 correlation coefficient is </span><span class="sc">{</span>lag_1_correlation_mt<span class="sc">}</span><span class="ss">'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>The lag 1 correlation coefficient is -0.000962673758206564</code></pre>
+</div>
+</div>
+<p>which is an order of magnitude better than the LCG.</p>
 
 
 <div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
