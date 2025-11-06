@@ -369,7 +369,7 @@ window.Quarto = {
 <h3 data-number="2.2.1" class="anchored" data-anchor-id="pseudorandom-number-generators"><span class="header-section-number">2.2.1</span> Pseudorandom Number Generators</h3>
 <p>In general, any procedure to generate random numbers is called a <em>pseudorandom number generator</em> (PRNB). A PRNB can be defined as a deterministic algorithm that, given an initial seed, produces a long sequence of numbers that mimic the statistical properties of truly random samples. Although the sequence is fully determined by the seed (so it is not truly random, hence <em>pseudorandom</em>), a good PRNG yields values that are uniformly distributed, have minimal serial correlation, and pass standard statistical tests. Important PRNG properties include period length, equidistribution, independence, speed, and reproducibility (the same seed reproduces the same sequence). For simulation work we typically prefer generators with very long periods and strong statistical quality while cryptographic applications require cryptographically secure PRNGs. PRNGs are used to produce uniform variates that are then transformed into other distributions via methods such as inverse transform sampling, acceptance–rejection, or composition.</p>
 <p>Let’s explore the properties of a specific PRNG, the Linear Congruential Generator (LCG) using the following Python code.</p>
-<div id="50a7d577" class="cell" data-execution_count="1">
+<div id="07522f29" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.stats <span class="im">import</span> chisquare</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> collections <span class="im">import</span> defaultdict</span>
@@ -414,10 +414,10 @@ X_{n+1} = (a X_n + c) \operatorname{mod} m
 \tag{2.1}\]</span></span></p>
 <p>Starting at <span class="math inline">\(n=0\)</span>, we initialize <span class="math inline">\(X_0\)</span> to the random seed provided.</p>
 <p>We can now use the generator as follows:</p>
-<div id="4f79f8bd" class="cell" data-execution_count="2">
+<div id="6ae5cf1c" class="cell" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># LCG Parameters (a 'poor' LCG to highlight the deterministic nature)</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co"># A small modulus (m) leads to a short period and visible patterns.</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>SEED <span class="op">=</span> <span class="dv">12345</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>SEED <span class="op">=</span> <span class="dv">42</span></span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> <span class="dv">65</span>  <span class="co"># Multiplier</span></span>
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>C <span class="op">=</span> <span class="dv">1</span>   <span class="co"># Increment</span></span>
 <span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>M <span class="op">=</span> <span class="dv">2</span><span class="op">**</span><span class="dv">10</span>  <span class="co"># Modulus (1024) - A small M is used for demonstration purposes</span></span>
@@ -427,11 +427,84 @@ X_{n+1} = (a X_n + c) \operatorname{mod} m
 <span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>prng <span class="op">=</span> LCG(SEED, A, C, M)</span>
 <span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>int_sequence, float_sequence <span class="op">=</span> prng.generate(SEQUENCE_SIZE)</span>
 <span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>int_sequence[:<span class="dv">10</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="4">
-<pre><code>array([634, 251, 956, 701, 510, 383, 320, 321, 386, 515])</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="25">
+<pre><code>array([683, 364, 109, 942, 815, 752, 753, 818, 947, 116])</code></pre>
 </div>
 </div>
-<p>We have now generated 1000 random numbers using LCG (only first 10 are shown).</p>
+<p>We have now generated 1000 random numbers using LCG (only first 10 are shown). But how can we ensure if this PRNM works well in practice? We will look now at the <strong>period length</strong>, how to check for <strong>uniformity</strong> and how to assert if there is <strong>serial correlation</strong>.</p>
+<p><strong>Period length</strong></p>
+<p>The period length assesses the number of values generated before the sequence of states returns to the first value (the starting state) for the first time. Note that in general the longer, the better. Note that in this case, the maximum possible period is <span class="math inline">\(m\)</span>, the modulo of the generator. We can calculate this with a simple Python function as follows:</p>
+<div id="4bd3a4cd" class="cell" data-execution_count="3">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> calculate_period(lcg_generator):</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co">    Calculates the period (cycle length) of the LCG.</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co">    The period is the number of values generated before the sequence repeats.</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    initial_state <span class="op">=</span> lcg_generator.seed</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    current_state <span class="op">=</span> initial_state</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Check for the next state immediately after the seed to start the loop</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    current_state <span class="op">=</span> (lcg_generator.a <span class="op">*</span> current_state <span class="op">+</span> lcg_generator.c) <span class="op">%</span> lcg_generator.m</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    period <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Loop until the state returns to the initial seed</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> current_state <span class="op">!=</span> initial_state:</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>        current_state <span class="op">=</span> (lcg_generator.a <span class="op">*</span> current_state <span class="op">+</span> lcg_generator.c) <span class="op">%</span> lcg_generator.m</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>        period <span class="op">+=</span> <span class="dv">1</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Safety break for potentially infinite loops in case of a non-standard LCG</span></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> period <span class="op">&gt;</span> lcg_generator.m:</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>           <span class="cf">return</span> <span class="ss">f"Period is greater than modulus m (</span><span class="sc">{</span>lcg_generator<span class="sc">.</span>m<span class="sc">}</span><span class="ss">). Check parameters."</span></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>            </span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> period</span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>period <span class="op">=</span> calculate_period(prng)</span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>period</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="26">
+<pre><code>1024</code></pre>
+</div>
+</div>
+<p>So in this case, our generator reaches the maximum period (1024), which is the best we can do.</p>
+<p><strong>Tests for uniformity</strong></p>
+<p>We want the generated random numbers to be uniformly generated (we will see later how generate numbers with different distributions started with uniformly generated random numbers). For this, we use the <span class="math inline">\(\chi^2\)</span> test for uniformity:</p>
+<ul>
+<li>Null Hypothesis (<span class="math inline">\(H_0\)</span>): The generated numbers are uniformly distributed.</li>
+<li>Alternative Hypothesis (<span class="math inline">\(H_1\)</span>): The generated numbers are not uniformly distributed.</li>
+</ul>
+<p>The main idea of this test is to divide the generated numbers in intervals, and check whether those intervals contain roughly the same number of generated values (e.g.&nbsp;a flat histogram). Like in the classical <span class="math inline">\(\chi^2\)</span> test, we calculate the expected <span class="math inline">\(E_i\)</span> and the observed <span class="math inline">\(O_i\)</span> frequencies for each range and calculate the <span class="math inline">\(\chi^2\)</span> statistic as usual:</p>
+<p><span class="math display">\[
+\chi^2=\sum_{i=1}^k\frac{(O_i-E_i)^2}{E_i}
+\]</span></p>
+<p>We can use the following Python function:</p>
+<div id="faaac319" class="cell" data-execution_count="4">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> chi_squared_uniformity_test(data_float, num_bins<span class="op">=</span><span class="dv">10</span>):</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="co">    Statistical Test: Chi-Squared Goodness-of-Fit Test for Uniformity.</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    N <span class="op">=</span> <span class="bu">len</span>(data_float)</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 1. Bin the data to get observed frequencies</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    <span class="co"># The bins are equal-sized intervals in [0, 1).</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    observed_frequencies, _ <span class="op">=</span> np.histogram(data_float, bins<span class="op">=</span>num_bins, <span class="bu">range</span><span class="op">=</span>(<span class="dv">0</span>, <span class="dv">1</span>))</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 2. Calculate expected frequencies for a perfectly uniform distribution</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>    expected_frequency <span class="op">=</span> N <span class="op">/</span> num_bins</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>    expected_frequencies <span class="op">=</span> np.full(num_bins, expected_frequency)</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 3. Perform the Chi-Squared test</span></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>    <span class="co"># The 'chisquare' function compares observed and expected frequencies.</span></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>    <span class="co"># A small p-value (e.g., &lt; 0.05) leads to rejection of H0, meaning non-uniformity.</span></span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>    chi2_stat, p_value <span class="op">=</span> chisquare(f_obs<span class="op">=</span>observed_frequencies, f_exp<span class="op">=</span>expected_frequencies)</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> chi2_stat, p_value, num_bins</span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>chi2_stat, p_value_uniformity, num_bins <span class="op">=</span> chi_squared_uniformity_test(float_sequence)</span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f'Chi2 statistic: </span><span class="sc">{</span>chi2_stat<span class="sc">}</span><span class="ss">, p-value: </span><span class="sc">{</span>p_value_uniformity<span class="sc">}</span><span class="ss">, number of bins: </span><span class="sc">{</span>num_bins<span class="sc">}</span><span class="ss">'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Chi2 statistic: 0.18, p-value: 0.9999996506223499, number of bins: 10</code></pre>
+</div>
+</div>
+<p>In this case, the p-value is much higher than <span class="math inline">\(\alpha=0.05\)</span> and we <strong>cannot</strong> reject <span class="math inline">\(H_0\)</span>, so the numbers appear to be uniformly random.</p>
 
 
 <div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
