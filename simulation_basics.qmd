@@ -1,3 +1,5 @@
+
+
 # Simulation basics {#sec-simulation-basics}
 
 ## What is Simulation?
@@ -408,3 +410,105 @@ We call a Bernoulli process a sequence of independent trials with two possible o
 The classical example is flipping a coin independently for $n$ times.
 
 ![A typical Bernoulli process.](figures/chapter_2/fig_bernoulli){#fig-bernoulli}
+
+We formally define a **Bernoulli process** as follows:
+
+- Each variable takes values from the set $\{0,1\}$. In our example, the value 0 could stand for 
+heads, and 1 for tails.
+- The probability of sucess (per convention, $P(success)=P(X(t)=1)$) is the same for every trial.
+- The outcome for a given trial is independent of any other trial. So in our case, each coin flip 
+is independent of all the others.
+
+$$ 
+P(X(t)=1)=p\text{ and }P(X(t)=0)=1-p
+$$
+
+The **Bernoulli counting process** $\{N(t)\}$ is just the sum of the outcomes of the first $t$ trials.
+
+$$
+N(t)=\sum_{i=1}^t X(i)
+$$
+
+where $X(i)$ is a Bernoulli random variable with parameter $p$. So $N(t)$ counts the number of 
+successes occurred in trials 1 to $t$. Some properties of the counting process are:
+
+- Each variable $N(t)$ takes values in the set $\{0,1,2,\dots,t\}$.
+- The **increment** of this process $N(t)-N(t-1)$ is equals to the result of the $t$-th trial, $X(t)$. 
+- $N(t)$ follows a **binomial distribution**:
+
+$$
+P(N(t)=k)=\binom{t}{k}p^k(1-p)^{z-k}
+$$ {#eq-binomial}
+
+Let's see how to simulate a Bernoulli process:
+
+```{python}
+import random
+
+def simulate_bernoulli_process(num_trials, success_probability):
+    """
+    Simulates a Bernoulli process for a given number of trials and success probability.
+    """
+    if not 0 <= success_probability <= 1:
+        raise ValueError("Success probability must be between 0 and 1.")
+
+    bernoulli_outcomes = [
+        1 if random.random() < success_probability else 0
+        for _ in range(num_trials)
+    ]
+    
+    return bernoulli_outcomes
+```
+
+Here we are just using Python's default random number generator (the Mersenne Twister) to 
+check if the generated number is below or above the sucess probability, in the former 
+case we count a success, otherwise a failure. We can now run the simulation for both
+Bernoulli and Bernoulli counting processes and visualize the results.
+
+```{python}
+import matplotlib.pyplot as plt
+import numpy as np
+P_SUCCESS = 0.3  # Probability of success (p)
+NUM_TRIALS = 50  # Total number of trials
+random.seed(42)  # Set seed for reproducibility
+outcomes = simulate_bernoulli_process(NUM_TRIALS, P_SUCCESS)
+counting_process = np.cumsum(outcomes)
+```
+
+In this case, the Bernoulli counting process is just the cumulative sum of the generated 
+Bernoulli process.
+
+```{python}
+#| fig-cap: "Plots of Bernoulli and counting processes"
+trials = np.arange(1, NUM_TRIALS + 1)
+
+# plt.figure(figsize=(12, 6))
+
+# Subplot 1: The Bernoulli Process (Outcomes)
+plt.subplot(2, 1, 1)
+plt.step(trials, outcomes, where='post', color='blue', linewidth=2)
+plt.yticks([0, 1], ['Failure (0)', 'Success (1)'])
+plt.title('Bernoulli Process (Sequence of Trials)')
+plt.xlabel('Trial Number (i)')
+plt.ylabel('Outcome ($X_i$)')
+plt.grid(axis='y', linestyle='--')
+plt.ylim(-0.1, 1.1)
+
+# Subplot 2: The Bernoulli Counting Process (Cumulative Sum)
+plt.subplot(2, 1, 2)
+plt.step(trials, counting_process, where='post', color='red', linewidth=2)
+plt.title('Bernoulli Counting Process (Cumulative Successes)')
+plt.xlabel('Trial Number (t)')
+plt.ylabel('Count ($N(t)$)')
+plt.axhline(NUM_TRIALS * P_SUCCESS, color='green', linestyle=':', label='Expected Count')
+plt.legend()
+plt.grid(True, linestyle='--')
+
+plt.tight_layout()
+plt.show()
+```
+
+For this plot, we have generated $T=50$ trials with a success probability of $p=0.3$. The Bernoulli process
+outcomes are depicted in the upper part of the figure. In the lower part, the evolution of the 
+counting process $\{N(t)\}$ is shown. The expected count is just calculated by multiplying the number 
+of trials with the success probability, which results in 15 as the expected number of successes.
