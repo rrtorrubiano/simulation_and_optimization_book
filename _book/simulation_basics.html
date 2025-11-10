@@ -310,6 +310,10 @@ window.Quarto = {
   <li><a href="#pseudorandom-number-generators" id="toc-pseudorandom-number-generators" class="nav-link" data-scroll-target="#pseudorandom-number-generators"><span class="header-section-number">2.2.1</span> Pseudorandom Number Generators</a></li>
   </ul></li>
   <li><a href="#sampling-methods" id="toc-sampling-methods" class="nav-link" data-scroll-target="#sampling-methods"><span class="header-section-number">2.3</span> Sampling Methods</a></li>
+  <li><a href="#stochastic-processes" id="toc-stochastic-processes" class="nav-link" data-scroll-target="#stochastic-processes"><span class="header-section-number">2.4</span> Stochastic Processes</a>
+  <ul class="collapse">
+  <li><a href="#bernoulli-and-binomial-processes" id="toc-bernoulli-and-binomial-processes" class="nav-link" data-scroll-target="#bernoulli-and-binomial-processes"><span class="header-section-number">2.4.1</span> Bernoulli and Binomial Processes</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -370,7 +374,7 @@ window.Quarto = {
 <h3 data-number="2.2.1" class="anchored" data-anchor-id="pseudorandom-number-generators"><span class="header-section-number">2.2.1</span> Pseudorandom Number Generators</h3>
 <p>In general, any procedure to generate random numbers is called a <em>pseudorandom number generator</em> (PRNB). A PRNB can be defined as a deterministic algorithm that, given an initial seed, produces a long sequence of numbers that mimic the statistical properties of truly random samples. Although the sequence is fully determined by the seed (so it is not truly random, hence <em>pseudorandom</em>), a good PRNG yields values that are uniformly distributed, have minimal serial correlation, and pass standard statistical tests. Important PRNG properties include period length, equidistribution, independence, speed, and reproducibility (the same seed reproduces the same sequence). For simulation work we typically prefer generators with very long periods and strong statistical quality while cryptographic applications require cryptographically secure PRNGs. PRNGs are used to produce uniform variates that are then transformed into other distributions via methods such as inverse transform sampling, acceptance–rejection, or composition.</p>
 <p>Let’s explore the properties of a specific PRNG, the Linear Congruential Generator (LCG) using the following Python code.</p>
-<div id="19d52646" class="cell" data-execution_count="1">
+<div id="135b7b18" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.stats <span class="im">import</span> chisquare</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> collections <span class="im">import</span> defaultdict</span>
@@ -415,7 +419,7 @@ X_{n+1} = (a X_n + c) \operatorname{mod} m
 \tag{2.1}\]</span></span></p>
 <p>Starting at <span class="math inline">\(n=0\)</span>, we initialize <span class="math inline">\(X_0\)</span> to the random seed provided.</p>
 <p>We can now use the generator as follows:</p>
-<div id="34a2097a" class="cell" data-execution_count="2">
+<div id="e443d48d" class="cell" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># LCG Parameters (a 'poor' LCG to highlight the deterministic nature)</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co"># A small modulus (m) leads to a short period and visible patterns.</span></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>SEED <span class="op">=</span> <span class="dv">42</span></span>
@@ -428,14 +432,14 @@ X_{n+1} = (a X_n + c) \operatorname{mod} m
 <span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>prng <span class="op">=</span> LCG(SEED, A, C, M)</span>
 <span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>int_sequence, float_sequence <span class="op">=</span> prng.generate(SEQUENCE_SIZE)</span>
 <span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>int_sequence[:<span class="dv">10</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="146">
+<div class="cell-output cell-output-display" data-execution_count="14">
 <pre><code>array([683, 364, 109, 942, 815, 752, 753, 818, 947, 116])</code></pre>
 </div>
 </div>
 <p>We have now generated 100000 random numbers using LCG (only first 10 are shown). But how can we ensure if this PRNM works well in practice? We will look now at the <strong>period length</strong>, how to check for <strong>uniformity</strong> and how to assert if there is <strong>serial correlation</strong>.</p>
 <p><strong>Period length</strong></p>
 <p>The period length assesses the number of values generated before the sequence of states returns to the first value (the starting state) for the first time. Note that in general the longer, the better. Note that in this case, the maximum possible period is <span class="math inline">\(m\)</span>, the modulo of the generator. We can calculate this with a simple Python function as follows:</p>
-<div id="6fcb2f16" class="cell" data-execution_count="3">
+<div id="392866ec" class="cell" data-execution_count="3">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> calculate_period(lcg_generator):</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co">    Calculates the period (cycle length) of the LCG.</span></span>
@@ -461,7 +465,7 @@ X_{n+1} = (a X_n + c) \operatorname{mod} m
 <span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>period <span class="op">=</span> calculate_period(prng)</span>
 <span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>period</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="147">
+<div class="cell-output cell-output-display" data-execution_count="15">
 <pre><code>1024</code></pre>
 </div>
 </div>
@@ -477,7 +481,7 @@ X_{n+1} = (a X_n + c) \operatorname{mod} m
 \chi^2=\sum_{i=1}^k\frac{(O_i-E_i)^2}{E_i}
 \]</span></p>
 <p>We can use the following Python function:</p>
-<div id="fea3141f" class="cell" data-execution_count="4">
+<div id="b2f45e73" class="cell" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> chi_squared_uniformity_test(data_float, num_bins<span class="op">=</span><span class="dv">10</span>):</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="co">    Statistical Test: Chi-Squared Goodness-of-Fit Test for Uniformity.</span></span>
@@ -520,7 +524,7 @@ S_{n+1} &amp; = \{X_2,X_3,X_4,\dots,X_n\}
 r=\frac{\sum (S_1-\bar{S_1})(S_2-\bar{S_2})}{\sqrt{\sum (S_1-\bar{S_1})^2(S_2-\bar{S_2})^2}}
 \]</span></p>
 <p>Our goal is that <span class="math inline">\(r\)</span> is as close to zero as possible (note that <span class="math inline">\(r\in[-1,1]\)</span>). Let’s use the following code:</p>
-<div id="36b4c102" class="cell" data-execution_count="5">
+<div id="e225d4ac" class="cell" data-execution_count="5">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> serial_correlation_check(data_float):</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="co">    Characterization: Autocorrelation (Serial Correlation) Check.</span></span>
@@ -544,7 +548,7 @@ r=\frac{\sum (S_1-\bar{S_1})(S_2-\bar{S_2})}{\sqrt{\sum (S_1-\bar{S_1})^2(S_2-\b
 </div>
 </div>
 <p>While the value is low, it’s not as close to zero as it should, which is a known weakness of the LCG (the generated numbers tend to fall onto a number of parallel hyperplanes). This is the reason why PRNM like the LCG are not normally used in practice. The de-facto standard for pseudorandom number generation in practice is the algorithm known as the <strong>Mersenne Twister</strong>. This is the default generator used in Python or MATLAB, and the preferred one for simulation purposes (but <em>not</em> for cryptographic purposes). The basic idea is to use a highly non-linear twisted generalized feedback shift register. Apart from being much faster than LCG, it passes the serial correlation chek with flying colors:</p>
-<div id="9c5d2870" class="cell" data-execution_count="6">
+<div id="326a8495" class="cell" data-execution_count="6">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> random</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>random.seed(SEED)</span>
@@ -604,6 +608,54 @@ f(x)=\sum_{i=1}^k p_i f_i(x)\text{, with }p_i\ge 0\text{, and }\sum_{i=1}^k p_i 
 <li>Generate a random variable <span class="math inline">\(x\)</span> from <span class="math inline">\(f_i(x)\)</span> by using any of the aforementioned methods.</li>
 </ul>
 <p>This is a suitable method, for instance, to generate random numbers that follow a <strong>Gaussian Mixture Model (GMM)</strong>. In this case, we just sample an index and generate a random number according to the Box-Muller method, scaling accordingly if necessary.</p>
+</section>
+<section id="stochastic-processes" class="level2" data-number="2.4">
+<h2 data-number="2.4" class="anchored" data-anchor-id="stochastic-processes"><span class="header-section-number">2.4</span> Stochastic Processes</h2>
+<p>Now that we know how to generate random numbers and sample from different distributions, we need to understand how they interact over time in a simulation study. This is the realm of <em>stochastic processes</em>.</p>
+<p>A stochastic process <span class="math inline">\(\{X(t), t \in T\}\)</span> is a collection of random variables indexed by time. The set <span class="math inline">\(T\)</span> can be:</p>
+<ul>
+<li><strong>Discrete</strong>: <span class="math inline">\(T = \{0, 1, 2, ...\}\)</span> or <span class="math inline">\(T = \{t_0, t_1, t_2, ...\}\)</span></li>
+<li><strong>Continuous</strong>: <span class="math inline">\(T = [0, \infty)\)</span> or <span class="math inline">\(T = [a, b]\)</span></li>
+</ul>
+<p>For each fixed time <span class="math inline">\(t\)</span>, <span class="math inline">\(X(t)\)</span> is a random variable. For each sample path (realization) of the process, <span class="math inline">\(X(t)\)</span> is a function of time. The nature of the state space (the set of possible values of <span class="math inline">\(X(t)\)</span>) leads to different classifications:</p>
+<ul>
+<li><strong>Discrete state space</strong>: The process can only take certain values (e.g., number of customers in a queue)</li>
+<li><strong>Continuous state space</strong>: The process can take any value in an interval (e.g., temperature in a reactor)</li>
+</ul>
+<p>Understanding stochastic processes is crucial for simulation because they model how random events unfold over time, which is exactly what we need to simulate complex systems with uncertainty.</p>
+<p><strong>Stationary and non-stationary processes</strong></p>
+<p>A stochastic process <span class="math inline">\(\{X(t)\}\)</span> is said to be <strong>stationary</strong> if its statistical properties do not change over time. More formally:</p>
+<ul>
+<li>The mean function is constant: <span class="math inline">\(E[X(t)] = \mu\)</span> for all <span class="math inline">\(t\in T\)</span>.</li>
+<li>The variance function is constant: <span class="math inline">\(Var[X(t)] = \sigma^2\)</span> for all <span class="math inline">\(t\in T\)</span>.</li>
+<li>The autocovariance function depends only on the time difference: <span class="math inline">\(Cov[X(t), X(s)] = C(|t-s|)\)</span>.</li>
+</ul>
+<p>In contrast, a <strong>non-stationary</strong> process has statistical properties that vary with time. For example:</p>
+<ul>
+<li>A random walk is non-stationary because its variance increases with time.</li>
+<li>A seasonal time series with repeating patterns is non-stationary.</li>
+<li>A process with a trend component is non-stationary.</li>
+</ul>
+<p>Stationarity is an important property in simulation because it allows us to:</p>
+<ul>
+<li>Make meaningful predictions about future behavior.</li>
+<li>Estimate parameters from historical data.</li>
+<li>Apply many statistical techniques that assume stationarity.</li>
+</ul>
+<p>In the following we will see examples of different stochastic processes and how to simulate them efficiently.</p>
+<section id="bernoulli-and-binomial-processes" class="level3" data-number="2.4.1">
+<h3 data-number="2.4.1" class="anchored" data-anchor-id="bernoulli-and-binomial-processes"><span class="header-section-number">2.4.1</span> Bernoulli and Binomial Processes</h3>
+<p>We call a Bernoulli process a sequence of independent trials with two possible outcomes (“success/failure”). The classical example is flipping a coin independently for <span class="math inline">\(n\)</span> times.</p>
+<div id="fig-bernoulli" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-bernoulli-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="figures/chapter_2/fig_bernoulli.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-bernoulli-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2.1: A typical Bernoulli process.
+</figcaption>
+</figure>
+</div>
 
 
 <div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
@@ -617,6 +669,7 @@ Jordon, James, Lukasz Szpruch, Florimond Houssiau, Mirko Bottarelli, Giovanni Ch
 Osais, Yahya Esmail. 2017. <em>Computer <span>Simulation</span>: <span>A</span> <span>Foundational</span> <span>Approach</span> <span>Using</span> <span>Python</span></em>. New York: Chapman; Hall/CRC. <a href="https://doi.org/10.1201/9781315120294">https://doi.org/10.1201/9781315120294</a>.
 </div>
 </div>
+</section>
 </section>
 
 </main> <!-- /main -->

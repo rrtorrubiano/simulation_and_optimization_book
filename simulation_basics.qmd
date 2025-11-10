@@ -360,3 +360,51 @@ This is a suitable method, for instance, to generate random numbers that follow 
 **Gaussian Mixture Model (GMM)**. In this case, we just sample an index and generate a 
 random number according to the Box-Muller method, scaling accordingly if necessary.
 
+## Stochastic Processes
+
+Now that we know how to generate random numbers and sample from different distributions, we need
+to understand how they interact over time in a simulation study. This is the realm of *stochastic processes*.
+
+A stochastic process $\{X(t), t \in T\}$ is a collection of random variables indexed by time. The set $T$ can be:
+
+- **Discrete**: $T = \{0, 1, 2, ...\}$ or $T = \{t_0, t_1, t_2, ...\}$
+- **Continuous**: $T = [0, \infty)$ or $T = [a, b]$
+
+For each fixed time $t$, $X(t)$ is a random variable. For each sample path (realization) of the process,
+$X(t)$ is a function of time. The nature of the state space (the set of possible values of $X(t)$) leads
+to different classifications:
+
+- **Discrete state space**: The process can only take certain values (e.g., number of customers in a queue)
+- **Continuous state space**: The process can take any value in an interval (e.g., temperature in a reactor)
+
+Understanding stochastic processes is crucial for simulation because they model how random events unfold
+over time, which is exactly what we need to simulate complex systems with uncertainty.
+
+**Stationary and non-stationary processes**
+
+A stochastic process $\{X(t)\}$ is said to be **stationary** if its statistical properties do not change over time. More formally:
+
+- The mean function is constant: $E[X(t)] = \mu$ for all $t\in T$.
+- The variance function is constant: $Var[X(t)] = \sigma^2$ for all $t\in T$.
+- The autocovariance function depends only on the time difference: $Cov[X(t), X(s)] = C(|t-s|)$.
+
+In contrast, a **non-stationary** process has statistical properties that vary with time. For example:
+
+- A random walk is non-stationary because its variance increases with time.
+- A seasonal time series with repeating patterns is non-stationary.
+- A process with a trend component is non-stationary.
+
+Stationarity is an important property in simulation because it allows us to:
+
+- Make meaningful predictions about future behavior.
+- Estimate parameters from historical data.
+- Apply many statistical techniques that assume stationarity.
+
+In the following we will see examples of different stochastic processes and how to simulate them efficiently.
+
+### Bernoulli and Binomial Processes
+
+We call a Bernoulli process a sequence of independent trials with two possible outcomes ("success/failure").
+The classical example is flipping a coin independently for $n$ times.
+
+![A typical Bernoulli process.](figures/chapter_2/fig_bernoulli){#fig-bernoulli}
