@@ -512,3 +512,42 @@ For this plot, we have generated $T=50$ trials with a success probability of $p=
 outcomes are depicted in the upper part of the figure. In the lower part, the evolution of the 
 counting process $\{N(t)\}$ is shown. The expected count is just calculated by multiplying the number 
 of trials with the success probability, which results in 15 as the expected number of successes.
+
+### Poisson Processes
+
+We now switch from *continuous* to *discrete* time. The **Poisson process** is a canonical 
+continous time counting process. It tracks 
+the number of occurrences of a given event up to a certain time $t$. Formally, let $\lambda > 0$ be the 
+rate of occurrences of the event in question. We define the Poisson process $\{N(t),t\ge 0\}$ as follows:
+
+- As initial condition, we set $N(0)=0$.
+- If we consider two non-overlapping intervals $[s,t]\cap [u,v]=\emptyset$, then the increments on those
+intervals are **independent** of each other:
+
+$$
+N(t)-N(s)\text{ is independent of }N(v)-N(u), [s,t]\cap [u,v]=\emptyset
+$$ {#eq-poisson-intervals}
+
+- At any interval of length $\tau=t-s$, the increments follow a Poisson distribution with 
+parameter $\lambda\tau$.
+
+$$
+N(t)-N(s) \sim \operatorname{Poisson}(\lambda\tau)
+$$ {#eq-poisson-increment}
+
+$$ 
+P(N(t)-N(s)=k)=e^{-\lambda\tau}\frac{(\lambda\tau)^k}{k!}
+$$ {#eq-poisson-probability}
+
+The Poisson process is one of the most widely used stochastic models in science, engineering, and finance due to its ability to accurately model random, independent, and rare events occurring over time or space. Its practical relevance stems directly from the three conditions of its definition (independent, stationary increments, and the resulting Poisson distribution). For instance, the arrival of customer calls in a
+call center can be accurately modeled using Poisson processes. In engineernig, the number of defects
+found per area or volume (e.g. on a silicon wafer) can be also modeled this way (in this case, the rate 
+is *spatial* rather than *temporal*, but the concept remains the same). In general,
+customer arrivals (at a hospital, a bank, a supermarket) can be also modeled using a Poisson process.
+
+One of the main properties that makes the Poisson process useful in practice is the fact that is 
+*memoryless*: the time until the next event is independent of how long it has been since the 
+previous event, which aligns well with phenomena found in practice. Another advantage is that since 
+the process is based in the Poisson (for the number of events per time interval) and the 
+exponential distributions (for the time between events), the process is mathematically well 
+tractable and closed-form solutions exists for many situations of interest.
