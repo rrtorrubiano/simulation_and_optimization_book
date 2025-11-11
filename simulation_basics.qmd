@@ -551,3 +551,70 @@ previous event, which aligns well with phenomena found in practice. Another adva
 the process is based in the Poisson (for the number of events per time interval) and the 
 exponential distributions (for the time between events), the process is mathematically well 
 tractable and closed-form solutions exists for many situations of interest.
+
+The next code snippet demonstrates how to simulate a Poisson process.
+
+```{python}
+import numpy as np
+import matplotlib.pyplot as plt
+import random
+
+def simulate_poisson_process(rate_lambda, max_time):
+    if rate_lambda <= 0 or max_time <= 0:
+        raise ValueError("Rate and max_time must be positive.")
+
+    # Set up the event simulation
+    current_time = 0.0
+    event_times = [0.0]  # Start at time 0 with the first "event"
+
+    while current_time < max_time:
+        # 1. Generate the next inter-arrival time
+        time_until_next_event = random.expovariate(rate_lambda)
+        
+        # 2. Update the cumulative time
+        current_time += time_until_next_event
+        
+        # 3. Record the event time if it's within the simulation duration
+        if current_time < max_time:
+            event_times.append(current_time)
+
+    # Calculate the event count at each recorded time
+    num_events = len(event_times) - 1 # N(0)=0 is the first entry
+    num_events_at_t = list(range(num_events + 1))
+    
+    return event_times, num_events_at_t
+```
+
+In this code we exploit the fact that the interarrival times are exponentially distributed, 
+so we sample a time and count it as a new event. We can now use the code 
+to simulate the process:
+
+```{python}
+RATE_LAMBDA = 2.0  # Average rate of 2 events per unit of time
+MAX_TIME = 10.0    # Simulate over 10 time units
+
+random.seed(42) # Set seed for reproducibility
+event_times, cumulative_counts = simulate_poisson_process(RATE_LAMBDA, MAX_TIME)
+event_times[:5]
+```
+
+Like in the previous case, we can perform some visualizations to help understand 
+the evolution of the process.
+
+```{python}
+# Plot the step function of the counting process N(t)
+# We use drawstyle='steps-post' to create the classic step-function look
+plt.plot(event_times, cumulative_counts, drawstyle='steps-post', color='darkorange', linewidth=2, marker='o', markersize=4)
+
+# Plot the expected count line
+plt.axhline(RATE_LAMBDA * MAX_TIME, color='gray', linestyle='--', alpha=0.6, label='Expected Final Count')
+
+plt.title(f'Poisson Counting Process $N(t)$ with $lambda = {RATE_LAMBDA}$')
+plt.xlabel('Time (t)')
+plt.ylabel('Number of Events ($N(t)$)')
+plt.xlim(0, MAX_TIME)
+plt.ylim(bottom=0)
+plt.grid(True, linestyle='--')
+plt.legend()
+plt.show()
+```
