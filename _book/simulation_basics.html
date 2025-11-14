@@ -376,7 +376,7 @@ window.Quarto = {
 <h3 data-number="2.2.1" class="anchored" data-anchor-id="pseudorandom-number-generators"><span class="header-section-number">2.2.1</span> Pseudorandom Number Generators</h3>
 <p>In general, any procedure to generate random numbers is called a <em>pseudorandom number generator</em> (PRNB). A PRNB can be defined as a deterministic algorithm that, given an initial seed, produces a long sequence of numbers that mimic the statistical properties of truly random samples. Although the sequence is fully determined by the seed (so it is not truly random, hence <em>pseudorandom</em>), a good PRNG yields values that are uniformly distributed, have minimal serial correlation, and pass standard statistical tests. Important PRNG properties include period length, equidistribution, independence, speed, and reproducibility (the same seed reproduces the same sequence). For simulation work we typically prefer generators with very long periods and strong statistical quality while cryptographic applications require cryptographically secure PRNGs. PRNGs are used to produce uniform variates that are then transformed into other distributions via methods such as inverse transform sampling, acceptance–rejection, or composition.</p>
 <p>Let’s explore the properties of a specific PRNG, the Linear Congruential Generator (LCG) using the following Python code.</p>
-<div id="c96d8005" class="cell" data-execution_count="1">
+<div id="53315000" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.stats <span class="im">import</span> chisquare</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> collections <span class="im">import</span> defaultdict</span>
@@ -421,7 +421,7 @@ X_{n+1} = (a X_n + c) \operatorname{mod} m
 \tag{2.1}\]</span></span></p>
 <p>Starting at <span class="math inline">\(n=0\)</span>, we initialize <span class="math inline">\(X_0\)</span> to the random seed provided.</p>
 <p>We can now use the generator as follows:</p>
-<div id="7238842c" class="cell" data-execution_count="2">
+<div id="539d62b1" class="cell" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># LCG Parameters (a 'poor' LCG to highlight the deterministic nature)</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co"># A small modulus (m) leads to a short period and visible patterns.</span></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>SEED <span class="op">=</span> <span class="dv">42</span></span>
@@ -434,14 +434,14 @@ X_{n+1} = (a X_n + c) \operatorname{mod} m
 <span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>prng <span class="op">=</span> LCG(SEED, A, C, M)</span>
 <span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>int_sequence, float_sequence <span class="op">=</span> prng.generate(SEQUENCE_SIZE)</span>
 <span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>int_sequence[:<span class="dv">10</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="53">
+<div class="cell-output cell-output-display" data-execution_count="71">
 <pre><code>array([683, 364, 109, 942, 815, 752, 753, 818, 947, 116])</code></pre>
 </div>
 </div>
 <p>We have now generated 100000 random numbers using LCG (only first 10 are shown). But how can we ensure if this PRNM works well in practice? We will look now at the <strong>period length</strong>, how to check for <strong>uniformity</strong> and how to assert if there is <strong>serial correlation</strong>.</p>
 <p><strong>Period length</strong></p>
 <p>The period length assesses the number of values generated before the sequence of states returns to the first value (the starting state) for the first time. Note that in general the longer, the better. Note that in this case, the maximum possible period is <span class="math inline">\(m\)</span>, the modulo of the generator. We can calculate this with a simple Python function as follows:</p>
-<div id="deb0baba" class="cell" data-execution_count="3">
+<div id="41532451" class="cell" data-execution_count="3">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> calculate_period(lcg_generator):</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co">    Calculates the period (cycle length) of the LCG.</span></span>
@@ -467,7 +467,7 @@ X_{n+1} = (a X_n + c) \operatorname{mod} m
 <span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>period <span class="op">=</span> calculate_period(prng)</span>
 <span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>period</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="54">
+<div class="cell-output cell-output-display" data-execution_count="72">
 <pre><code>1024</code></pre>
 </div>
 </div>
@@ -483,7 +483,7 @@ X_{n+1} = (a X_n + c) \operatorname{mod} m
 \chi^2=\sum_{i=1}^k\frac{(O_i-E_i)^2}{E_i}
 \]</span></p>
 <p>We can use the following Python function:</p>
-<div id="2bdab688" class="cell" data-execution_count="4">
+<div id="ed18dcc2" class="cell" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> chi_squared_uniformity_test(data_float, num_bins<span class="op">=</span><span class="dv">10</span>):</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="co">    Statistical Test: Chi-Squared Goodness-of-Fit Test for Uniformity.</span></span>
@@ -526,7 +526,7 @@ S_{n+1} &amp; = \{X_2,X_3,X_4,\dots,X_n\}
 r=\frac{\sum (S_1-\bar{S_1})(S_2-\bar{S_2})}{\sqrt{\sum (S_1-\bar{S_1})^2(S_2-\bar{S_2})^2}}
 \]</span></p>
 <p>Our goal is that <span class="math inline">\(r\)</span> is as close to zero as possible (note that <span class="math inline">\(r\in[-1,1]\)</span>). Let’s use the following code:</p>
-<div id="d3eecbc8" class="cell" data-execution_count="5">
+<div id="86d56717" class="cell" data-execution_count="5">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> serial_correlation_check(data_float):</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="co">    Characterization: Autocorrelation (Serial Correlation) Check.</span></span>
@@ -550,7 +550,7 @@ r=\frac{\sum (S_1-\bar{S_1})(S_2-\bar{S_2})}{\sqrt{\sum (S_1-\bar{S_1})^2(S_2-\b
 </div>
 </div>
 <p>While the value is low, it’s not as close to zero as it should, which is a known weakness of the LCG (the generated numbers tend to fall onto a number of parallel hyperplanes). This is the reason why PRNM like the LCG are not normally used in practice. The de-facto standard for pseudorandom number generation in practice is the algorithm known as the <strong>Mersenne Twister</strong>. This is the default generator used in Python or MATLAB, and the preferred one for simulation purposes (but <em>not</em> for cryptographic purposes). The basic idea is to use a highly non-linear twisted generalized feedback shift register. Apart from being much faster than LCG, it passes the serial correlation chek with flying colors:</p>
-<div id="013085a5" class="cell" data-execution_count="6">
+<div id="2bd938c6" class="cell" data-execution_count="6">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> random</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>random.seed(SEED)</span>
@@ -681,7 +681,7 @@ N(t)=\sum_{i=1}^t X(i)
 P(N(t)=k)=\binom{t}{k}p^k(1-p)^{z-k}
 \tag{2.5}\]</span></span></p>
 <p>Let’s see how to simulate a Bernoulli process:</p>
-<div id="94d38691" class="cell" data-execution_count="7">
+<div id="68189916" class="cell" data-execution_count="7">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> random</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> simulate_bernoulli_process(num_trials, success_probability):</span>
@@ -699,7 +699,7 @@ P(N(t)=k)=\binom{t}{k}p^k(1-p)^{z-k}
 <span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> bernoulli_outcomes</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Here we are just using Python’s default random number generator (the Mersenne Twister) to check if the generated number is below or above the sucess probability, in the former case we count a success, otherwise a failure. We can now run the simulation for both Bernoulli and Bernoulli counting processes and visualize the results.</p>
-<div id="75cae07a" class="cell" data-execution_count="8">
+<div id="d28c5052" class="cell" data-execution_count="8">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>P_SUCCESS <span class="op">=</span> <span class="fl">0.3</span>  <span class="co"># Probability of success (p)</span></span>
@@ -709,7 +709,7 @@ P(N(t)=k)=\binom{t}{k}p^k(1-p)^{z-k}
 <span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>counting_process <span class="op">=</span> np.cumsum(outcomes)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>In this case, the Bernoulli counting process is just the cumulative sum of the generated Bernoulli process.</p>
-<div id="604e7bfb" class="cell" data-execution_count="9">
+<div id="0dc006fa" class="cell" data-execution_count="9">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>trials <span class="op">=</span> np.arange(<span class="dv">1</span>, NUM_TRIALS <span class="op">+</span> <span class="dv">1</span>)</span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.figure(figsize=(12, 6))</span></span>
@@ -769,7 +769,7 @@ P(N(t)-N(s)=k)=e^{-\lambda\tau}\frac{(\lambda\tau)^k}{k!}
 <p>The Poisson process is one of the most widely used stochastic models in science, engineering, and finance due to its ability to accurately model random, independent, and rare events occurring over time or space. Its practical relevance stems directly from the three conditions of its definition (independent, stationary increments, and the resulting Poisson distribution). For instance, the arrival of customer calls in a call center can be accurately modeled using Poisson processes. In engineernig, the number of defects found per area or volume (e.g.&nbsp;on a silicon wafer) can be also modeled this way (in this case, the rate is <em>spatial</em> rather than <em>temporal</em>, but the concept remains the same). In general, customer arrivals (at a hospital, a bank, a supermarket) can be also modeled using a Poisson process.</p>
 <p>One of the main properties that makes the Poisson process useful in practice is the fact that is <em>memoryless</em>: the time until the next event is independent of how long it has been since the previous event, which aligns well with phenomena found in practice. Another advantage is that since the process is based in the Poisson (for the number of events per time interval) and the exponential distributions (for the time between events), the process is mathematically well tractable and closed-form solutions exists for many situations of interest.</p>
 <p>The next code snippet demonstrates how to simulate a Poisson process.</p>
-<div id="77d89284" class="cell" data-execution_count="10">
+<div id="f7156ffc" class="cell" data-execution_count="10">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> random</span>
@@ -800,14 +800,14 @@ P(N(t)-N(s)=k)=e^{-\lambda\tau}\frac{(\lambda\tau)^k}{k!}
 <span id="cb15-28"><a href="#cb15-28" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> event_times, num_events_at_t</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>In this code we exploit the fact that the interarrival times are exponentially distributed, so we sample a time and count it as a new event. We can now use the code to simulate the process:</p>
-<div id="a586d824" class="cell" data-execution_count="11">
+<div id="8a2435e7" class="cell" data-execution_count="11">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>RATE_LAMBDA <span class="op">=</span> <span class="fl">2.0</span>  <span class="co"># Average rate of 2 events per unit of time</span></span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>MAX_TIME <span class="op">=</span> <span class="fl">10.0</span>    <span class="co"># Simulate over 10 time units</span></span>
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>random.seed(<span class="dv">42</span>) <span class="co"># Set seed for reproducibility</span></span>
 <span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>event_times, cumulative_counts <span class="op">=</span> simulate_poisson_process(RATE_LAMBDA, MAX_TIME)</span>
 <span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>event_times[:<span class="dv">5</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="62">
+<div class="cell-output cell-output-display" data-execution_count="80">
 <pre><code>[0.0,
  0.5100301436374005,
  0.5226945631587699,
@@ -816,7 +816,7 @@ P(N(t)-N(s)=k)=e^{-\lambda\tau}\frac{(\lambda\tau)^k}{k!}
 </div>
 </div>
 <p>Like in the previous case, we can perform some visualizations to help understand the evolution of the process.</p>
-<div id="5dd38009" class="cell" data-execution_count="12">
+<div id="2437b8f8" class="cell" data-execution_count="12">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the step function of the counting process N(t)</span></span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="co"># We use drawstyle='steps-post' to create the classic step-function look</span></span>
 <span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>plt.plot(event_times, cumulative_counts, drawstyle<span class="op">=</span><span class="st">'steps-post'</span>, color<span class="op">=</span><span class="st">'darkorange'</span>, linewidth<span class="op">=</span><span class="dv">2</span>, marker<span class="op">=</span><span class="st">'o'</span>, markersize<span class="op">=</span><span class="dv">4</span>)</span>
@@ -876,7 +876,7 @@ P_{21} &amp; P_{22} &amp; \dots \\
 \end{pmatrix}
 \]</span></p>
 <p>So for instance, the probability of a rainy day given that yesterday was cloudy is <span class="math inline">\(P_{23}=0.2\)</span>.</p>
-<div id="b8bea453" class="cell" data-execution_count="13">
+<div id="a1fab37b" class="cell" data-execution_count="13">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> random</span>
@@ -907,7 +907,7 @@ P_{21} &amp; P_{22} &amp; \dots \\
 <span id="cb19-28"><a href="#cb19-28" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> state_history</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>We now setup the simulation for our example:</p>
-<div id="a0fb0170" class="cell" data-execution_count="14">
+<div id="23fcb859" class="cell" data-execution_count="14">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Define the Transition Probability Matrix (P)</span></span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>P <span class="op">=</span> np.array([</span>
 <span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>    [<span class="fl">0.80</span>, <span class="fl">0.15</span>, <span class="fl">0.05</span>],  <span class="co"># From Sunny (0)</span></span>
@@ -926,7 +926,7 @@ P_{21} &amp; P_{22} &amp; \dots \\
 <span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a>simulated_states <span class="op">=</span> simulate_dtmc(START_STATE_INDEX, P, NUM_SIMULATION_STEPS)</span>
 <span id="cb20-17"><a href="#cb20-17" aria-hidden="true" tabindex="-1"></a>simulated_weather <span class="op">=</span> [STATE_MAP[s] <span class="cf">for</span> s <span class="kw">in</span> simulated_states]</span>
 <span id="cb20-18"><a href="#cb20-18" aria-hidden="true" tabindex="-1"></a>simulated_weather[:<span class="dv">10</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="65">
+<div class="cell-output cell-output-display" data-execution_count="83">
 <pre><code>['Sunny',
  'Sunny',
  'Rainy',
@@ -939,6 +939,125 @@ P_{21} &amp; P_{22} &amp; \dots \\
  'Cloudy']</code></pre>
 </div>
 </div>
+<p>Now let’s plot the sequence of states against time:</p>
+<div id="36277388" class="cell" data-execution_count="15">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>time_steps <span class="op">=</span> np.arange(NUM_SIMULATION_STEPS <span class="op">+</span> <span class="dv">1</span>)</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>plt.plot(time_steps, simulated_states, marker<span class="op">=</span><span class="st">'o'</span>, linestyle<span class="op">=</span><span class="st">'-'</span>, drawstyle<span class="op">=</span><span class="st">'steps-post'</span>, markersize<span class="op">=</span><span class="dv">4</span>)</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>plt.yticks([<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">2</span>], [STATE_MAP[<span class="dv">0</span>], STATE_MAP[<span class="dv">1</span>], STATE_MAP[<span class="dv">2</span>]])</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'Discrete-Time Markov Chain State Trajectory (Weather)'</span>)</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Time Step (Day)'</span>)</span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'State'</span>)</span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>plt.grid(<span class="va">True</span>, axis<span class="op">=</span><span class="st">'y'</span>, linestyle<span class="op">=</span><span class="st">'--'</span>)</span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="simulation_basics_files/figure-html/cell-16-output-1.png" width="614" height="449" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><strong>Continuous-Time Markov Chains</strong></p>
+<p>In our previous example, we have assumed that the time index takes values in a discrete set. Let’s now consider the situation where time is continuous: <span class="math inline">\(\{X(t),t\ge 0\}\)</span>. In this case, the system might change its state at any time, instead of being governed by a fixed transition probability <span class="math inline">\(P_{ij}\)</span>. We now assume that the time spent in the current state <span class="math inline">\(i\)</span> is <strong>itself a random variable</strong> which is continuous and exponentially distributed. Let’s denote this <strong>holding time</strong> by <span class="math inline">\(\tau_i\)</span>. We have:</p>
+<p><span id="eq-ctmc"><span class="math display">\[
+\tau_i \sim \operatorname{Exponential}(q_i)
+\tag{2.9}\]</span></span></p>
+<p>where the parameter <span class="math inline">\(q_i\)</span> is called the <strong>total exit rate</strong> or intensity from state <span class="math inline">\(i\)</span>. The Markov property is now given by the fact that the exponential distribution is memoryless: the time remaining in state <span class="math inline">\(i\)</span> is independent on how long the system has been there already.</p>
+<p>So how do we decide where which state to jump next? For that, let <span class="math inline">\(q_{ij}\)</span> denote the <em>instantaneous rate of moving</em> from state <span class="math inline">\(i\)</span> to <span class="math inline">\(j\)</span>. Our parameter <span class="math inline">\(q_i\)</span> becomes then <span class="math inline">\(q_i=\sum_{i\neq j} q_{ij}\)</span>. We can convert this into a transition probability <span class="math inline">\(P_{ij}\)</span> using <span class="math inline">\(P_{ij}=\frac{q_{ij}}{q_i}\)</span>. Instead of talking about a transition matrix <span class="math inline">\(\mathbf{P}\)</span>, we define a <strong>rate</strong> or <strong>Q-Matrix</strong> <span class="math inline">\(\mathbf{Q}\)</span> where <span class="math inline">\(Q_{ij}=q_{ij}\)</span> for <span class="math inline">\(i\neq j\)</span> and <span class="math inline">\(Q_{ii}=-q_i\)</span> (the diagonal elements are defined with a minus sign because we want the sum of each row -the sum of leaving and entering state <span class="math inline">\(i\)</span>- to be 0).</p>
+<p>We can simulate a continuous-time Markov chain in the following way:</p>
+<div id="1d5b9743" class="cell" data-execution_count="16">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> simulate_ctmc(Q_matrix, start_state, max_time):</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>    current_time <span class="op">=</span> <span class="fl">0.0</span></span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>    current_state <span class="op">=</span> start_state</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>    times <span class="op">=</span> [<span class="fl">0.0</span>]</span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>    states <span class="op">=</span> [current_state]</span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>    num_states <span class="op">=</span> Q_matrix.shape[<span class="dv">0</span>]</span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> current_time <span class="op">&lt;</span> max_time:</span>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a>        exit_rate <span class="op">=</span> <span class="op">-</span>Q_matrix[current_state, current_state]</span>
+<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> exit_rate <span class="op">&lt;=</span> <span class="dv">0</span>:</span>
+<span id="cb23-17"><a href="#cb23-17" aria-hidden="true" tabindex="-1"></a>            <span class="cf">break</span></span>
+<span id="cb23-18"><a href="#cb23-18" aria-hidden="true" tabindex="-1"></a>            </span>
+<span id="cb23-19"><a href="#cb23-19" aria-hidden="true" tabindex="-1"></a>        time_step <span class="op">=</span> np.random.exponential(scale<span class="op">=</span><span class="dv">1</span><span class="op">/</span>exit_rate)</span>
+<span id="cb23-20"><a href="#cb23-20" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb23-21"><a href="#cb23-21" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> current_time <span class="op">+</span> time_step <span class="op">&gt;</span> max_time:</span>
+<span id="cb23-22"><a href="#cb23-22" aria-hidden="true" tabindex="-1"></a>            <span class="cf">break</span></span>
+<span id="cb23-23"><a href="#cb23-23" aria-hidden="true" tabindex="-1"></a>            </span>
+<span id="cb23-24"><a href="#cb23-24" aria-hidden="true" tabindex="-1"></a>        rates_row <span class="op">=</span> Q_matrix[current_state, :].copy()</span>
+<span id="cb23-25"><a href="#cb23-25" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb23-26"><a href="#cb23-26" aria-hidden="true" tabindex="-1"></a>        rates_row[current_state] <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb23-27"><a href="#cb23-27" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb23-28"><a href="#cb23-28" aria-hidden="true" tabindex="-1"></a>        jump_probabilities <span class="op">=</span> rates_row <span class="op">/</span> exit_rate</span>
+<span id="cb23-29"><a href="#cb23-29" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb23-30"><a href="#cb23-30" aria-hidden="true" tabindex="-1"></a>        next_state <span class="op">=</span> np.random.choice(np.arange(num_states), p<span class="op">=</span>jump_probabilities)</span>
+<span id="cb23-31"><a href="#cb23-31" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb23-32"><a href="#cb23-32" aria-hidden="true" tabindex="-1"></a>        current_time <span class="op">+=</span> time_step</span>
+<span id="cb23-33"><a href="#cb23-33" aria-hidden="true" tabindex="-1"></a>        current_state <span class="op">=</span> next_state</span>
+<span id="cb23-34"><a href="#cb23-34" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb23-35"><a href="#cb23-35" aria-hidden="true" tabindex="-1"></a>        times.append(current_time)</span>
+<span id="cb23-36"><a href="#cb23-36" aria-hidden="true" tabindex="-1"></a>        states.append(current_state)</span>
+<span id="cb23-37"><a href="#cb23-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-38"><a href="#cb23-38" aria-hidden="true" tabindex="-1"></a>    times.append(max_time)</span>
+<span id="cb23-39"><a href="#cb23-39" aria-hidden="true" tabindex="-1"></a>    states.append(states[<span class="op">-</span><span class="dv">1</span>])</span>
+<span id="cb23-40"><a href="#cb23-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-41"><a href="#cb23-41" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> times, states</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>This function first enters a classical simulation loop where time advances until a stopping time has been reached. On each iteration, we first sample a time using the inverse of the exit rate (the minus diagonal element of the Q-matrix) as the parameter of an exponential distribution. Then we determine the state we are goint to jump to by calculating the jump probabilities. The next state is then chosen according to the jump probabilities.</p>
+<p>Let’s now simulate a scenario where we want to study machine reliability. We define the state space as Operational (1), Degraded (2) or Failed (3). In the operational state, the machine works as expected, however it transitions to degraded often, but rarely to failed. In the degraded state, the machine transitions to failed quickly, since it is already not working properly (and never transitions to operational). Finally, in the failed state, the machine is broken and it will only transition to operational if the machine is repaired.</p>
+<div id="0030b556" class="cell" data-execution_count="17">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Define the Generator Matrix (Q)</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Rows must sum to 0.</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Units: events per hour (rates)</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>Q <span class="op">=</span> np.array([</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a><span class="co"># To:   Op(0)   Deg(1)  Fail(2)</span></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>    [<span class="op">-</span><span class="fl">0.6</span>,   <span class="fl">0.5</span>,    <span class="fl">0.1</span>],  <span class="co"># From Operational (Exit rate = 0.6)</span></span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>    [ <span class="fl">0.0</span>,  <span class="op">-</span><span class="fl">2.0</span>,    <span class="fl">2.0</span>],  <span class="co"># From Degraded    (Exit rate = 2.0 -&gt; Very fast exit)</span></span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>    [ <span class="fl">1.0</span>,   <span class="fl">0.0</span>,   <span class="op">-</span><span class="fl">1.0</span>]   <span class="co"># From Failed      (Exit rate = 1.0 -&gt; Repair time)</span></span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>])</span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>STATE_NAMES <span class="op">=</span> {<span class="dv">0</span>: <span class="st">'Operational'</span>, <span class="dv">1</span>: <span class="st">'Degraded'</span>, <span class="dv">2</span>: <span class="st">'Failed'</span>}</span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>START_STATE <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>DURATION <span class="op">=</span> <span class="fl">24.0</span>  <span class="co"># Simulate 24 hours</span></span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Run Simulation ---</span></span>
+<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a>np.random.seed(<span class="dv">101</span>)</span>
+<span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a>sim_times, sim_states <span class="op">=</span> simulate_ctmc(Q, START_STATE, DURATION)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Note that the units of <span class="math inline">\(\mathbf{Q}\)</span> are <em>rates</em> or events per unit of time. Here the unit of time can be freely chosen, what is important is the fact that each number represents the number of events that happen, on average, in the unit of time, and that each row has to sum up to 0.</p>
+<div id="a5bfbf27" class="cell" data-execution_count="18">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>plt.step(sim_times, sim_states, where<span class="op">=</span><span class="st">'post'</span>, color<span class="op">=</span><span class="st">'purple'</span>, linewidth<span class="op">=</span><span class="dv">2</span>)</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>plt.yticks([<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">2</span>], [STATE_NAMES[<span class="dv">0</span>], STATE_NAMES[<span class="dv">1</span>], STATE_NAMES[<span class="dv">2</span>]])</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Time (Hours)'</span>)</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'Machine State'</span>)</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'CTMC Trajectory: Variable Holding Times'</span>)</span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>plt.grid(<span class="va">True</span>, axis<span class="op">=</span><span class="st">'y'</span>, linestyle<span class="op">=</span><span class="st">'--'</span>)</span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>plt.xlim(<span class="dv">0</span>, DURATION)</span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>plt.ylim(<span class="op">-</span><span class="fl">0.5</span>, <span class="fl">2.5</span>)</span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(sim_times)<span class="op">-</span><span class="dv">1</span>):</span>
+<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> sim_states[i] <span class="op">==</span> <span class="dv">0</span> <span class="kw">and</span> (sim_times[i<span class="op">+</span><span class="dv">1</span>] <span class="op">-</span> sim_times[i] <span class="op">&gt;</span> <span class="fl">2.0</span>):</span>
+<span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a>        mid_point <span class="op">=</span> (sim_times[i] <span class="op">+</span> sim_times[i<span class="op">+</span><span class="dv">1</span>]) <span class="op">/</span> <span class="dv">2</span></span>
+<span id="cb25-14"><a href="#cb25-14" aria-hidden="true" tabindex="-1"></a>        plt.text(mid_point, <span class="fl">0.1</span>, <span class="st">"Long Holding Time</span><span class="ch">\n</span><span class="st">(Random)"</span>, ha<span class="op">=</span><span class="st">'center'</span>, fontsize<span class="op">=</span><span class="dv">9</span>, color<span class="op">=</span><span class="st">'green'</span>)</span>
+<span id="cb25-15"><a href="#cb25-15" aria-hidden="true" tabindex="-1"></a>        <span class="cf">break</span></span>
+<span id="cb25-16"><a href="#cb25-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-17"><a href="#cb25-17" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="simulation_basics_files/figure-html/cell-19-output-1.png" width="646" height="449" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>In this visualization, an exemplary long holding time (the first longer than 2 hours in the operational state) is highlighted. As can be seen, the holding times are highly variable (compare to the discrete-time Markov chain previously). Note also that the system spends very little time in the degraded state. This is because the exit rate (the diagonal element) is very high, so the machine passes this state quickly on its way to the failed state. Since the exit rate is quite low in the operational state, the machine stays there for longer periods.</p>
 
 
 <div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">

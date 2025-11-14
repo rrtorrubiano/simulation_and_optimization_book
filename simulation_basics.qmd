@@ -482,8 +482,6 @@ Bernoulli process.
 #| fig-cap: "Plots of Bernoulli and counting processes"
 trials = np.arange(1, NUM_TRIALS + 1)
 
-# plt.figure(figsize=(12, 6))
-
 # Subplot 1: The Bernoulli Process (Outcomes)
 plt.subplot(2, 1, 1)
 plt.step(trials, outcomes, where='post', color='blue', linewidth=2)
@@ -729,3 +727,150 @@ simulated_states = simulate_dtmc(START_STATE_INDEX, P, NUM_SIMULATION_STEPS)
 simulated_weather = [STATE_MAP[s] for s in simulated_states]
 simulated_weather[:10]
 ```
+
+Now let's plot the sequence of states against time:
+
+```{python}
+time_steps = np.arange(NUM_SIMULATION_STEPS + 1)
+
+plt.plot(time_steps, simulated_states, marker='o', linestyle='-', drawstyle='steps-post', markersize=4)
+plt.yticks([0, 1, 2], [STATE_MAP[0], STATE_MAP[1], STATE_MAP[2]])
+plt.title('Discrete-Time Markov Chain State Trajectory (Weather)')
+plt.xlabel('Time Step (Day)')
+plt.ylabel('State')
+plt.grid(True, axis='y', linestyle='--')
+plt.show()
+```
+
+**Continuous-Time Markov Chains**
+
+In our previous example, we have assumed that the time index takes values in a discrete set. Let's now
+consider the situation where time is continuous: $\{X(t),t\ge 0\}$. In this case, the system might change 
+its state at any time, instead of being governed by a fixed transition probability $P_{ij}$. We now assume 
+that the time spent in the current state $i$ is **itself a random variable** which is continuous and 
+exponentially distributed. Let's denote this **holding time** by $\tau_i$. We have:
+
+$$
+\tau_i \sim \operatorname{Exponential}(q_i)
+$$ {#eq-ctmc}
+
+where the parameter $q_i$ is called the **total exit rate** or intensity from state $i$. The Markov 
+property is now given by the fact that the exponential distribution is memoryless: the time remaining in
+state $i$ is independent on how long the system has been there already.
+
+So how do we decide where which state to jump next? For that, let $q_{ij}$ denote the *instantaneous 
+rate of moving* from state $i$ to $j$. Our parameter $q_i$ becomes then $q_i=\sum_{i\neq j} q_{ij}$. We can
+convert this into a transition probability $P_{ij}$ using $P_{ij}=\frac{q_{ij}}{q_i}$. Instead of talking 
+about a transition matrix $\mathbf{P}$, we define a **rate** or **Q-Matrix** $\mathbf{Q}$ where 
+$Q_{ij}=q_{ij}$ for $i\neq j$ and $Q_{ii}=-q_i$ (the diagonal elements are defined with a minus
+sign because we want the sum of each row -the sum of leaving and entering state $i$- to be 0).
+
+We can simulate a continuous-time Markov chain in the following way:
+
+```{python}
+import numpy as np
+import matplotlib.pyplot as plt
+
+def simulate_ctmc(Q_matrix, start_state, max_time):
+    current_time = 0.0
+    current_state = start_state
+    
+    times = [0.0]
+    states = [current_state]
+    
+    num_states = Q_matrix.shape[0]
+
+    while current_time < max_time:
+        exit_rate = -Q_matrix[current_state, current_state]
+        
+        if exit_rate <= 0:
+            break
+            
+        time_step = np.random.exponential(scale=1/exit_rate)
+        
+        if current_time + time_step > max_time:
+            break
+            
+        rates_row = Q_matrix[current_state, :].copy()
+        
+        rates_row[current_state] = 0
+        
+        jump_probabilities = rates_row / exit_rate
+        
+        next_state = np.random.choice(np.arange(num_states), p=jump_probabilities)
+        
+        current_time += time_step
+        current_state = next_state
+        
+        times.append(current_time)
+        states.append(current_state)
+
+    times.append(max_time)
+    states.append(states[-1])
+
+    return times, states
+```
+
+This function first enters a classical simulation loop where time advances until a stopping time has been
+reached. On each iteration, we first sample a time using the inverse of the exit rate (the minus 
+diagonal element of the Q-matrix) as the parameter of an exponential distribution. Then we 
+determine the state we are goint to jump to by calculating the jump probabilities. The next state 
+is then chosen according to the jump probabilities.
+
+Let's now simulate a scenario where we want to study machine reliability. We define the state space 
+as Operational (1), Degraded (2) or Failed (3). In the operational state, the machine works as 
+expected, however it transitions to degraded often, but rarely to failed. In the degraded state, 
+the machine transitions to failed quickly, since it is already not working properly (and never
+transitions to operational). Finally, in the failed 
+state, the machine is broken and it will only transition to operational if the machine is repaired.
+
+```{python}
+# Define the Generator Matrix (Q)
+# Rows must sum to 0.
+# Units: events per hour (rates)
+Q = np.array([
+# To:   Op(0)   Deg(1)  Fail(2)
+    [-0.6,   0.5,    0.1],  # From Operational (Exit rate = 0.6)
+    [ 0.0,  -2.0,    2.0],  # From Degraded    (Exit rate = 2.0 -> Very fast exit)
+    [ 1.0,   0.0,   -1.0]   # From Failed      (Exit rate = 1.0 -> Repair time)
+])
+
+STATE_NAMES = {0: 'Operational', 1: 'Degraded', 2: 'Failed'}
+START_STATE = 0
+DURATION = 24.0  # Simulate 24 hours
+
+# --- Run Simulation ---
+np.random.seed(101)
+sim_times, sim_states = simulate_ctmc(Q, START_STATE, DURATION)
+```
+
+Note that the units of $\mathbf{Q}$ are *rates* or events per unit of time. Here the unit of time
+can be freely chosen, what is important is the fact that each number represents the number 
+of events that happen, on average, in the unit of time, and that each row has to sum up to 0.
+
+```{python}
+plt.step(sim_times, sim_states, where='post', color='purple', linewidth=2)
+
+plt.yticks([0, 1, 2], [STATE_NAMES[0], STATE_NAMES[1], STATE_NAMES[2]])
+plt.xlabel('Time (Hours)')
+plt.ylabel('Machine State')
+plt.title('CTMC Trajectory: Variable Holding Times')
+plt.grid(True, axis='y', linestyle='--')
+plt.xlim(0, DURATION)
+plt.ylim(-0.5, 2.5)
+
+for i in range(len(sim_times)-1):
+    if sim_states[i] == 0 and (sim_times[i+1] - sim_times[i] > 2.0):
+        mid_point = (sim_times[i] + sim_times[i+1]) / 2
+        plt.text(mid_point, 0.1, "Long Holding Time\n(Random)", ha='center', fontsize=9, color='green')
+        break
+
+plt.show()
+```
+
+In this visualization, an exemplary long holding time (the first longer than 2 hours in 
+the operational state) is highlighted. As can be seen, the holding times are highly variable (compare 
+to the discrete-time Markov chain previously). Note also that the system spends very little time
+in the degraded state. This is because the exit rate (the diagonal element) is very high, so the
+machine passes this state quickly on its way to the failed state. Since the exit rate is quite low 
+in the operational state, the machine stays there for longer periods. 
