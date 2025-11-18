@@ -998,3 +998,26 @@ plt.xlim(0, TOTAL_TIME)
 plt.grid(True, linestyle='--')
 plt.show()
 ```
+
+## Chapter Summary
+
+In this chapter, we introduced the fundamental concepts of simulation, focusing on random number generation, sampling methods, 
+and stochastic processes. We explored pseudorandom number generators, including the Linear Congruential Generator and the Mersenne Twister, 
+and discussed their properties and limitations. Sampling methods such as the inversion method, rejection sampling, and the Box-Muller 
+transform were presented for generating random variables from various distributions. We then delved into stochastic processes, 
+covering discrete and continuous-time processes like Bernoulli, Poisson, Markov chains, and Brownian motion, along with their simulation techniques. 
+These concepts form the foundation for modeling and analyzing systems with inherent randomness.
+
+## Exercises
+
+1. Implement a simulation for a geometric random walk, where the state evolves as:
+    $$ X_{t+1} = X_t \cdot e^{\mu + \sigma Z_t} $$
+    Here, $Z_t \sim N(0, 1)$, $\mu$ is the drift, and $\sigma$ is the volatility. Simulate the process for 1000 steps with $\mu = 0.01$ and $\sigma = 0.2$, starting at $X_0 = 1$. Plot the resulting trajectory.
+
+2.  Modify the Poisson process simulation to handle a time-dependent rate $\lambda(t)$. For example, use $\lambda(t) = 2 + \sin(t)$ over the interval $[0, 10]$. Plot the resulting event times and the cumulative count process.
+
+3. Show that the exponential distribution is memoryless, i.e., for $T \sim \text{Exponential}(\lambda)$:
+    $$ P(T > s + t \mid T > t) = P(T > s). $$
+    Provide a detailed derivation.
+
+4. Prove that the Poisson process has stationary increments, i.e., the number of events in any interval of length $\tau$ follows the same distribution, regardless of the starting time. Use the definition of the Poisson process and its properties in your proof.
