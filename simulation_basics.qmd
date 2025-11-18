@@ -617,10 +617,10 @@ plt.legend()
 plt.show()
 ```
 
-### Markov Chains
+### Markov Processes
 
 The next type of process is fundamental for many practical applications and for simulation 
-approaches that we will see in the rest of the book: **Markov chain**. A Markov chain is a stochastic process that
+approaches that we will see in the rest of the book: **Markov processes**. A Markov process is a stochastic process that
 satisfies the Markov property, which states that the future state of the process depends only on the current state and not on the sequence of states that preceded it. Formally, a discrete-time Markov chain $\{X_t, t \geq 0\}$ satisfies:
 
 $$
@@ -628,7 +628,8 @@ P(X_{t+1} = j \mid X_t = i, X_{t-1} = i_{t-1}, \dots, X_0 = i_0) = P(X_{t+1} = j
 $$
 
 This property is known as the **memoryless** or **Markov property**. The process is fully characterized by its **state space** (the set of possible states) and the **transition probabilities** between states. Both the state space and 
-the time parameter can be either *discrete* or *continuous*.
+the time parameter can be either *discrete* or *continuous*. In the discrete-time case, 
+we normally call these processes **Markov chains**.
 
 **Transition Matrix**
 
@@ -742,7 +743,7 @@ plt.grid(True, axis='y', linestyle='--')
 plt.show()
 ```
 
-**Continuous-Time Markov Chains**
+**Continuous-Time Markov Processes**
 
 In our previous example, we have assumed that the time index takes values in a discrete set. Let's now
 consider the situation where time is continuous: $\{X(t),t\ge 0\}$. In this case, the system might change 
@@ -874,3 +875,126 @@ to the discrete-time Markov chain previously). Note also that the system spends 
 in the degraded state. This is because the exit rate (the diagonal element) is very high, so the
 machine passes this state quickly on its way to the failed state. Since the exit rate is quite low 
 in the operational state, the machine stays there for longer periods. 
+
+**Continuous-State Markov Processes**
+
+The last important case we need to take a closer look at is when the state space $S$ is **continuous**.
+a continuous range of values, such as the position of a particle in space, the temperature of a system, or the level of a reservoir. In this case, the process is often described by a **stochastic differential equation (SDE)**, which governs the evolution of the state over time. The time parameter can 
+be in this case either discrete or continuous, so the corresponding considerations apply. The main
+challenge is how to deal with state transition probabilities. For this purpose, the most 
+general solution is to switch from transition matrices to **transition probability density 
+functions** that we denote by $f(x_t | x_{t-1})$.
+
+One particularly relevant example of Markov process is the **random walk**. The main idea is 
+to let the process evolve from an initial state by applying random, independent perturbations:
+
+$$
+X_t=X_{t-1}+\epsilon_t\text{,   }\epsilon_t \sim N(0, \sigma^2)
+$$ {#eq-random-walk}
+
+It is important to stress the fact that the noise terms $\epsilon_t$ and the process steps 
+$X_{t-1}$ are independent. We can see that for random walks, the Markov property is fulfilled
+because $X_t$ only depends on $X_{t-1}$ and not on any values before. Random walks are used
+when modeling non-stationary time series, like stock prices without a drift.
+
+Another important example is the **Brownian motion** or **Wiener process**. The Brownian motion 
+is a stochastic process commonly used for modeling random movements of particles. Let's 
+denote this process by $W(t)$. The defining characteristic of a Brownian motion is that 
+its increments are **normally distributed** and **independent of the past**.
+
+$$
+W(t+s) - W(s) \sim N(0, t-s)
+$$ {#eq-brownian-motion}
+
+There are many practical applications of this type of process. In finance, the Brownian motion is used to model option pricing (the **Black-Scholes** equation).
+In polymer physics, the random, wriggling moving of a long-chain polymer molecule in a solvent 
+can be well modeled using the Brownian motion. In audio engineering and signal processing,
+it can be used for random noise generation (white and pink noise).
+
+**Simulation example**
+
+We will now see how to simulate a Brownian motion. In order to simulate this process (and like it,
+any continuous-time Markov process), we resort to the **discrete approximation method**. The main 
+idea is to model a continuous path by adding small, independent, normally distributed random 
+increments at small time steps ($\Delta t$). We use the following equation:
+
+$$
+W(t_{i+1})=W(t_i)+\sqrt{\Delta t}\cdot Z_i
+$$ {#eq-discrete-approx}
+
+The square root of the increment follows from the increments property of the Brownian motion: the 
+variance of the increments has to be proportional to the difference between the time steps.
+
+```{python}
+import numpy as np
+import matplotlib.pyplot as plt
+
+def simulate_brownian_motion(total_time, num_steps):
+    if num_steps <= 0 or total_time <= 0:
+        raise ValueError("num_steps and total_time must be positive.")
+
+    dt = total_time / num_steps
+    time_points = np.linspace(0, total_time, num_steps + 1)
+
+    standard_deviation = np.sqrt(dt)
+    
+    Z_increments = np.random.normal(loc=0.0, scale=1.0, size=num_steps)
+    dW_increments = standard_deviation * Z_increments
+
+    brownian_path = np.concatenate(([0.0], np.cumsum(dW_increments)))
+
+    return time_points, brownian_path
+```
+
+In the code, we first discretize the time by dividing the total time by the number of 
+simulation steps. Then we calculate the standard deviation as the square root 
+of the increment and proceed to simulate the increments $Z_i$. The final Brownian path 
+is taken to be the cumulative sum of the increments.
+
+Let's now perform a simulation a visualize the results:
+
+```{python}
+TOTAL_TIME = 1.0     # Simulate up to time T=1
+NUM_STEPS = 1000     # Use 1000 steps for a smooth path
+
+np.random.seed(42) # Seed for reproducibility
+time, path = simulate_brownian_motion(TOTAL_TIME, NUM_STEPS)
+
+plt.plot(time, path, label='Wiener Process Path', color='navy')
+
+# The theoretical standard deviation at time t is sqrt(t)
+std_dev = np.sqrt(time)
+plt.plot(time, 2 * std_dev, 'r--', label=r'Theoretical Bounds ($\pm 2\sqrt{t}$)', alpha=0.6)
+plt.plot(time, -2 * std_dev, 'r--', alpha=0.6)
+
+plt.title('Simulated 1D Brownian Motion (Wiener Process)')
+plt.xlabel('Time (t)')
+plt.ylabel('State ($W(t)$)')
+plt.axhline(0, color='black', linewidth=0.5)
+plt.xlim(0, TOTAL_TIME)
+plt.grid(True, linestyle='--')
+plt.legend()
+plt.show()
+```
+
+In this visualization, we plot one realization of a Brownian motion bounded by its theoretical 
+bounds (using a standard deviation of $\sqrt{t}$ up and down). The next visualization shows
+several realizations of the same Brownian motion:
+
+```{python}
+NUM_PATHS = 5
+for i in range(NUM_PATHS):
+    np.random.seed(i) # Use a different seed for each path
+    _, multi_path = simulate_brownian_motion(TOTAL_TIME, NUM_STEPS)
+    plt.plot(time, multi_path, alpha=0.7)
+
+plt.plot(time, 2 * np.sqrt(time), 'k--', label='Theoretical Bounds', linewidth=1.5)
+plt.plot(time, -2 * np.sqrt(time), 'k--', linewidth=1.5)
+plt.title(f'Multiple Simulated Brownian Motion Paths')
+plt.xlabel('Time (t)')
+plt.ylabel('State ($W(t)$)')
+plt.axhline(0, color='black', linewidth=0.5)
+plt.xlim(0, TOTAL_TIME)
+plt.grid(True, linestyle='--')
+plt.show()
+```
