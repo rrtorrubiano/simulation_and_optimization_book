@@ -1,1 +1,51 @@
 # Monte Carlo {#sec-monte-carlo}
+
+## What is Monte-Carlo Simulation?
+
+We call **Monte-Carlo (MC) simulation methods** to a broad class of computational methods used to 
+approximate solutions to complex problems which can't often be obtained by traditional analytical 
+methods. The main idea of MC methods is to repeatedly sample randomly from pre-specified probability
+distributions to obtain numerical results that can be used to approximate the problem or
+phenomenon of interest.
+
+Usually, each MC method comprises the following steps:
+
+1. **Define a model:** The first step is to define a mathematical model of the phenomenon of interest, for instance
+stock prices, project duration, interest rates, etc.
+2. **Assign probability distributions:** For any of the inputs defined in the mathematical model, we assign a 
+**probability distribution** to each of them. These distributions can take any particular form which may be 
+suited to the problem at hand (normal, exponential, Poisson, etc) and represent the range of possible values 
+and their likelihood.
+3. **Simulate and aggregate:** We run simulations of the model for large sample sizes and record the results 
+for each run.
+
+The final result is a **distribution of possible outcomes** and the probability of each outcome occurring, 
+which provides a clear picture of the risk and potential variability inherent in the system.
+
+The Monte Carlo method was developed in the 1940s by scientists working on the Manhattan Project, including Stanislaw Ulam and John von Neumann. The method was named after the Monte Carlo Casino in Monaco, reflecting the element of chance central to the technique. Initially used to solve problems in nuclear physics, the method has since been widely adopted across various fields, including finance, engineering, and computer science, due to its versatility and effectiveness in solving complex probabilistic problems.
+
+### The intuition behind Monte-Carlo simulation
+
+Imagine that you want to know the probability of a particular outcome in a complex system with many uncertain 
+variables that possibly interact in complicated ways. For instance, what is the probability that a new
+product launch will be successful, given uncertain factors like manufacturing costs, consumer demand and 
+competitor pricing?
+
+Instead of defining a mathematical equation to calculate that specific probability, we just simulate 
+the event a large number of times (which can be thousands or even millions). Think of it like running an 
+experiment for a number of times, the only difference being that in MC simulation the experiments are 
+not physical but *virtual*. Therefore, the element of chance and repeated trials is central to MC simulation,
+and hence its connection to casinos and related games like the roulette wheel.
+
+By running experiments a repeated number of times, we build representative samples that we can use to 
+aggregate and calculate probabilities and confidence intervals. For instance, in our example if it turns 
+out that 20% of the simulations result in success, we can confidently say that the probability of 
+achieving that goal is 20%.
+
+**Example: Estimating the value of $\pi$**
+
+Let's look at an example where we use MC simulation to approximate the value of the
+constant $\pi$.
+
+![Example of Monte-Carlo simulation to calculate $\pi$.](figures/chapter_3/monte_carlo_pi){#fig-mc-pi}
+
