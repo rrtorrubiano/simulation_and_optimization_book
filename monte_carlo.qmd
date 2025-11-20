@@ -45,7 +45,142 @@ achieving that goal is 20%.
 **Example: Estimating the value of $\pi$**
 
 Let's look at an example where we use MC simulation to approximate the value of the
-constant $\pi$.
+constant $\pi$, which is depicted in @fig-mc-pi. Imagine you are throwing darts into this figure. When 
+a dart hits the inside of the circle, we color it blue. Otherwise, we color it green. 
+From basic arithmetic, we know that the ratio between the area of the circle (which is $\pi r^2=\pi$
+because $r=1$) and the area of the square (a $2\times 2$ square with area 4) is $\pi/4$. This means that
+if we had an approximation for these two areas, we could also approximate the value of $\pi$ by 
+dividing the circle's area by the square's area and multiplying by 4.
+
+As you start throwing darts and counting which darts hit the inside and which ones the outside, you 
+can estimate the ratio between the areas by just counting the number of blue dots and dividing by
+the total number of dots. However, for this to work, we need to assume that you are very bad 
+at darts: concretely, that your darts will be uniformly distributed inside of the square. Under this 
+conditions, if you continue throwing more and more darts and count accordingly, your approximation 
+for $\pi$ will get better and better. That's MC simulation in a nutshell!
 
 ![Example of Monte-Carlo simulation to calculate $\pi$.](figures/chapter_3/monte_carlo_pi){#fig-mc-pi}
 
+Let's use some code to make this more concrete:
+
+```{python}
+import random
+import math
+
+def estimate_pi_monte_carlo(num_iterations):
+    points_inside_circle = 0
+    
+    inside_x, inside_y = [], []
+    outside_x, outside_y = [], []
+
+    for _ in range(num_iterations):
+        x = random.uniform(0, 1)
+        y = random.uniform(0, 1)
+
+        distance_squared = x**2 + y**2
+
+        if distance_squared <= 1:
+            points_inside_circle += 1
+            inside_x.append(x)
+            inside_y.append(y)
+        else:
+            outside_x.append(x)
+            outside_y.append(y)
+
+    pi_estimate = 4 * (points_inside_circle / num_iterations)
+    return pi_estimate
+
+N = 100000  # 100,000 darts
+estimated_pi = estimate_pi_monte_carlo(N)
+estimated_pi
+```
+
+In this code, we make use of the modeling fact that points $(x,y)$ inside of the circle satisfy $x^2+y^2\le 1$. 
+
+### Limitations
+
+Albeit powerful, MC simulation has a number of limitations that need to be taken into account. 
+
+- **Variance:** Since MC is an inherently probabilistic method, the estimates have a degree of 
+statistical uncertainty. Therefore different simulation runs will typically produce different estimates.
+- **Slow convergence:** In order to reduce this variance, the number $N$ of iterations (samples) has to be 
+dramatically increased. In general, the standard error decreases like $1/\sqrt{N}$. So to halve 
+the error, it's not enough to *double* the number of samples, but it needs to be *four times larger*.
+- **Random number generators:** Here the quality of the PRNG used (see [@sec-simulation-basics]) plays 
+a critical role. The used generator has to produce samples which are as random and independent as possible or 
+otherwise MC won't work.
+
+In the next sections, we will uncover the foundations of MC simulation. First we will explore the core 
+concepts and mathematical foundations behind it. After that, we will study classical MC techniques and 
+how to calculate confidence intervals for their outputs. We will conclude this chapter with Markov Chain
+Monte Carlo (MCMC), one essential technique widely used in machine learning.
+
+## Core Concepts
+
+The core idea of MC simulation is to leverage the **Law of Large Numbers** to approximate complex 
+quantities: the average of a random variable over a large number of samples will converge to its expected value. This allows us to approximate quantities that are difficult or impossible to compute analytically by simulating random samples and calculating their average.
+
+Mathematically, the goal of MC simulation is to estimate the expected value of a function of a random variable
+$E[g(X)]$. The true expected value is defined by the integral:
+
+$$
+E[g(x)]=\int_{-\infty}^{\infty} g(x)f(x)dx
+$$ {#eq-mc-ev}
+
+Instead of solving this (often intractable) integral analytically, the MC method provides an approximation:
+
+1. **Sampling:** We start by generating $N$ independent and identically distributed (iid) random samples 
+$X_1, X_2, \dots, X_N$ from the probability distribution of $X$ (using any of the methods seen in [@sec-simulation-basics]).
+2. **Evaluation**: We now evaluate the target function $g$ on each of the samples: $g(X_1),g(X_2),\dots,g(X_N)$.
+3. **Estimation**: The MC estimate $\hat{E}[g(X)]$ is calculated as the sample average:
+
+$$
+\hat{E}[g(X)]=\frac{1}{N}\sum_{i=1}^N g(X_i)
+$$ {#eq-est-mc}
+
+We call $\hat{E}[g(X)]$ the **Monte Carlo estimator**. Note that we can approximate *any integral* with MC simulation using a simple trick. Assume we want to
+calculate the following integral:
+
+$$
+I=\int_a^b h(x) dx
+$$
+
+We can reframe this integral as the expectation of a uniform random variable in the interval $[a,b]$. Such
+a random variable has a pdf $f(x)=1/(b-a)$. Now we have:
+
+$$
+\begin{aligned}
+I &= \int_{a}^{b} h(x) dx \\
+&= (b-a) \int_{a}^{b} h(x) \frac{1}{b-a} dx \\
+&= (b-a) \int_{a}^{b} h(x) f(x) dx \\
+&= (b-a) E[h(X)] \quad \text{where } f(x) = \frac{1}{b-a} 
+\end{aligned}
+$$
+
+So we can approximate $I$ by:
+
+$$
+\hat{I}=(b-a)\hat{E}[h(X)]=(b-a)\times\left(\frac{1}{N}\sum_{i=1}^N h(X_i)\right)
+$$ {#eq-est-integral}
+
+### Statistical properties of the MC estimator
+
+Recall that an estimator $\hat{\theta}$ of a parameter $\theta$ is said to be *unbiased* iff its 
+expected value is equals to its true value $E[\hat{\theta}]=\theta$. The MC estimator is an 
+**unbiased** estimator of the expected value of a function of a random variable:
+
+$$
+\begin{aligned}
+E[\hat{E}[g(X)]]&=E\left[\frac{1}{N}\sum_{i=1}^N g(X_i)\right]=\frac{1}{N}\sum_{i=1}^N E[g(X_i)]= \\
+&\overset{iid}{=} \frac{1}{N}\sum_{i=1}^N E[g(X)]=\frac{1}{N}N\cdot E[g(X)]=E[g(X)]
+\end{aligned}
+$$
+
+By the law of large numbers, we know that $\hat{E}[g(X)]$ converges in probability to $E[g(X)]$. 
+Additionally, by the Central Limit Theorem (CLT), the standard error is proportional to $1/\sqrt{N}$.
+
+$$
+\text{Standard error} \propto \frac{\sigma}{\sqrt{N}}
+$$
+
+where $\sigma$ is the standard deviation of $g(X)$, which explains the slow convergence in general of MC simulation.

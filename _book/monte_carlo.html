@@ -20,6 +20,41 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -252,6 +287,11 @@ window.Quarto = {
   <li><a href="#what-is-monte-carlo-simulation" id="toc-what-is-monte-carlo-simulation" class="nav-link active" data-scroll-target="#what-is-monte-carlo-simulation"><span class="header-section-number">3.1</span> What is Monte-Carlo Simulation?</a>
   <ul class="collapse">
   <li><a href="#the-intuition-behind-monte-carlo-simulation" id="toc-the-intuition-behind-monte-carlo-simulation" class="nav-link" data-scroll-target="#the-intuition-behind-monte-carlo-simulation"><span class="header-section-number">3.1.1</span> The intuition behind Monte-Carlo simulation</a></li>
+  <li><a href="#limitations" id="toc-limitations" class="nav-link" data-scroll-target="#limitations"><span class="header-section-number">3.1.2</span> Limitations</a></li>
+  </ul></li>
+  <li><a href="#core-concepts" id="toc-core-concepts" class="nav-link" data-scroll-target="#core-concepts"><span class="header-section-number">3.2</span> Core Concepts</a>
+  <ul class="collapse">
+  <li><a href="#statistical-properties-of-the-mc-estimator" id="toc-statistical-properties-of-the-mc-estimator" class="nav-link" data-scroll-target="#statistical-properties-of-the-mc-estimator"><span class="header-section-number">3.2.1</span> Statistical properties of the MC estimator</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -295,7 +335,8 @@ window.Quarto = {
 <p>Instead of defining a mathematical equation to calculate that specific probability, we just simulate the event a large number of times (which can be thousands or even millions). Think of it like running an experiment for a number of times, the only difference being that in MC simulation the experiments are not physical but <em>virtual</em>. Therefore, the element of chance and repeated trials is central to MC simulation, and hence its connection to casinos and related games like the roulette wheel.</p>
 <p>By running experiments a repeated number of times, we build representative samples that we can use to aggregate and calculate probabilities and confidence intervals. For instance, in our example if it turns out that 20% of the simulations result in success, we can confidently say that the probability of achieving that goal is 20%.</p>
 <p><strong>Example: Estimating the value of <span class="math inline">\(\pi\)</span></strong></p>
-<p>Let’s look at an example where we use MC simulation to approximate the value of the constant <span class="math inline">\(\pi\)</span>.</p>
+<p>Let’s look at an example where we use MC simulation to approximate the value of the constant <span class="math inline">\(\pi\)</span>, which is depicted in <a href="#fig-mc-pi" class="quarto-xref">Figure&nbsp;<span>3.1</span></a>. Imagine you are throwing darts into this figure. When a dart hits the inside of the circle, we color it blue. Otherwise, we color it green. From basic arithmetic, we know that the ratio between the area of the circle (which is <span class="math inline">\(\pi r^2=\pi\)</span> because <span class="math inline">\(r=1\)</span>) and the area of the square (a <span class="math inline">\(2\times 2\)</span> square with area 4) is <span class="math inline">\(\pi/4\)</span>. This means that if we had an approximation for these two areas, we could also approximate the value of <span class="math inline">\(\pi\)</span> by dividing the circle’s area by the square’s area and multiplying by 4.</p>
+<p>As you start throwing darts and counting which darts hit the inside and which ones the outside, you can estimate the ratio between the areas by just counting the number of blue dots and dividing by the total number of dots. However, for this to work, we need to assume that you are very bad at darts: concretely, that your darts will be uniformly distributed inside of the square. Under this conditions, if you continue throwing more and more darts and count accordingly, your approximation for <span class="math inline">\(\pi\)</span> will get better and better. That’s MC simulation in a nutshell!</p>
 <div id="fig-mc-pi" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-mc-pi-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -306,6 +347,101 @@ Figure&nbsp;3.1: Example of Monte-Carlo simulation to calculate <span class="mat
 </figcaption>
 </figure>
 </div>
+<p>Let’s use some code to make this more concrete:</p>
+<div id="7b104191" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> random</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> math</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> estimate_pi_monte_carlo(num_iterations):</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    points_inside_circle <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    inside_x, inside_y <span class="op">=</span> [], []</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    outside_x, outside_y <span class="op">=</span> [], []</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(num_iterations):</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>        x <span class="op">=</span> random.uniform(<span class="dv">0</span>, <span class="dv">1</span>)</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>        y <span class="op">=</span> random.uniform(<span class="dv">0</span>, <span class="dv">1</span>)</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>        distance_squared <span class="op">=</span> x<span class="op">**</span><span class="dv">2</span> <span class="op">+</span> y<span class="op">**</span><span class="dv">2</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> distance_squared <span class="op">&lt;=</span> <span class="dv">1</span>:</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>            points_inside_circle <span class="op">+=</span> <span class="dv">1</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>            inside_x.append(x)</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>            inside_y.append(y)</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>:</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>            outside_x.append(x)</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>            outside_y.append(y)</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>    pi_estimate <span class="op">=</span> <span class="dv">4</span> <span class="op">*</span> (points_inside_circle <span class="op">/</span> num_iterations)</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> pi_estimate</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> <span class="dv">100000</span>  <span class="co"># 100,000 darts</span></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>estimated_pi <span class="op">=</span> estimate_pi_monte_carlo(N)</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>estimated_pi</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="22">
+<pre><code>3.13516</code></pre>
+</div>
+</div>
+<p>In this code, we make use of the modeling fact that points <span class="math inline">\((x,y)\)</span> inside of the circle satisfy <span class="math inline">\(x^2+y^2\le 1\)</span>.</p>
+</section>
+<section id="limitations" class="level3" data-number="3.1.2">
+<h3 data-number="3.1.2" class="anchored" data-anchor-id="limitations"><span class="header-section-number">3.1.2</span> Limitations</h3>
+<p>Albeit powerful, MC simulation has a number of limitations that need to be taken into account.</p>
+<ul>
+<li><strong>Variance:</strong> Since MC is an inherently probabilistic method, the estimates have a degree of statistical uncertainty. Therefore different simulation runs will typically produce different estimates.</li>
+<li><strong>Slow convergence:</strong> In order to reduce this variance, the number <span class="math inline">\(N\)</span> of iterations (samples) has to be dramatically increased. In general, the standard error decreases like <span class="math inline">\(1/\sqrt{N}\)</span>. So to halve the error, it’s not enough to <em>double</em> the number of samples, but it needs to be <em>four times larger</em>.</li>
+<li><strong>Random number generators:</strong> Here the quality of the PRNG used (see <a href="simulation_basics.html" class="quarto-xref"><span>Chapter 2</span></a>) plays a critical role. The used generator has to produce samples which are as random and independent as possible or otherwise MC won’t work.</li>
+</ul>
+<p>In the next sections, we will uncover the foundations of MC simulation. First we will explore the core concepts and mathematical foundations behind it. After that, we will study classical MC techniques and how to calculate confidence intervals for their outputs. We will conclude this chapter with Markov Chain Monte Carlo (MCMC), one essential technique widely used in machine learning.</p>
+</section>
+</section>
+<section id="core-concepts" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="core-concepts"><span class="header-section-number">3.2</span> Core Concepts</h2>
+<p>The core idea of MC simulation is to leverage the <strong>Law of Large Numbers</strong> to approximate complex quantities: the average of a random variable over a large number of samples will converge to its expected value. This allows us to approximate quantities that are difficult or impossible to compute analytically by simulating random samples and calculating their average.</p>
+<p>Mathematically, the goal of MC simulation is to estimate the expected value of a function of a random variable <span class="math inline">\(E[g(X)]\)</span>. The true expected value is defined by the integral:</p>
+<p><span id="eq-mc-ev"><span class="math display">\[
+E[g(x)]=\int_{-\infty}^{\infty} g(x)f(x)dx
+\tag{3.1}\]</span></span></p>
+<p>Instead of solving this (often intractable) integral analytically, the MC method provides an approximation:</p>
+<ol type="1">
+<li><strong>Sampling:</strong> We start by generating <span class="math inline">\(N\)</span> independent and identically distributed (iid) random samples <span class="math inline">\(X_1, X_2, \dots, X_N\)</span> from the probability distribution of <span class="math inline">\(X\)</span> (using any of the methods seen in <a href="simulation_basics.html" class="quarto-xref"><span>Chapter 2</span></a>).</li>
+<li><strong>Evaluation</strong>: We now evaluate the target function <span class="math inline">\(g\)</span> on each of the samples: <span class="math inline">\(g(X_1),g(X_2),\dots,g(X_N)\)</span>.</li>
+<li><strong>Estimation</strong>: The MC estimate <span class="math inline">\(\hat{E}[g(X)]\)</span> is calculated as the sample average:</li>
+</ol>
+<p><span id="eq-est-mc"><span class="math display">\[
+\hat{E}[g(X)]=\frac{1}{N}\sum_{i=1}^N g(X_i)
+\tag{3.2}\]</span></span></p>
+<p>We call <span class="math inline">\(\hat{E}[g(X)]\)</span> the <strong>Monte Carlo estimator</strong>. Note that we can approximate <em>any integral</em> with MC simulation using a simple trick. Assume we want to calculate the following integral:</p>
+<p><span class="math display">\[
+I=\int_a^b h(x) dx
+\]</span></p>
+<p>We can reframe this integral as the expectation of a uniform random variable in the interval <span class="math inline">\([a,b]\)</span>. Such a random variable has a pdf <span class="math inline">\(f(x)=1/(b-a)\)</span>. Now we have:</p>
+<p><span class="math display">\[
+\begin{aligned}
+I &amp;= \int_{a}^{b} h(x) dx \\
+&amp;= (b-a) \int_{a}^{b} h(x) \frac{1}{b-a} dx \\
+&amp;= (b-a) \int_{a}^{b} h(x) f(x) dx \\
+&amp;= (b-a) E[h(X)] \quad \text{where } f(x) = \frac{1}{b-a}
+\end{aligned}
+\]</span></p>
+<p>So we can approximate <span class="math inline">\(I\)</span> by:</p>
+<p><span id="eq-est-integral"><span class="math display">\[
+\hat{I}=(b-a)\hat{E}[h(X)]=(b-a)\times\left(\frac{1}{N}\sum_{i=1}^N h(X_i)\right)
+\tag{3.3}\]</span></span></p>
+<section id="statistical-properties-of-the-mc-estimator" class="level3" data-number="3.2.1">
+<h3 data-number="3.2.1" class="anchored" data-anchor-id="statistical-properties-of-the-mc-estimator"><span class="header-section-number">3.2.1</span> Statistical properties of the MC estimator</h3>
+<p>Recall that an estimator <span class="math inline">\(\hat{\theta}\)</span> of a parameter <span class="math inline">\(\theta\)</span> is said to be <em>unbiased</em> iff its expected value is equals to its true value <span class="math inline">\(E[\hat{\theta}]=\theta\)</span>. The MC estimator is an <strong>unbiased</strong> estimator of the expected value of a function of a random variable:</p>
+<p><span class="math display">\[
+\begin{aligned}
+E[\hat{E}[g(X)]]&amp;=E\left[\frac{1}{N}\sum_{i=1}^N g(X_i)\right]=\frac{1}{N}\sum_{i=1}^N E[g(X_i)]= \\
+&amp;\overset{iid}{=} \frac{1}{N}\sum_{i=1}^N E[g(X)]=\frac{1}{N}N\cdot E[g(X)]=E[g(X)]
+\end{aligned}
+\]</span></p>
+<p>By the law of large numbers, we know that <span class="math inline">\(\hat{E}[g(X)]\)</span> converges in probability to <span class="math inline">\(E[g(X)]\)</span>. Additionally, by the Central Limit Theorem (CLT), the standard error is proportional to <span class="math inline">\(1/\sqrt{N}\)</span>.</p>
+<p><span class="math display">\[
+\text{Standard error} \propto \frac{\sigma}{\sqrt{N}}
+\]</span></p>
+<p>where <span class="math inline">\(\sigma\)</span> is the standard deviation of <span class="math inline">\(g(X)\)</span>, which explains the slow convergence in general of MC simulation.</p>
 
 
 </section>
