@@ -292,6 +292,7 @@ window.Quarto = {
   <li><a href="#core-concepts" id="toc-core-concepts" class="nav-link" data-scroll-target="#core-concepts"><span class="header-section-number">3.2</span> Core Concepts</a>
   <ul class="collapse">
   <li><a href="#statistical-properties-of-the-mc-estimator" id="toc-statistical-properties-of-the-mc-estimator" class="nav-link" data-scroll-target="#statistical-properties-of-the-mc-estimator"><span class="header-section-number">3.2.1</span> Statistical properties of the MC estimator</a></li>
+  <li><a href="#the-law-of-large-numbers" id="toc-the-law-of-large-numbers" class="nav-link" data-scroll-target="#the-law-of-large-numbers"><span class="header-section-number">3.2.2</span> The Law of Large Numbers</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -348,7 +349,7 @@ Figure&nbsp;3.1: Example of Monte-Carlo simulation to calculate <span class="mat
 </figure>
 </div>
 <p>Let’s use some code to make this more concrete:</p>
-<div id="7b104191" class="cell" data-execution_count="1">
+<div id="62c5e378" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> random</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> math</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -378,8 +379,8 @@ Figure&nbsp;3.1: Example of Monte-Carlo simulation to calculate <span class="mat
 <span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> <span class="dv">100000</span>  <span class="co"># 100,000 darts</span></span>
 <span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>estimated_pi <span class="op">=</span> estimate_pi_monte_carlo(N)</span>
 <span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>estimated_pi</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="22">
-<pre><code>3.13516</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="12">
+<pre><code>3.14588</code></pre>
 </div>
 </div>
 <p>In this code, we make use of the modeling fact that points <span class="math inline">\((x,y)\)</span> inside of the circle satisfy <span class="math inline">\(x^2+y^2\le 1\)</span>.</p>
@@ -442,6 +443,25 @@ E[\hat{E}[g(X)]]&amp;=E\left[\frac{1}{N}\sum_{i=1}^N g(X_i)\right]=\frac{1}{N}\s
 \text{Standard error} \propto \frac{\sigma}{\sqrt{N}}
 \]</span></p>
 <p>where <span class="math inline">\(\sigma\)</span> is the standard deviation of <span class="math inline">\(g(X)\)</span>, which explains the slow convergence in general of MC simulation.</p>
+</section>
+<section id="the-law-of-large-numbers" class="level3" data-number="3.2.2">
+<h3 data-number="3.2.2" class="anchored" data-anchor-id="the-law-of-large-numbers"><span class="header-section-number">3.2.2</span> The Law of Large Numbers</h3>
+<p>The correctness guarantee for MC simulation comes from the <strong>law of large numbers</strong>, as mentioned before. We now give a more formal justification of why MC simulation does indeed arrive at the correct answer.</p>
+<p>Let <span class="math inline">\(X_1,X_2,\dots,X_n\)</span> be a sequence of iid random variables, and let <span class="math inline">\(\mu=E[X]\)</span> denote the true mean of the distribution of the <span class="math inline">\(X_i\)</span>. We calculate the <em>sample average</em> of the sequence as:</p>
+<p><span class="math display">\[
+\bar{X}_n=\frac{X_1+X_2+\dots+X_n}{n}
+\]</span></p>
+<p>The law of large numbers states in its strong version that</p>
+<p><span id="eq-law-large-numbers"><span class="math display">\[
+P\left(\lim_{n\rightarrow\infty}\hat{X}_n=\mu\right)=1
+\tag{3.4}\]</span></span></p>
+<p>That is, in the limit <span class="math inline">\(n\rightarrow\infty\)</span>, the probability of the limit converging to the true mean <span class="math inline">\(\mu\)</span> is equals to 1. In our case, the true expectation <span class="math inline">\(\mu\)</span> corresponds to the quantity of interest that we wish to calculate, and the random variables <span class="math inline">\(X_i\)</span> correspond to one iteration of the simulation. The sample average <span class="math inline">\(\hat{X}_n\)</span> represents then our current estimate of the true value <span class="math inline">\(\mu\)</span>.</p>
+<p>We can model the simulation using the following probabilistic model. We can imagine each realization <span class="math inline">\(X_i\)</span> to be the true value <span class="math inline">\(\mu\)</span> perturbed by a random noise term <span class="math inline">\(\epsilon_i\)</span> with <span class="math inline">\(E[\epsilon_i]=0\)</span>: <span class="math inline">\(X_i=\mu+\epsilon_i\)</span>. Now we average over <span class="math inline">\(n\)</span> realizations:</p>
+<p><span class="math display">\[
+\hat{X}_n=\frac{1}{n}\sum_{i=1}^n (\mu+\epsilon_i)=\mu+\frac{1}{n}\sum_{i=1}^n \epsilon_i
+\]</span></p>
+<p>But because the noise terms cancel out over time, we have <span class="math inline">\(\frac{1}{n}\sum \epsilon_i\rightarrow 0\)</span> as <span class="math inline">\(n\rightarrow\infty\)</span>, and we end up in the limit with <span class="math inline">\(\bar{X}_n \approx \mu\)</span>.</p>
+<p>Note that the independece assumption of the <span class="math inline">\(X_i\)</span> is <em>critical</em>, since otherwise the error terms would compound rather than cancel out. This is the reason why only high-quality PRNG are used with MC simulation</p>
 
 
 </section>

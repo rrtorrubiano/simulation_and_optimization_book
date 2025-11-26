@@ -184,3 +184,42 @@ $$
 $$
 
 where $\sigma$ is the standard deviation of $g(X)$, which explains the slow convergence in general of MC simulation.
+
+### The Law of Large Numbers
+
+The correctness guarantee for MC simulation comes from the **law of large numbers**, as mentioned before.
+We now give a more formal justification of why MC simulation does indeed arrive at the correct answer.
+
+Let $X_1,X_2,\dots,X_n$ be a sequence of iid random variables, and let $\mu=E[X]$ denote the true
+mean of the distribution of the $X_i$. We calculate the *sample average* of the sequence as:
+
+$$
+\bar{X}_n=\frac{X_1+X_2+\dots+X_n}{n}
+$$
+
+The law of large numbers states in its strong version that
+
+$$
+P\left(\lim_{n\rightarrow\infty}\hat{X}_n=\mu\right)=1
+$$ {#eq-law-large-numbers}
+
+That is, in the limit $n\rightarrow\infty$, the probability of the limit converging to 
+the true mean $\mu$ is equals to 1. In our case, the true expectation $\mu$ corresponds to the 
+quantity of interest that we wish to calculate, and the random variables $X_i$ correspond to 
+one iteration of the simulation. The sample average $\hat{X}_n$ represents then our current 
+estimate of the true value $\mu$.
+
+We can model the simulation using the following probabilistic model. We can imagine each 
+realization $X_i$ to be the true value $\mu$ perturbed by a random noise term $\epsilon_i$
+with $E[\epsilon_i]=0$: $X_i=\mu+\epsilon_i$. Now we average over $n$ realizations:
+
+$$
+\hat{X}_n=\frac{1}{n}\sum_{i=1}^n (\mu+\epsilon_i)=\mu+\frac{1}{n}\sum_{i=1}^n \epsilon_i
+$$
+
+But because the noise terms cancel out over time, we have $\frac{1}{n}\sum \epsilon_i\rightarrow 0$
+as $n\rightarrow\infty$, and we end up in the limit with $\bar{X}_n \approx \mu$.
+
+Note that the independece assumption of the $X_i$ is *critical*, since otherwise the error
+terms would compound rather than cancel out. This is the reason why only high-quality PRNG 
+are used with MC simulation
