@@ -293,6 +293,7 @@ window.Quarto = {
   <ul class="collapse">
   <li><a href="#statistical-properties-of-the-mc-estimator" id="toc-statistical-properties-of-the-mc-estimator" class="nav-link" data-scroll-target="#statistical-properties-of-the-mc-estimator"><span class="header-section-number">3.2.1</span> Statistical properties of the MC estimator</a></li>
   <li><a href="#the-law-of-large-numbers" id="toc-the-law-of-large-numbers" class="nav-link" data-scroll-target="#the-law-of-large-numbers"><span class="header-section-number">3.2.2</span> The Law of Large Numbers</a></li>
+  <li><a href="#confidence-intervals" id="toc-confidence-intervals" class="nav-link" data-scroll-target="#confidence-intervals"><span class="header-section-number">3.2.3</span> Confidence intervals</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -349,7 +350,7 @@ Figure&nbsp;3.1: Example of Monte-Carlo simulation to calculate <span class="mat
 </figure>
 </div>
 <p>Let’s use some code to make this more concrete:</p>
-<div id="62c5e378" class="cell" data-execution_count="1">
+<div id="03fb3c6b" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> random</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> math</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -379,8 +380,8 @@ Figure&nbsp;3.1: Example of Monte-Carlo simulation to calculate <span class="mat
 <span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> <span class="dv">100000</span>  <span class="co"># 100,000 darts</span></span>
 <span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>estimated_pi <span class="op">=</span> estimate_pi_monte_carlo(N)</span>
 <span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>estimated_pi</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="12">
-<pre><code>3.14588</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="5">
+<pre><code>3.14656</code></pre>
 </div>
 </div>
 <p>In this code, we make use of the modeling fact that points <span class="math inline">\((x,y)\)</span> inside of the circle satisfy <span class="math inline">\(x^2+y^2\le 1\)</span>.</p>
@@ -461,7 +462,65 @@ P\left(\lim_{n\rightarrow\infty}\hat{X}_n=\mu\right)=1
 \hat{X}_n=\frac{1}{n}\sum_{i=1}^n (\mu+\epsilon_i)=\mu+\frac{1}{n}\sum_{i=1}^n \epsilon_i
 \]</span></p>
 <p>But because the noise terms cancel out over time, we have <span class="math inline">\(\frac{1}{n}\sum \epsilon_i\rightarrow 0\)</span> as <span class="math inline">\(n\rightarrow\infty\)</span>, and we end up in the limit with <span class="math inline">\(\bar{X}_n \approx \mu\)</span>.</p>
-<p>Note that the independece assumption of the <span class="math inline">\(X_i\)</span> is <em>critical</em>, since otherwise the error terms would compound rather than cancel out. This is the reason why only high-quality PRNG are used with MC simulation</p>
+<p>Note that the independece assumption of the <span class="math inline">\(X_i\)</span> is <em>critical</em>, since otherwise the error terms would compound rather than cancel out. This is the reason why only high-quality PRNG are used with MC simulation.</p>
+</section>
+<section id="confidence-intervals" class="level3" data-number="3.2.3">
+<h3 data-number="3.2.3" class="anchored" data-anchor-id="confidence-intervals"><span class="header-section-number">3.2.3</span> Confidence intervals</h3>
+<p>In order to quantify the uncertainty given by a MC estimate, confidence intevals represent an appropriate tool. For the calculation, we rely on the <strong>Central Limit Theorem</strong> already mentioned above. By this theorem, we know that the distribution of the <em>sample mean</em> tends towards a <strong>normal distribution</strong> when the number of iterations becomes large. Formally:</p>
+<p><span class="math display">\[
+\sqrt{n}(\bar{X}_n-\mu)\sim N(0,\sigma^2)
+\]</span></p>
+<p>Where <span class="math inline">\(\operatorname{Var}(X_i)=\sigma^2\)</span>. The consequence is that we can use <span class="math inline">\(Z\)</span>-values of the standard normal distribution to calculate the confidence intervals:</p>
+<ol type="1">
+<li>Calculate the sample standard deviation:</li>
+</ol>
+<p><span class="math display">\[
+s=\sqrt{\frac{1}{n-1}\sum_{i=1}^n (X_i - \bar{X}_n)}
+\]</span></p>
+<ol start="2" type="1">
+<li>Calculate the standard error <span class="math inline">\(SE=s/\sqrt{n}\)</span>.</li>
+<li>Choose a confidence level <span class="math inline">\((1-\alpha)\)</span> (usually, 95%, so <span class="math inline">\(\alpha=0.05\)</span>).</li>
+<li>The confidence interval is then:</li>
+</ol>
+<p><span class="math display">\[
+CI=\bar{X}_n \pm \left(z_{\alpha/2}\times\frac{s}{\sqrt{n}}\right)
+\]</span></p>
+<p>where <span class="math inline">\(z_{\alpha/2}\)</span> represents the <span class="math inline">\(\alpha/2\)</span>-level quantile of the standard normal distribution. As an example, consider the following implementation for the estimate of <span class="math inline">\(\pi\)</span> using Python code:</p>
+<div id="e7e427d7" class="cell" data-execution_count="2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy.stats <span class="im">as</span> stats</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> monte_carlo_with_ci(num_iterations):</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    x <span class="op">=</span> np.random.uniform(<span class="dv">0</span>, <span class="dv">1</span>, num_iterations)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    y <span class="op">=</span> np.random.uniform(<span class="dv">0</span>, <span class="dv">1</span>, num_iterations)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    inside_circle <span class="op">=</span> (x<span class="op">**</span><span class="dv">2</span> <span class="op">+</span> y<span class="op">**</span><span class="dv">2</span>) <span class="op">&lt;=</span> <span class="dv">1</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    values <span class="op">=</span> inside_circle <span class="op">*</span> <span class="fl">4.0</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    mean_estimate <span class="op">=</span> np.mean(values)</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>    std_dev <span class="op">=</span> np.std(values, ddof<span class="op">=</span><span class="dv">1</span>) <span class="co"># ddof=1 for sample standard deviation</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    standard_error <span class="op">=</span> std_dev <span class="op">/</span> np.sqrt(num_iterations)</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 4. Calculate 95% Confidence Interval</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>    <span class="co"># z-score for 95% is 1.96, or strictly: stats.norm.ppf(0.025)</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>    z_score <span class="op">=</span> stats.norm.ppf(<span class="fl">0.025</span>) </span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>    margin_of_error <span class="op">=</span> z_score <span class="op">*</span> standard_error</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>    lower_bound <span class="op">=</span> mean_estimate <span class="op">+</span> margin_of_error</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>    upper_bound <span class="op">=</span> mean_estimate <span class="op">-</span> margin_of_error</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> mean_estimate, lower_bound, upper_bound</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a><span class="co"># Run</span></span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>mu, lower, upper <span class="op">=</span> monte_carlo_with_ci(<span class="dv">10000</span>)</span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Estimate: </span><span class="sc">{</span>mu<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"95% CI:   [</span><span class="sc">{</span>lower<span class="sc">:.4f}</span><span class="ss">, </span><span class="sc">{</span>upper<span class="sc">:.4f}</span><span class="ss">]"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Estimate: 3.1512
+95% CI:   [3.1191, 3.1833]</code></pre>
+</div>
+</div>
 
 
 </section>
