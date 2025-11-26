@@ -451,3 +451,111 @@ print(f"Variance Reduction:       {reduction_factor:.1f}x lower variance")
 As can be seen, the variance reduction achieved by the control variates method is in this case
 around 60x, which means that running 10,000 iterations using the control variates method is *as good as
 running classical MC with 600,000 iterations*.
+
+### Importance sampling
+
+The next method is used in cases where the region of interest in the sampling space is very small, i.e. the 
+events we try to simulate are very rare. Imagine we want to estimate the probability for a market crash. If we
+simulate the market for 1,000,000 times, we might still miss all crash events (e.g. if the market crash
+is considered to be a five-sigma event, its probability amounts to about 1 in 3.5 million). Therefore, 
+standard MC would come up with a probability of 0, which is incorrect.
+
+Instead of that, we sample from a probability distribution where markt crashes are common.
+The good news is that now, we will have plenty of points to work with. However, by doing this we introduce 
+a significant bias in the simulation, so our result will not be correct. The trick used by **importance 
+sampling** is to "un-bias" the simulation by assigning a *weight* to each sample which is basically
+proportional to its *likelihood*. Samples which are more likely according to the original distribution will
+get a high weight, whereas rare samples will be assigned a low weight. 
+
+More formally, we want to calculate the expectation of a function of a random variable $f(x)$ under a 
+probability distribution characterized by its pdf $p(x)$.
+
+$$
+E_p[f(x)]=\int f(x)p(x)dx
+$$
+
+We now introduce a *proposal distribution* $q(x)$, which is biased towards the rare events, by multiplying 
+and dividing by it:
+
+$$
+\int f(x)p(x)dx = \int f(x)\frac{p(x)}{q(x)}q(x)dx
+$$
+
+This is equivalent to the expectation of a new function of $x$ under the new distribution $q$:
+
+$$ 
+\int f(x)\frac{p(x)}{q(x)}q(x)dx=E_q\left[f(x)\frac{p(x)}{q(x)}\right]
+$$
+
+which is the result of *weighting* $f(x)$ by a factor given by the quotient $p(x)/q(x)$. This results
+in the estimator:
+
+$$
+\hat{I}=\frac{1}{n}\sum_{i=1}^n f(x_i)\cdot\frac{p(x_i)}{q(x_i)}=\frac{1}{n}\sum_{i=1}^n w_i f(x_i)
+$$ 
+
+Note that our samples now come from $q(x)$ instead of $p(x)$ (because we sample from the biased distribution).
+Let's now consider as an example a five-sigma event under a standard normal distribution governed
+by the probability $P(X>5)$, where the true probability is about $2.87\times 10^{-7}$. In the real world, the true probability distribution is $N(0,1)$. Now we 
+can sample from a biased distribution by moving the mean: $N(5,1)$. In this distribution, events $X>5$ happen
+roughly 50% of the time.
+
+```{python}
+import numpy as np
+import scipy.stats as stats
+import matplotlib.pyplot as plt
+
+def importance_sampling_demo(n_samples, threshold=5):
+    samples_naive = np.random.normal(0, 1, n_samples)
+    
+    hits_naive = samples_naive > threshold
+    prob_naive = np.mean(hits_naive)
+    
+    var_naive = (prob_naive * (1 - prob_naive)) / n_samples
+    
+    shift_mean = threshold
+    samples_is = np.random.normal(loc=shift_mean, scale=1, size=n_samples)
+    
+    hits_is = samples_is > threshold # This will be True for roughly 50% of samples
+    f_x = hits_is.astype(float)
+    
+    p_x = stats.norm.pdf(samples_is, loc=0, scale=1)
+    q_x = stats.norm.pdf(samples_is, loc=shift_mean, scale=1)
+    
+    weights = p_x / q_x
+    
+    weighted_values = f_x * weights
+    prob_is = np.mean(weighted_values)
+    
+    var_is = np.var(weighted_values) / n_samples
+    
+    return prob_naive, var_naive, prob_is, var_is
+```
+
+In this code, we compare the probability estimates and the variances obtained by standard MC and
+importance sampling. 
+
+```{python}
+N = 10000 # Only 10,000 samples (Small for a rare event!)
+target = 5
+
+naive_p, naive_var, is_p, is_var = importance_sampling_demo(N, target)
+true_p = 1 - stats.norm.cdf(target) # Analytical solution
+
+print(f"Target: P(X > {target})")
+print(f"True Probability: {true_p:.10f}")
+print(f"Naive MC Estimate: {naive_p:.10f}")
+print(f"Naive Variance:    {naive_var:.10f} (Likely zero if no hits occurred)")
+print(f"Imp. Samp Estimate:{is_p:.10f}")
+print(f"Imp. Samp Variance:{is_var:.20f}")
+
+# Check the ratio of variance reduction (avoid div by zero)
+if naive_var == 0:
+    print("Naive method failed completely (0 hits). Importance Sampling is infinitely better here.")
+else:
+    print(f"Variance Reduction Factor: {naive_var / is_var:.1f}x")
+```
+
+As can be seen, the estimate obtained by importance sampling is quite close to the true 
+probability. With only 10,000 iterations, standard MC fails to sample a single extreme event, and therefore
+both the estimate and the variance are 0.
