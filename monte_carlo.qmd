@@ -559,3 +559,183 @@ else:
 As can be seen, the estimate obtained by importance sampling is quite close to the true 
 probability. With only 10,000 iterations, standard MC fails to sample a single extreme event, and therefore
 both the estimate and the variance are 0.
+
+**How to choose a good $q(x)$**
+
+We have seen that, in general, we should choose $q(x)$ so that it is biased towards regions where the
+events of interest are more common. Concretely this means that $q(x)$ should have high density where 
+$|f(x)|p(x)$ is also high, since this will significantly steer sampling towards the "important" region 
+and reduce the variance. On the other side, if $q(x)$ is zero in regions where $p(x)$ is not, we might
+stop sampling in regions that matter. In this case, the answer will definitely be biased. As a rule
+of thumb, the tails of $q(x)$ need to be heavier than those of $p(x)$, since we do not want $q(x)$ to
+decrease faster than $p(x)$.
+
+### Stratified sampling
+
+Let's assume we want to integrate a monotonic function (that is, a function that either *always* 
+increases or *always* decreases). Think e.g. about $f(x)=e^x$ in $[0,1]$. If we start sampling
+random numbers, we might get trapped either in the low or the high region of the function. This might
+well happen because PRNM might accidentally "cluster" samples in a specific region. Alas, that would 
+be bad, because it would significantly bias our estimate. In this case, we need to make sure that 
+we sample equally well from all regions. This is the main idea of **stratified sampling**. 
+
+The mathematical trick now is to divide the sampling space into disjoint **strata**, which represent
+separate regions that cover the whole space. Depending on the form of the target function, the strata
+might be different in size. However, if possible, choosing strata of equal size might simplify the
+calculations.
+
+Let's denote by $H$ the number of strata and $p_h$ the probability that a random sample falls into
+stratum $h$. We denote by $S$ the random variable that represents the index of the stratum.
+Therefore, $p_h = P(S=h)$ and $\sum p_h = 1$. Each stratum has its own mean $\mu_h=E[Y|S=h]$ and
+variance $\sigma_h^2=\operatorname{Var}(Y|S=h)$. The total expected value that we are trying to 
+estimate with stratified MC becomes then:
+
+$$
+\mu=E[Y]=\sum_{h=1}^H p_h\mu_h
+$$
+
+In order to calculate the variance, we use the *law of total variance* to decompose it into:
+
+$$ 
+\sigma^2=\operatorname{Var}(Y)=E[\operatorname{Var}(Y|S)]+\operatorname{Var}(E[Y|S])
+$$ {#eq-total-var}
+
+In this decomposition, the first term on the right-hand side $E[\operatorname{Var}(Y|S)]$ represents the
+*mean variance* of the strata, or the variation *within strata*. The second term 
+$\operatorname{Var}(E[Y|S])$ represents the *variance* of the mean values of the strata, which can be
+seen as a measure of the variation *between* strata.
+
+$$ 
+\begin{aligned}
+\sigma_W^2 &= E[\operatorname{Var}(Y|S)]=\sum_{h=1}^H p_h \sigma_h^2 \\
+\sigma_B^2 &= \operatorname{Var}(E[Y|S])=\sum_{h=1}^H p_h (\mu_h-\mu)^2 \\
+\sigma^2 &= \sigma_W^2 + \sigma_B^2
+\end{aligned}
+$$
+
+Let's now compare the variance of the stratified estimator compared to standard MC. Recall that for 
+the standard MC estimator $\hat{Y}_{MC}=\frac{1}{n}\sum f(x_i)$:
+
+$$
+\begin{aligned}
+\sigma_{MC}^2 &= \operatorname{Var}(\hat{Y}_{MC})=\operatorname{Var}\left(\frac{1}{n}\sum_{i=1}^n f(x_i) \right)=\frac{1}{n^2} \sum_{i=1}^n \operatorname{Var}(f(x_i)) =\\
+&= \frac{1}{n^2} \sum_{i=1}^n \sigma^2 = \frac{\sigma^2}{n}=\frac{1}{n}(\sigma_W^2 + \sigma_B^2)
+\end{aligned}
+$$
+
+For the stratified MC estimator, we have the sample means of each stratum $\hat{\mu}_h$, and we 
+calculate $\hat{Y}_{SE} = \frac{1}{n} \sum p_h\hat{\mu}_h$. The variance then becomes the sum of 
+the variances, since the covariance between strata is 0:
+
+$$
+\operatorname{Var}(\hat{Y}_{SE}) = \sum_{h=1}^H \operatorname{Var}(p_h \hat{\mu}_h) = \sum_{h=1}^H p_h^2 \operatorname{Var}(\hat{\mu}_h)=\sum_{h=1}^H p_h^2\frac{\sigma_h^2}{n_h}
+$$
+
+If we now choose the number of samples in each stratum to be proportional to the stratum's weight $n_h=p_h\times n$, 
+we have:
+
+$$
+\sigma_{SE}^2=\text{Var}(\hat{Y}_{SE}) = \sum_{h=1}^H p_h^2 \frac{\sigma_h^2}{(p_h \cdot n)} = \sum_{h=1}^H p_h \frac{\sigma_h^2}{n} = \frac{1}{n} \sum_{h=1}^H p_h \sigma_h^2
+$$
+
+This should look familiar: it corresponds exactly to $\frac{1}{n}$ times the sum of the individual 
+within-strata variances!
+
+$$
+\begin{aligned}
+\sigma_{MC}^2 &=\frac{1}{n}(\sigma_W^2 + \sigma_B^2) \\
+\sigma_{SE}^2 &=\frac{1}{n}\sigma_W^2
+\end{aligned}
+$$
+
+And since $\sigma_B^2 \ge 0$, we have our variance reduction $\operatorname{Var}(\hat{Y}_{SE})\le \operatorname{Var}(\hat{Y}_{MC})$.
+
+In summary, stratified sampling using proportional strata is always equal to or better than standard sampling because it eliminates the variance caused by the variability in sampling proportions across strata with different means.
+
+**Example**
+
+As an example, let's integrate $f(x)=e^x$ in the interval $[0,1]$. For this, we will define $H$ equally-spaced
+strata in this interval.
+
+```{python}
+import numpy as np
+import matplotlib.pyplot as plt
+
+def simulation_stratified(n_samples):
+    u_naive = np.random.uniform(0, 1, n_samples)
+    y_naive = np.exp(u_naive)
+    
+    est_naive = np.mean(y_naive)
+    var_naive = np.var(y_naive)
+    
+    strata_starts = np.arange(n_samples) / n_samples
+    offsets = np.random.uniform(0, 1/n_samples, n_samples)
+    x_stratified = strata_starts + offsets
+    
+    y_stratified = np.exp(x_stratified)
+    est_stratified = np.mean(y_stratified)
+    
+    return est_naive, est_stratified
+
+```
+
+We now run the experiment multiple times to determine the variance of the method. Because
+stratified samples are not iid, we need to repeat the experiment to get an estimate of its variance:
+
+```{python}
+experiments = 1000
+N = 100 # Samples per experiment
+
+naive_results = []
+stratified_results = []
+
+for _ in range(experiments):
+    n_res, s_res = simulation_stratified(N)
+    naive_results.append(n_res)
+    stratified_results.append(s_res)
+
+true_value = np.e - 1
+
+# Calculate statistics of the *Estimators*
+var_of_naive_method = np.var(naive_results)
+var_of_stratified_method = np.var(stratified_results)
+
+print(f"True Value: {true_value:.6f}")
+print("-" * 30)
+print(f"Naive MC Variance (across {experiments} runs):      {var_of_naive_method:.8f}")
+print(f"Stratified MC Variance (across {experiments} runs): {var_of_stratified_method:.8f}")
+print("-" * 30)
+print(f"Variance Reduction Factor: {var_of_naive_method / var_of_stratified_method:.1f}x")
+
+# --- Visualization (First 50 points) ---
+
+# Plot Standard
+plt.subplot(1, 2, 1)
+u_naive = np.random.uniform(0, 1, 20)
+plt.scatter(u_naive, np.zeros_like(u_naive), color='red', alpha=0.6, s=50)
+plt.title("Standard MC (Clumping & Gaps)")
+plt.yticks([])
+plt.xlim(0, 1)
+plt.grid(axis='x', alpha=0.3)
+
+# Plot Stratified
+plt.subplot(1, 2, 2)
+strata_starts = np.arange(20) / 20
+offsets = np.random.uniform(0, 1/20, 20)
+x_stratified = strata_starts + offsets
+plt.scatter(x_stratified, np.zeros_like(x_stratified), color='green', alpha=0.6, s=50)
+# Draw grid lines to show strata
+for i in range(21):
+    plt.axvline(i/20, color='gray', alpha=0.2)
+plt.title("Stratified Sampling (Even Spread)")
+plt.yticks([])
+plt.xlim(0, 1)
+
+plt.tight_layout()
+plt.show()
+
+```
+
+As can be seen, the variance could be dramatically reduced and, comparing the plots, we can see why: 
+stratified sampling obtains a much more balance distribution for the sampled points than standard MC, where
+the random numbers tend to clump and form gaps.
