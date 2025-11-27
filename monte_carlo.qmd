@@ -900,3 +900,29 @@ In this plot, we have used a logarithmic scale on the $y$-axis to better see sma
 Additionally, a trend line is provided which is the moving average of the errors. As can 
 be seen, the LHS errors are clearly lower than the standard MC errors and the method
 is about 100x more accurate than standard MC using the same number of samples.
+
+### Summary of Variance Reduction Techniques
+
+Variance reduction techniques are essential in Monte Carlo simulations to improve the accuracy of estimates without requiring a significant increase in the number of samples. Below is a summary of the techniques discussed and when to use each:
+
+1. **Antithetic Variates**:
+    - **When to use**: Use when the random variables are symmetric, and you can generate negatively correlated pairs (e.g., sampling $U$ and $1-U$).
+    - **Advantage**: Reduces variance by ensuring that large deviations in one direction are counterbalanced by deviations in the opposite direction.
+
+2. **Control Variates**:
+    - **When to use**: Use when you have a control variable that is highly correlated with the target variable and whose expected value is known.
+    - **Advantage**: Significantly reduces variance by leveraging the known expected value of the control variable to correct the estimate.
+
+3. **Importance Sampling**:
+    - **When to use**: Use when the region of interest in the sampling space is rare or has low probability (e.g., rare events like market crashes).
+    - **Advantage**: Focuses sampling on the important regions of the space, improving efficiency and reducing variance for rare events.
+
+4. **Stratified Sampling**:
+    - **When to use**: Use when the sampling space can be divided into distinct strata, and you want to ensure proportional representation from each stratum.
+    - **Advantage**: Reduces variance by eliminating variability caused by uneven sampling across strata.
+
+5. **Latin Hypercube Sampling (LHS)**:
+    - **When to use**: Use in high-dimensional problems where stratified sampling becomes computationally expensive.
+    - **Advantage**: Ensures that samples are evenly distributed across each dimension, reducing variance in high-dimensional spaces.
+
+Each technique has its strengths and is suited for specific scenarios. By selecting the appropriate method, a significant variance reduction and improved efficiency of the MC simulation can be achieved.
