@@ -739,3 +739,164 @@ plt.show()
 As can be seen, the variance could be dramatically reduced and, comparing the plots, we can see why: 
 stratified sampling obtains a much more balance distribution for the sampled points than standard MC, where
 the random numbers tend to clump and form gaps.
+
+### Latin Hypercube Sampling
+
+The last variance reduction technique we will see is a modification of stratified sampling that comes
+to the rescue in high-dimensional problems: **Latin Hypercube Sampling**. The problem of stratified 
+sampling in higher dimensions is that the number of strata required grows exponentially with the
+dimension of the problem. For instance, if we wish to stratify each dimension using 100 bins, the
+number of strata becomes already prohibitive for e.g. 10 dimensions ($100^{10}$ points would be needed).
+
+Latin hypercube sampling is a clever way to organize the sampling space. The main idea is to
+stratify every single dimension **simultaneously**, but without filling the entire grid. Our goal is
+to sample $n$ points such that, when looking from the perspective of any single dimension, there
+is always exactly one point in every bin. To visualize this, imagine a chess board with 8 rooks, and
+try to place each rook so that *no rook can attack another*.
+
+TODO: visualization
+
+If we now look at each dimension in isolation, there is always exactly one rook in each row/column. The
+advantage is that samples are now spread out maximally across the range of each variable individually, thus
+effectively reducing the variance in higher dimensions.
+
+The method to build a latin hypercube for sampling $n$ points is as follows:
+
+1. Divide the range $[0,1]$ into $n$ equal intervals.
+2. For each dimension, generate a random permutation of the indices $[0,1,\dots,N-1]$.
+3. Based on these permutations, we assign the intervals to the samples.
+4. To avoid each sample to be exactly at the center, we add a random jitter to each point.
+
+```{python}
+import numpy as np
+import matplotlib.pyplot as plt
+
+def latin_hypercube_sampling(n_samples, n_dim):
+    samples = np.zeros((n_samples, n_dim))
+    
+    for d in range(n_dim):
+        permutation = np.random.permutation(n_samples)
+        
+        jitter = np.random.uniform(0, 1, n_samples)
+        
+        samples[:, d] = (permutation + jitter) / n_samples
+        
+    return samples
+```
+
+In two dimensions, this would look like the following:
+
+```{python}
+N = 10 # 10 samples
+D = 2  # 2 dimensions
+
+# Generate Data
+random_samples = np.random.uniform(0, 1, (N, D))
+lhs_samples = latin_hypercube_sampling(N, D)
+
+# Plot 1: Random Sampling
+plt.subplot(1, 2, 1)
+plt.scatter(random_samples[:, 0], random_samples[:, 1], color='red', s=100)
+plt.title("Random Sampling")
+plt.xlim(0, 1); plt.ylim(0, 1)
+# Draw grid to show bins
+for i in range(1, N):
+    plt.axvline(i/N, color='gray', alpha=0.2)
+    plt.axhline(i/N, color='gray', alpha=0.2)
+plt.xlabel("X")
+plt.ylabel("Y")
+
+# Plot 2: Latin Hypercube Sampling
+plt.subplot(1, 2, 2)
+plt.scatter(lhs_samples[:, 0], lhs_samples[:, 1], color='green', s=100)
+plt.title("Latin Hypercube Sampling")
+plt.xlim(0, 1); plt.ylim(0, 1)
+# Draw grid to show bins
+for i in range(1, N):
+    plt.axvline(i/N, color='gray', alpha=0.2)
+    plt.axhline(i/N, color='gray', alpha=0.2)
+plt.xlabel("X")
+plt.ylabel("Y")
+
+plt.tight_layout()
+plt.show()
+```
+
+As can be seen, the points are clearly better organized than in the random sampling case. The jitter adds
+some variability in order not always to fall in the center of each bin.
+
+To conclude, we demonstrate how to calculate a high-dimensional integral using latin hypercube sampling. Let's 
+calculate the integral of the following 5-dimensional function:
+
+$$
+f(\mathbf{x})=\sum_{i=1}^5 x_i^2
+$$
+
+in the interval $[-1,1]$ for each dimension $x_i$. For this, we will use the standard latin hypersquare 
+sampling implementation of the SciPy library ``scipy.stats.qmc``.
+
+```{python}
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.stats import qmc
+
+def target_function(x):
+    return np.sum(x**2, axis=1)
+
+dim = 5
+sample_sizes = np.arange(10, 1000, 10) 
+
+errors_mc = []
+errors_lhs = []
+true_mean = dim * (1/3)
+
+for n in sample_sizes:
+    mc_samples = np.random.uniform(low=-1, high=1, size=(n, dim))
+    mc_results = target_function(mc_samples)
+    mc_estimate = np.mean(mc_results)
+    errors_mc.append(abs(mc_estimate - true_mean))
+
+    sampler = qmc.LatinHypercube(d=dim)
+    lhs_unit = sampler.random(n=n)
+
+    lhs_samples = qmc.scale(lhs_unit, l_bounds=[-1]*dim, u_bounds=[1]*dim)
+    
+    lhs_results = target_function(lhs_samples)
+    lhs_estimate = np.mean(lhs_results)
+    errors_lhs.append(abs(lhs_estimate - true_mean))
+```
+
+Note that the ``LatinHypercube`` sampler outputs samples in the interval 
+$[0,1]$ which need so be scaled to $[-1,1]$ using the scaler ``qmc.scale``. Let's now visualize the results:
+
+```{python}
+plt.semilogy(sample_sizes, errors_mc, color='red', alpha=0.4, label='Standard Monte Carlo Noise')
+plt.semilogy(sample_sizes, errors_lhs, color='green', alpha=0.4, label='LHS Noise')
+
+# Add trendlines (moving average) to make it clearer
+def moving_average(a, n=10) :
+    ret = np.cumsum(a, dtype=float)
+    ret[n:] = ret[n:] - ret[:-n]
+    return ret[n - 1:] / n
+
+plt.semilogy(sample_sizes[9:], moving_average(errors_mc), color='darkred', linewidth=2, label='Standard MC Trend')
+plt.semilogy(sample_sizes[9:], moving_average(errors_lhs), color='darkgreen', linewidth=2, label='LHS Trend')
+
+plt.title(f"Convergence Comparison: LHS vs Standard MC ({dim} Dimensions)")
+plt.xlabel("Number of Samples (Iterations)")
+plt.ylabel("Absolute Error (Log Scale)")
+plt.legend()
+plt.grid(True, which="both", ls="-", alpha=0.2)
+plt.show()
+
+# Final comparison for the largest N
+print(f"Final Error (N={sample_sizes[-1]}):")
+print(f"Standard MC Error: {errors_mc[-1]:.6f}")
+print(f"LHS Error:         {errors_lhs[-1]:.6f}")
+print(f"Improvement Factor: {errors_mc[-1]/errors_lhs[-1]:.1f}x more accurate")
+```
+
+In this plot, we have used a logarithmic scale on the $y$-axis to better see small errors. 
+Additionally, a trend line is provided which is the moving average of the errors. As can 
+be seen, the LHS errors are clearly lower than the standard MC errors and the method
+is about 100x more accurate than standard MC using the same number of samples.
