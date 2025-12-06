@@ -287,7 +287,7 @@ print(f"Estimate: {mu:.4f}")
 print(f"95% CI:   [{lower:.4f}, {upper:.4f}]")
 ```
 
-## Variance Reduction Techniques
+## Variance Reduction Techniques {#sec-var-reduction}
 
 Until now, we have considered situations where sampling the probability space is effective. For 
 instance, in the $\pi$ calculation example, we are sampling points $(x,y)$ from a 
@@ -926,3 +926,74 @@ Variance reduction techniques are essential in Monte Carlo simulations to improv
     - **Advantage**: Ensures that samples are evenly distributed across each dimension, reducing variance in high-dimensional spaces.
 
 Each technique has its strengths and is suited for specific scenarios. By selecting the appropriate method, a significant variance reduction and improved efficiency of the MC simulation can be achieved.
+
+## Markov Chain Monte Carlo
+
+Until now, all methods for standard Monte Carlo that we have seen so far rely explicitly on the
+However, in many practical scenarios, generating independent samples directly from the target distribution is either computationally expensive or infeasible. This is where **Markov Chain Monte Carlo (MCMC)** methods come into play. MCMC methods allow us to sample from complex distributions by constructing a Markov chain whose stationary distribution matches the target distribution.
+
+The key idea is to design a Markov chain that "explores" the target distribution efficiently, even if the samples are not independent. Over time, the chain converges to the target distribution, and we can use the samples generated to approximate expectations.
+
+In the next sections, we will explore the foundations of MCMC, including the **Metropolis-Hastings** algorithm and **Gibbs sampling**, two of the most widely used MCMC techniques.
+
+### Motivation for MCMC
+
+Imagine that we want to map the mountain peaks on a mountain range that is covered in thick fog. We have
+basically two options:
+
+1. A helicopter drops thousands of hikers at completely random coordinates in a 100 km area. As a result,
+99% of them land in the valleys or the ocean. Only a few luck out and land on a peak. This is the approach 
+used by standard MC.
+
+2. We drop only **one** hiker, which follows the following rule: 
+    - Pick a random direction and check the altitude of that spot.
+    - If the new spot is higher, **move there**.
+    - If it's lower, move there only with a given **probability**. 
+
+The last approach encompasses the main idea of MCMC: If the hiker only moved up, they would get stuck on the very top of the first tiny hill they found (local maximum). By occasionally accepting downward steps, the hiker can traverse valleys to find the massive mountains on the other side. After 10,000 (simulation) steps, if we look at a map of where the hiker has been, the density of their footprints will perfectly match the elevation map of the mountain range.
+
+Note that it's not just that the mountain pikes are concentrated in a rather small volume: the main issue in this case is rather that it is  
+challenging to sample from the target distribution directly. MCMC methods provide a way to approximate the target distribution by constructing a **Markov chain** that explores the space iteratively. Over time, the chain converges to the desired distribution, allowing us to estimate expectations and probabilities effectively.
+
+### When do we apply MCMC?
+
+As mentioned early, MCMC is particularly useful in scenarios where direct sampling from the target distribution is challenging or computationally expensive. Some common situations where MCMC is applied include:
+
+1. **High-dimensional distributions**: When the target distribution exists in a high-dimensional space, direct sampling becomes infeasible due to the curse of dimensionality. We already mentioned similar situations for some variance
+reduction methods in @sec-var-reduction.
+
+2. **Complex or unknown normalizing constants**: In Bayesian inference, posterior distributions often involve a normalizing constant that is difficult to compute. That is a distribution of the form:
+
+$$
+p(x)=\frac{f(x)}{Z}
+$$
+
+where $Z$ is a normalization constant required to make probabilities sum up to 1. In essence, $Z$ represents
+the integral of $f(x)$ over the entire domain. However this integral might be impossible to calculate. This is
+especially relevant in Bayesian inference when calculating the posterior distribution of a parameter of interest given the available data:
+
+$$
+p(\theta|D)=\frac{p(D|\theta)p(\theta)}{p(D)}
+$$
+
+where the normalization constant $p(D)$ is usually written as:
+
+$$
+p(D)=\int p(D|\theta)p(\theta)d\theta
+$$
+
+This integral is usually intractable, either because of the high dimensionality of $\theta$ (think e.g. of neural network weights) or because there is no closed form solution. MCMC allows sampling without explicitly calculating this constant, as we will see shortly.
+
+3. **Non-standard distributions**: When the target distribution does not have a closed-form expression or does not belong to a standard family of distributions.
+
+4. **Rare event probabilities**: When estimating probabilities of rare events, MCMC can efficiently explore the regions of interest.
+
+5. **Integration over complex spaces**: MCMC is used to approximate integrals in cases where the integrand is defined over a complex or irregular domain.
+
+Applications of MCMC include cryptography (deciphering substitution ciphers), detecting gerrymandering in political science, protein folding in computational biology, Bayesian inference in machine learning, and epidemiology.
+
+### Foundations of MCMC
+
+The main idea of MCMC is the following: we want to sample the **target distribution** using a Markov chain where
+the **stationary distibution** is itself the distribution we want to sample from.
+
