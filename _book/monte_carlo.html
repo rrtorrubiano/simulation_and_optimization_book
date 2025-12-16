@@ -309,7 +309,10 @@ window.Quarto = {
   <li><a href="#motivation-for-mcmc" id="toc-motivation-for-mcmc" class="nav-link" data-scroll-target="#motivation-for-mcmc"><span class="header-section-number">3.4.1</span> Motivation for MCMC</a></li>
   <li><a href="#when-do-we-apply-mcmc" id="toc-when-do-we-apply-mcmc" class="nav-link" data-scroll-target="#when-do-we-apply-mcmc"><span class="header-section-number">3.4.2</span> When do we apply MCMC?</a></li>
   <li><a href="#foundations-of-mcmc" id="toc-foundations-of-mcmc" class="nav-link" data-scroll-target="#foundations-of-mcmc"><span class="header-section-number">3.4.3</span> Foundations of MCMC</a></li>
+  <li><a href="#metropolis-hastings" id="toc-metropolis-hastings" class="nav-link" data-scroll-target="#metropolis-hastings"><span class="header-section-number">3.4.4</span> Metropolis-Hastings</a></li>
   </ul></li>
+  <li><a href="#chapter-summary" id="toc-chapter-summary" class="nav-link" data-scroll-target="#chapter-summary"><span class="header-section-number">3.5</span> Chapter Summary</a></li>
+  <li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises"><span class="header-section-number">3.6</span> Exercises</a></li>
   </ul>
 </nav>
     </div>
@@ -365,7 +368,7 @@ Figure&nbsp;3.1: Example of Monte-Carlo simulation to calculate <span class="mat
 </figure>
 </div>
 <p>Let’s use some code to make this more concrete:</p>
-<div id="6497893a" class="cell" data-execution_count="1">
+<div id="07b7b86e" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> random</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> math</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -395,8 +398,8 @@ Figure&nbsp;3.1: Example of Monte-Carlo simulation to calculate <span class="mat
 <span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> <span class="dv">100000</span>  <span class="co"># 100,000 darts</span></span>
 <span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>estimated_pi <span class="op">=</span> estimate_pi_monte_carlo(N)</span>
 <span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>estimated_pi</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="1">
-<pre><code>3.1358</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="71">
+<pre><code>3.1516</code></pre>
 </div>
 </div>
 <p>In this code, we make use of the modeling fact that points <span class="math inline">\((x,y)\)</span> inside of the circle satisfy <span class="math inline">\(x^2+y^2\le 1\)</span>.</p>
@@ -501,7 +504,7 @@ s=\sqrt{\frac{1}{n-1}\sum_{i=1}^n (X_i - \bar{X}_n)}
 CI=\bar{X}_n \pm \left(z_{\alpha/2}\times\frac{s}{\sqrt{n}}\right)
 \]</span></p>
 <p>where <span class="math inline">\(z_{\alpha/2}\)</span> represents the <span class="math inline">\(\alpha/2\)</span>-level quantile of the standard normal distribution. As an example, consider the following implementation for the estimate of <span class="math inline">\(\pi\)</span> using Python code:</p>
-<div id="2e29a782" class="cell" data-execution_count="2">
+<div id="3a2639ee" class="cell" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy.stats <span class="im">as</span> stats</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -532,8 +535,8 @@ CI=\bar{X}_n \pm \left(z_{\alpha/2}\times\frac{s}{\sqrt{n}}\right)
 <span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Estimate: </span><span class="sc">{</span>mu<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
 <span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"95% CI:   [</span><span class="sc">{</span>lower<span class="sc">:.4f}</span><span class="ss">, </span><span class="sc">{</span>upper<span class="sc">:.4f}</span><span class="ss">]"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Estimate: 3.0936
-95% CI:   [3.0608, 3.1264]</code></pre>
+<pre><code>Estimate: 3.1468
+95% CI:   [3.1147, 3.1789]</code></pre>
 </div>
 </div>
 </section>
@@ -580,7 +583,7 @@ I=\int_0^1 e^{x^2} dx
 \int_0^1 (1+x^2)dx = \left[x+\frac{x^3}{3}\right]_0^1=1+\frac{1}{3}=1.3333\dots
 \]</span></p>
 <p>We will now estimate both quantities in the same loop to calculate the controlled estimate.</p>
-<div id="e73504e9" class="cell" data-execution_count="3">
+<div id="e5a8cb76" class="cell" data-execution_count="3">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -617,7 +620,7 @@ I=\int_0^1 e^{x^2} dx
 <span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a>    }</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Let’s now run the code for 10000 iterations and compare the results:</p>
-<div id="6d85a30b" class="cell" data-execution_count="4">
+<div id="31e66a0c" class="cell" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> <span class="dv">10000</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>results <span class="op">=</span> simulation_control_variates(N)</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -640,14 +643,14 @@ I=\int_0^1 e^{x^2} dx
 <div class="cell-output cell-output-stdout">
 <pre><code>--- Results with N=10,000 ---
 True Value:               1.462652
-Naive MC Estimate:        1.463533 (Error: 0.000881)
-Control Variate Estimate: 1.462186 (Error: 0.000466)
+Naive MC Estimate:        1.461851 (Error: 0.000800)
+Control Variate Estimate: 1.462823 (Error: 0.000171)
 
 --- Variance Analysis ---
 Correlation (X, Y):       0.9915
-Naive Variance:           0.224226
-CV Variance:              0.003780
-Variance Reduction:       59.3x lower variance</code></pre>
+Naive Variance:           0.225745
+CV Variance:              0.003822
+Variance Reduction:       59.1x lower variance</code></pre>
 </div>
 </div>
 <p>As can be seen, the variance reduction achieved by the control variates method is in this case around 60x, which means that running 10,000 iterations using the control variates method is <em>as good as running classical MC with 600,000 iterations</em>.</p>
@@ -655,7 +658,7 @@ Variance Reduction:       59.3x lower variance</code></pre>
 <section id="importance-sampling" class="level3" data-number="3.3.3">
 <h3 data-number="3.3.3" class="anchored" data-anchor-id="importance-sampling"><span class="header-section-number">3.3.3</span> Importance sampling</h3>
 <p>The next method is used in cases where the region of interest in the sampling space is very small, i.e.&nbsp;the events we try to simulate are very rare. Imagine we want to estimate the probability for a market crash. If we simulate the market for 1,000,000 times, we might still miss all crash events (e.g.&nbsp;if the market crash is considered to be a five-sigma event, its probability amounts to about 1 in 3.5 million). Therefore, standard MC would come up with a probability of 0, which is incorrect.</p>
-<p>Instead of that, we sample from a probability distribution where markt crashes are common. The good news is that now, we will have plenty of points to work with. However, by doing this we introduce a significant bias in the simulation, so our result will not be correct. The trick used by <strong>importance sampling</strong> is to “un-bias” the simulation by assigning a <em>weight</em> to each sample which is basically proportional to its <em>likelihood</em>. Samples which are more likely according to the original distribution will get a high weight, whereas rare samples will be assigned a low weight.</p>
+<p>Instead of that, we sample from a probability distribution where market crashes are common. The good news is that now, we will have plenty of points to work with. However, by doing this we introduce a significant bias in the simulation, so our result will not be correct. The trick used by <strong>importance sampling</strong> is to “un-bias” the simulation by assigning a <em>weight</em> to each sample which is basically proportional to its <em>likelihood</em>. Samples which are more likely according to the original distribution will get a higher weight, whereas rare samples will be assigned a low weight.</p>
 <p>More formally, we want to calculate the expectation of a function of a random variable <span class="math inline">\(f(x)\)</span> under a probability distribution characterized by its pdf <span class="math inline">\(p(x)\)</span>.</p>
 <p><span class="math display">\[
 E_p[f(x)]=\int f(x)p(x)dx
@@ -669,11 +672,11 @@ E_p[f(x)]=\int f(x)p(x)dx
 \int f(x)\frac{p(x)}{q(x)}q(x)dx=E_q\left[f(x)\frac{p(x)}{q(x)}\right]
 \]</span></p>
 <p>which is the result of <em>weighting</em> <span class="math inline">\(f(x)\)</span> by a factor given by the quotient <span class="math inline">\(p(x)/q(x)\)</span>. This results in the estimator:</p>
-<p><span class="math display">\[
+<p><span id="eq-importance-sampling"><span class="math display">\[
 \hat{I}=\frac{1}{n}\sum_{i=1}^n f(x_i)\cdot\frac{p(x_i)}{q(x_i)}=\frac{1}{n}\sum_{i=1}^n w_i f(x_i)
-\]</span></p>
+\tag{3.8}\]</span></span></p>
 <p>Note that our samples now come from <span class="math inline">\(q(x)\)</span> instead of <span class="math inline">\(p(x)\)</span> (because we sample from the biased distribution). Let’s now consider as an example a five-sigma event under a standard normal distribution governed by the probability <span class="math inline">\(P(X&gt;5)\)</span>, where the true probability is about <span class="math inline">\(2.87\times 10^{-7}\)</span>. In the real world, the true probability distribution is <span class="math inline">\(N(0,1)\)</span>. Now we can sample from a biased distribution by moving the mean: <span class="math inline">\(N(5,1)\)</span>. In this distribution, events <span class="math inline">\(X&gt;5\)</span> happen roughly 50% of the time.</p>
-<div id="8dadca1a" class="cell" data-execution_count="5">
+<div id="676654ce" class="cell" data-execution_count="5">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy.stats <span class="im">as</span> stats</span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
@@ -705,7 +708,7 @@ E_p[f(x)]=\int f(x)p(x)dx
 <span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> prob_naive, var_naive, prob_is, var_is</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>In this code, we compare the probability estimates and the variances obtained by standard MC and importance sampling.</p>
-<div id="023ae16b" class="cell" data-execution_count="6">
+<div id="b7ffe756" class="cell" data-execution_count="6">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> <span class="dv">10000</span> <span class="co"># Only 10,000 samples (Small for a rare event!)</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>target <span class="op">=</span> <span class="dv">5</span></span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -729,8 +732,8 @@ E_p[f(x)]=\int f(x)p(x)dx
 True Probability: 0.0000002867
 Naive MC Estimate: 0.0000000000
 Naive Variance:    0.0000000000 (Likely zero if no hits occurred)
-Imp. Samp Estimate:0.0000002848
-Imp. Samp Variance:0.00000000000000004656
+Imp. Samp Estimate:0.0000002871
+Imp. Samp Variance:0.00000000000000004675
 Naive method failed completely (0 hits). Importance Sampling is infinitely better here.</code></pre>
 </div>
 </div>
@@ -749,7 +752,7 @@ Naive method failed completely (0 hits). Importance Sampling is infinitely bette
 <p>In order to calculate the variance, we use the <em>law of total variance</em> to decompose it into:</p>
 <p><span id="eq-total-var"><span class="math display">\[
 \sigma^2=\operatorname{Var}(Y)=E[\operatorname{Var}(Y|S)]+\operatorname{Var}(E[Y|S])
-\tag{3.8}\]</span></span></p>
+\tag{3.9}\]</span></span></p>
 <p>In this decomposition, the first term on the right-hand side <span class="math inline">\(E[\operatorname{Var}(Y|S)]\)</span> represents the <em>mean variance</em> of the strata, or the variation <em>within strata</em>. The second term <span class="math inline">\(\operatorname{Var}(E[Y|S])\)</span> represents the <em>variance</em> of the mean values of the strata, which can be seen as a measure of the variation <em>between</em> strata.</p>
 <p><span class="math display">\[
 \begin{aligned}
@@ -784,7 +787,7 @@ Naive method failed completely (0 hits). Importance Sampling is infinitely bette
 <p>In summary, stratified sampling using proportional strata is always equal to or better than standard sampling because it eliminates the variance caused by the variability in sampling proportions across strata with different means.</p>
 <p><strong>Example</strong></p>
 <p>As an example, let’s integrate <span class="math inline">\(f(x)=e^x\)</span> in the interval <span class="math inline">\([0,1]\)</span>. For this, we will define <span class="math inline">\(H\)</span> equally-spaced strata in this interval.</p>
-<div id="29911bd3" class="cell" data-execution_count="7">
+<div id="c3cabb95" class="cell" data-execution_count="7">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -805,7 +808,7 @@ Naive method failed completely (0 hits). Importance Sampling is infinitely bette
 <span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> est_naive, est_stratified</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>We now run the experiment multiple times to determine the variance of the method. Because stratified samples are not iid, we need to repeat the experiment to get an estimate of its variance:</p>
-<div id="b6410aa7" class="cell" data-execution_count="8">
+<div id="b7da89b5" class="cell" data-execution_count="8">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>experiments <span class="op">=</span> <span class="dv">1000</span></span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> <span class="dv">100</span> <span class="co"># Samples per experiment</span></span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -859,10 +862,10 @@ Naive method failed completely (0 hits). Importance Sampling is infinitely bette
 <div class="cell-output cell-output-stdout">
 <pre><code>True Value: 1.718282
 ------------------------------
-Naive MC Variance (across 1000 runs):      0.00227044
-Stratified MC Variance (across 1000 runs): 0.00000030
+Naive MC Variance (across 1000 runs):      0.00233631
+Stratified MC Variance (across 1000 runs): 0.00000027
 ------------------------------
-Variance Reduction Factor: 7553.3x</code></pre>
+Variance Reduction Factor: 8775.3x</code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <div>
@@ -887,7 +890,7 @@ Variance Reduction Factor: 7553.3x</code></pre>
 <li>Based on these permutations, we assign the intervals to the samples.</li>
 <li>To avoid each sample to be exactly at the center, we add a random jitter to each point.</li>
 </ol>
-<div id="86d2a3de" class="cell" data-execution_count="9">
+<div id="c5b3eecf" class="cell" data-execution_count="9">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -904,7 +907,7 @@ Variance Reduction Factor: 7553.3x</code></pre>
 <span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> samples</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>In two dimensions, this would look like the following:</p>
-<div id="403f5349" class="cell" data-execution_count="10">
+<div id="2a5e79af" class="cell" data-execution_count="10">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> <span class="dv">10</span> <span class="co"># 10 samples</span></span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>D <span class="op">=</span> <span class="dv">2</span>  <span class="co"># 2 dimensions</span></span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -952,7 +955,7 @@ Variance Reduction Factor: 7553.3x</code></pre>
 f(\mathbf{x})=\sum_{i=1}^5 x_i^2
 \]</span></p>
 <p>in the interval <span class="math inline">\([-1,1]\)</span> for each dimension <span class="math inline">\(x_i\)</span>. For this, we will use the standard latin hypersquare sampling implementation of the SciPy library <code>scipy.stats.qmc</code>.</p>
-<div id="0acdf9b1" class="cell" data-execution_count="11">
+<div id="41cc5bda" class="cell" data-execution_count="11">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.stats <span class="im">import</span> qmc</span>
@@ -983,7 +986,7 @@ f(\mathbf{x})=\sum_{i=1}^5 x_i^2
 <span id="cb16-28"><a href="#cb16-28" aria-hidden="true" tabindex="-1"></a>    errors_lhs.append(<span class="bu">abs</span>(lhs_estimate <span class="op">-</span> true_mean))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Note that the <code>LatinHypercube</code> sampler outputs samples in the interval <span class="math inline">\([0,1]\)</span> which need so be scaled to <span class="math inline">\([-1,1]\)</span> using the scaler <code>qmc.scale</code>. Let’s now visualize the results:</p>
-<div id="e60f2906" class="cell" data-execution_count="12">
+<div id="062e9ae1" class="cell" data-execution_count="12">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>plt.semilogy(sample_sizes, errors_mc, color<span class="op">=</span><span class="st">'red'</span>, alpha<span class="op">=</span><span class="fl">0.4</span>, label<span class="op">=</span><span class="st">'Standard Monte Carlo Noise'</span>)</span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>plt.semilogy(sample_sizes, errors_lhs, color<span class="op">=</span><span class="st">'green'</span>, alpha<span class="op">=</span><span class="fl">0.4</span>, label<span class="op">=</span><span class="st">'LHS Noise'</span>)</span>
 <span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -1017,9 +1020,9 @@ f(\mathbf{x})=\sum_{i=1}^5 x_i^2
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Final Error (N=990):
-Standard MC Error: 0.010024
-LHS Error:         0.000030
-Improvement Factor: 329.3x more accurate</code></pre>
+Standard MC Error: 0.055892
+LHS Error:         0.000000
+Improvement Factor: 208123.0x more accurate</code></pre>
 </div>
 </div>
 <p>In this plot, we have used a logarithmic scale on the <span class="math inline">\(y\)</span>-axis to better see small errors. Additionally, a trend line is provided which is the moving average of the errors. As can be seen, the LHS errors are clearly lower than the standard MC errors and the method is about 100x more accurate than standard MC using the same number of samples.</p>
@@ -1106,10 +1109,180 @@ p(D)=\int p(D|\theta)p(\theta)d\theta
 </section>
 <section id="foundations-of-mcmc" class="level3" data-number="3.4.3">
 <h3 data-number="3.4.3" class="anchored" data-anchor-id="foundations-of-mcmc"><span class="header-section-number">3.4.3</span> Foundations of MCMC</h3>
-<p>The main idea of MCMC is the following: we want to sample the <strong>target distribution</strong> using a Markov chain where the <strong>stationary distibution</strong> is itself the distribution we want to sample from.</p>
-
-
+<p>The main idea of MCMC is the following: we want to sample the <strong>target distribution</strong> using a Markov chain where the <strong>stationary distibution</strong> is itself the distribution we want to sample from. Let’s denote by <span class="math inline">\(\pi(x)\)</span> our target distribution. The Markov chain we want to find is characterized by a <strong>transition kernel</strong> <span class="math inline">\(T(x'|x)\)</span>. The transition kernel is a generalization for the transition matrix <span class="math inline">\(\mathbf{P}\)</span> that applies for both continuous and discrete-state Markov chains. In the discrete case, <span class="math inline">\(T(j|i)=P_{ij}\)</span>. In the continuous case, <span class="math inline">\(T(x'|x)\)</span> is just the integral of the conditional pdf <span class="math inline">\(f(x'|x)\)</span> over the appropriate domain.</p>
+<p>Now we want to build our kernel in such a way that <span class="math inline">\(\pi(x)\)</span> is the stationary distribution of the chain. This is expressed by:</p>
+<p><span id="eq-mcmc-stationarity"><span class="math display">\[
+\pi(x')=\int T(x'|x) \pi(x) dx
+\tag{3.10}\]</span></span></p>
+<p>This means that when drawing a sample <span class="math inline">\(x\)</span> from <span class="math inline">\(\pi(x)\)</span>, applying the transition rules of the chain also results in a point <span class="math inline">\(x'\)</span> that is distributed according to <span class="math inline">\(\pi\)</span>. Therefore, once that the chain enters the target distribution, it will stay there forever. However, working directly with <a href="#eq-mcmc-stationarity" class="quarto-xref">Equation&nbsp;<span>3.10</span></a> can be challenging, therefore in practice we work with a simpler equilibrium condition (which is stronger than mere stationarity):</p>
+<p><span id="eq-mcmc-equilibrium"><span class="math display">\[
+T(x|x')\pi(x')=T(x'|x)\pi(x)
+\tag{3.11}\]</span></span></p>
+<p>This means that the probability flow between any two points <span class="math inline">\(x,x'\)</span> should remain equal. In summary, when this condition holds, then this implies <a href="#eq-mcmc-stationarity" class="quarto-xref">Equation&nbsp;<span>3.10</span></a> and <span class="math inline">\(\pi\)</span> becomes our stationary distribution as desired. However, we still haven’t any guarantees that the chain, indeed, will converge to <span class="math inline">\(\pi\)</span>. As soon as it does, it will stay there forever, but will it reach that point of no return? To answer this question affirmatively, we need to pose another condition and that is <strong>ergodicity</strong>. In essence, this boils down to the following two critical requirements:</p>
+<ol type="1">
+<li>The chain is <strong>irreducible</strong>: there must be a non-zero probability of reaching a state <span class="math inline">\(x\)</span> from any other state <span class="math inline">\(x'\)</span>. This means that the chain cannot get trapped forever in an isolated environment.</li>
+<li>The chain is <strong>aperiodic</strong>: it must not get stuck in a cycle (i.e.&nbsp;a fixed loop).</li>
+</ol>
+<p>If these two requirements are met, the following theorem (<strong>Ergodic Theorem</strong>) applies: Let <span class="math inline">\(\{X_t\}\)</span> be a Markov chain that is irreducible, aperiodic and has a stationary distribution <span class="math inline">\(\pi\)</span>. Then, for any starting point <span class="math inline">\(X_0\)</span>, we have:</p>
+<p><span id="eq-ergodic-thm"><span class="math display">\[
+\lim_{T\rightarrow\infty} \frac{1}{T}\sum_{t=1}^T g(X_t) = E_\pi \left[ g(X) \right]
+\tag{3.12}\]</span></span></p>
+<p>That is, in the limit the time average of the chain equals the mean of the target distribution.</p>
 </section>
+<section id="metropolis-hastings" class="level3" data-number="3.4.4">
+<h3 data-number="3.4.4" class="anchored" data-anchor-id="metropolis-hastings"><span class="header-section-number">3.4.4</span> Metropolis-Hastings</h3>
+<p>We now focus on a specific algorithm for building a transition kernel <span class="math inline">\(T\)</span> for a Markov chain that fulfills the equilibrium condition <a href="#eq-mcmc-equilibrium" class="quarto-xref">Equation&nbsp;<span>3.11</span></a> and the conditions for ergodicity. For this, a seminal approach is the <strong>Metropolis-Hastings</strong> algorithm. The main idea is to decompose the kernel <span class="math inline">\(T(x'|x)\)</span> into two parts:</p>
+<ol type="1">
+<li>A <strong>proposal</strong> distribution <span class="math inline">\(q(x'|x)\)</span>, which is usually a distribution we know how to sample from (e.g.&nbsp;usually a Gaussian centered at the current state <span class="math inline">\(N(x, \sigma)\)</span>).</li>
+<li>An <strong>acceptance probability</strong> <span class="math inline">\(\alpha(x'|x)\)</span> that expresses the probability that we accept the proposed move.</li>
+</ol>
+<p>So we have:</p>
+<p><span class="math display">\[
+T(x'|x)=\alpha(x'|x)\cdot q(x'|x)
+\]</span></p>
+<p>Let’s substitute this into <a href="#eq-mcmc-equilibrium" class="quarto-xref">Equation&nbsp;<span>3.11</span></a>:</p>
+<p><span id="eq-mcmc-detailed"><span class="math display">\[
+\alpha(x|x')q(x|x')\pi(x')=\alpha(x'|x)q(x'|x)\pi(x)
+\tag{3.13}\]</span></span></p>
+<p>Metropolis-Hastings proposes the following rule to satisfy the previous condition:</p>
+<p><span id="eq-metropolis-hastings"><span class="math display">\[
+\alpha(x'|x)=\min \left(1, \frac{q(x|x')\pi(x')}{q(x'|x)\pi(x)}\right)
+\tag{3.14}\]</span></span></p>
+<p>Because, in principle, this ratio is unbounded, we need to set a ceiling of 1 so that we get a valid probability. One of the main advantages of <a href="#eq-metropolis-hastings" class="quarto-xref">Equation&nbsp;<span>3.14</span></a> is that, since <span class="math inline">\(\pi\)</span> appears both on the numerator and the denominator, any normalization constant <span class="math inline">\(Z\)</span> appearing as <span class="math inline">\(\pi(x)=f(x)/Z\)</span> cancels out, so we don’t need to estimate this constant anymore.</p>
+<p>The algorithm itself involves the following steps:</p>
+<ol type="1">
+<li>Pick an arbitrary strating point <span class="math inline">\(x_0\)</span>.</li>
+<li>For <span class="math inline">\(t=0\)</span> to <span class="math inline">\(T\)</span> (simulation length):
+<ul>
+<li>Sample a candidate <span class="math inline">\(x'\)</span> from the proposal distribution <span class="math inline">\(x'\sim q(x'|x_t)\)</span>.</li>
+<li>Calculate the acceptance probability <span class="math inline">\(\alpha\)</span> according to <a href="#eq-metropolis-hastings" class="quarto-xref">Equation&nbsp;<span>3.14</span></a>.</li>
+<li>Generate a uniform random number <span class="math inline">\(u\)</span> in the interval <span class="math inline">\([0,1]\)</span>.</li>
+<li>If <span class="math inline">\(u\le \alpha\)</span>, <strong>accept</strong>: <span class="math inline">\(x_{t+1}=x'\)</span>.</li>
+<li>Otherwise, <strong>reject</strong>: <span class="math inline">\(x_{t+1}=x_t\)</span>.</li>
+</ul></li>
+</ol>
+<p><strong>Why Metropolis-Hastings works</strong></p>
+<p>Let’s take a closer look at <a href="#eq-metropolis-hastings" class="quarto-xref">Equation&nbsp;<span>3.14</span></a>, and why it satisfies <a href="#eq-mcmc-equilibrium" class="quarto-xref">Equation&nbsp;<span>3.11</span></a>. We can divide the ratio into the following parts:</p>
+<p><span class="math display">\[
+\alpha=\min\left(1, \underbrace{\frac{\pi(x')}{\pi(x)}}_\text{Likelihood Ratio}\times\underbrace{\frac{q(x|x')}{q(x'|x)}}_\text{Correction Factor}\right)
+\]</span></p>
+<p>The likelihood ratio <span class="math inline">\(\pi(x')/\pi(x)\)</span> measures how much better the new sampled point <span class="math inline">\(x'\)</span> is in relation to the current one <span class="math inline">\(x\)</span>. When this ratio is greater than 1, this means that the new point has a higher probability density than the previous one, and we would normally accept.</p>
+<p>The correction factor <span class="math inline">\(q(x|x')/q(x'|x)\)</span> ensures that, in case the proposal is not symmetric, the simulation is not biased towards specific high-probability regions by correcting for the imbalance (i.e.&nbsp;<span class="math inline">\(q(x'|x)\)</span> is very large).</p>
+<p>Now let’s denote the combined ratio by <span class="math inline">\(r\)</span>, so <span class="math inline">\(\alpha=\min(1,r)\)</span> and focus on the detailed balance condition (<a href="#eq-mcmc-detailed" class="quarto-xref">Equation&nbsp;<span>3.13</span></a>), which states the the flow from <span class="math inline">\(x\rightarrow x'\)</span> should be equal than the flow <span class="math inline">\(x'\rightarrow x\)</span>.</p>
+<ul>
+<li>If <span class="math inline">\(r\ge 1\)</span>, we get <span class="math inline">\(\alpha(x'|x)=1\)</span>. Additionally, <span class="math inline">\(\alpha(x|x')\)</span> is <span class="math inline">\(1/r\)</span>, which amounts to <span class="math inline">\(\pi(x)q(x'|x)/\pi(x')q(x|x')\)</span>. Substituting in <a href="#eq-mcmc-detailed" class="quarto-xref">Equation&nbsp;<span>3.13</span></a> we get:</li>
+</ul>
+<p><span class="math display">\[
+\frac{\pi(x)q(x'|x)}{\pi(x')q(x|x')}\cdot q(x|x')\pi(x')=1\cdot q(x'|x)\pi(x)
+\]</span></p>
+<p>which is clearly satisfied.</p>
+<ul>
+<li>If <span class="math inline">\(r&lt;1\)</span>, we have that the minimum is less than 1, and therefore <span class="math inline">\(\alpha(x'|x)=\pi(x')q(x|x')/\pi(x)q(x'|x)\)</span>. For <span class="math inline">\(\alpha(x|x')\)</span>, we have <span class="math inline">\(1/r&gt;1\)</span> and therefore <span class="math inline">\(\alpha(x|x')=1\)</span>. Substituting in <a href="#eq-mcmc-detailed" class="quarto-xref">Equation&nbsp;<span>3.13</span></a> we get:</li>
+</ul>
+<p><span class="math display">\[
+1\cdot q(x|x')\pi(x')=\frac{\pi(x')q(x|x')}{\pi(x)q(x'|x)}\cdot q(x'|x)\pi(x)
+\]</span></p>
+<p>which is also satisfied.</p>
+<p><strong>Example</strong></p>
+<p>Let’s sample from a bimodal distribution which is a mixture of two Gaussians. Without MCMC, classical algorithms would frequently get stuck in one peak or the other. For instance, <span class="math inline">\(\pi(x)=0.3 N(-2,1) +
+0.7 N(2,1)\)</span>.</p>
+<div id="5ed01c97" class="cell" data-execution_count="13">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy.stats <span class="im">as</span> stats</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> target_pdf(x):</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="fl">0.3</span> <span class="op">*</span> stats.norm.pdf(x, loc<span class="op">=-</span><span class="dv">2</span>, scale<span class="op">=</span><span class="dv">1</span>) <span class="op">+</span> <span class="op">\</span></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>           <span class="fl">0.7</span> <span class="op">*</span> stats.norm.pdf(x, loc<span class="op">=</span><span class="dv">2</span>, scale<span class="op">=</span><span class="fl">0.5</span>)</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> proposal_pdf(x, current_x, step_size):</span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> stats.norm.pdf(x, loc<span class="op">=</span>current_x, scale<span class="op">=</span>step_size)</span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> propose(current_x, step_size):</span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.random.normal(current_x, step_size)</span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> metropolis_hastings(n_samples, initial_x, step_size):</span>
+<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a>    samples <span class="op">=</span> [initial_x]</span>
+<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a>    current_x <span class="op">=</span> initial_x</span>
+<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a>    accepted_count <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb19-20"><a href="#cb19-20" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(n_samples):</span>
+<span id="cb19-21"><a href="#cb19-21" aria-hidden="true" tabindex="-1"></a>        proposed_x <span class="op">=</span> propose(current_x, step_size)</span>
+<span id="cb19-22"><a href="#cb19-22" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb19-23"><a href="#cb19-23" aria-hidden="true" tabindex="-1"></a>        p_current <span class="op">=</span> target_pdf(current_x)</span>
+<span id="cb19-24"><a href="#cb19-24" aria-hidden="true" tabindex="-1"></a>        p_proposed <span class="op">=</span> target_pdf(proposed_x)</span>
+<span id="cb19-25"><a href="#cb19-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-26"><a href="#cb19-26" aria-hidden="true" tabindex="-1"></a>        correction <span class="op">=</span> proposal_pdf(current_x, proposed_x, step_size) <span class="op">/</span> <span class="op">\</span></span>
+<span id="cb19-27"><a href="#cb19-27" aria-hidden="true" tabindex="-1"></a>            proposal_pdf(proposed_x, current_x, step_size)</span>
+<span id="cb19-28"><a href="#cb19-28" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb19-29"><a href="#cb19-29" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> p_current <span class="op">==</span> <span class="dv">0</span>:</span>
+<span id="cb19-30"><a href="#cb19-30" aria-hidden="true" tabindex="-1"></a>            ratio <span class="op">=</span> <span class="dv">1</span> </span>
+<span id="cb19-31"><a href="#cb19-31" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>:</span>
+<span id="cb19-32"><a href="#cb19-32" aria-hidden="true" tabindex="-1"></a>            ratio <span class="op">=</span> (p_proposed <span class="op">/</span> p_current) <span class="op">*</span> correction</span>
+<span id="cb19-33"><a href="#cb19-33" aria-hidden="true" tabindex="-1"></a>            </span>
+<span id="cb19-34"><a href="#cb19-34" aria-hidden="true" tabindex="-1"></a>        alpha <span class="op">=</span> <span class="bu">min</span>(<span class="dv">1</span>, ratio)</span>
+<span id="cb19-35"><a href="#cb19-35" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb19-36"><a href="#cb19-36" aria-hidden="true" tabindex="-1"></a>        u <span class="op">=</span> np.random.uniform(<span class="dv">0</span>, <span class="dv">1</span>)</span>
+<span id="cb19-37"><a href="#cb19-37" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> u <span class="op">&lt;=</span> alpha:</span>
+<span id="cb19-38"><a href="#cb19-38" aria-hidden="true" tabindex="-1"></a>            current_x <span class="op">=</span> proposed_x</span>
+<span id="cb19-39"><a href="#cb19-39" aria-hidden="true" tabindex="-1"></a>            accepted_count <span class="op">+=</span> <span class="dv">1</span></span>
+<span id="cb19-40"><a href="#cb19-40" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>:</span>
+<span id="cb19-41"><a href="#cb19-41" aria-hidden="true" tabindex="-1"></a>            <span class="cf">pass</span> </span>
+<span id="cb19-42"><a href="#cb19-42" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb19-43"><a href="#cb19-43" aria-hidden="true" tabindex="-1"></a>        samples.append(current_x)</span>
+<span id="cb19-44"><a href="#cb19-44" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb19-45"><a href="#cb19-45" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.array(samples), accepted_count <span class="op">/</span> n_samples</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Now let’s run a simulation for 10,000 steps.</p>
+<div id="06357062" class="cell" data-execution_count="14">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> <span class="dv">10000</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>start_x <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>step_size <span class="op">=</span> <span class="fl">2.0</span> </span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>samples, acc_rate <span class="op">=</span> metropolis_hastings(N, start_x, step_size)</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>plt.subplot(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">1</span>)</span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>plt.plot(samples, alpha<span class="op">=</span><span class="fl">0.5</span>, lw<span class="op">=</span><span class="fl">0.5</span>)</span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="ss">f"Trace Plot (Acceptance Rate: </span><span class="sc">{</span>acc_rate<span class="sc">:.2f}</span><span class="ss">)"</span>)</span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"Iteration"</span>)</span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"Value of X"</span>)</span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Histogram vs True Density</span></span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a>plt.subplot(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">2</span>)</span>
+<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Histogram of MCMC samples</span></span>
+<span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a>plt.hist(samples, bins<span class="op">=</span><span class="dv">50</span>, density<span class="op">=</span><span class="va">True</span>, alpha<span class="op">=</span><span class="fl">0.6</span>, color<span class="op">=</span><span class="st">'g'</span>, label<span class="op">=</span><span class="st">'MCMC Samples'</span>)</span>
+<span id="cb20-17"><a href="#cb20-17" aria-hidden="true" tabindex="-1"></a><span class="co"># True curve</span></span>
+<span id="cb20-18"><a href="#cb20-18" aria-hidden="true" tabindex="-1"></a>x_range <span class="op">=</span> np.linspace(<span class="op">-</span><span class="dv">6</span>, <span class="dv">6</span>, <span class="dv">1000</span>)</span>
+<span id="cb20-19"><a href="#cb20-19" aria-hidden="true" tabindex="-1"></a>plt.plot(x_range, target_pdf(x_range), <span class="st">'r-'</span>, lw<span class="op">=</span><span class="dv">2</span>, label<span class="op">=</span><span class="st">'True Target'</span>)</span>
+<span id="cb20-20"><a href="#cb20-20" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Estimated Density vs True Target"</span>)</span>
+<span id="cb20-21"><a href="#cb20-21" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
+<span id="cb20-22"><a href="#cb20-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-23"><a href="#cb20-23" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb20-24"><a href="#cb20-24" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="monte_carlo_files/figure-html/cell-15-output-1.png" width="662" height="470" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="chapter-summary" class="level2" data-number="3.5">
+<h2 data-number="3.5" class="anchored" data-anchor-id="chapter-summary"><span class="header-section-number">3.5</span> Chapter Summary</h2>
+<p>In this chapter, we have explored Monte Carlo simulation in detail, including its rationale and several variance reduction techniques to improve simulation accuracy. These techniques include antithetic variates, importance sampling, stratified sampling, and latin hypercube sampling. Additionally, we explored Markov Chain Monte Carlo as a way of simulating specially challenging probability distributions, and took a closer look at the Metropolis-Hastings algorithm as one special way of implementing MCMC.</p>
+</section>
+<section id="exercises" class="level2" data-number="3.6">
+<h2 data-number="3.6" class="anchored" data-anchor-id="exercises"><span class="header-section-number">3.6</span> Exercises</h2>
+<ol type="1">
+<li><p>Prove that for the control variates variance reduction approach, the constant that minimizes the variance is indeed <span class="math inline">\(c^*=\operatorname{Cov}(X,Y)/\operatorname{Var(X)}\)</span>. Hint: Use calculus.</p></li>
+<li><p>Consider the importance sampling variance reduction technique and let <span class="math inline">\(f(x)&gt;0\)</span> be strictly positive. Let the proposal distribution be defined as <span class="math inline">\(q^*(x)=f(x)p(x)/Z\)</span>, where <span class="math inline">\(Z\)</span> is the normalization constant required to make <span class="math inline">\(q^*\)</span> a probability distribution. Note that <span class="math inline">\(Z=\int f(x)p(x)dx\)</span> is exactly the integral we are trying to estimate. Substitute this proposal distribution <span class="math inline">\(q^*\)</span> into <a href="#eq-importance-sampling" class="quarto-xref">Equation&nbsp;<span>3.8</span></a> and explicitly calculate its variance. Explain why this choice of <span class="math inline">\(q^*\)</span> is theoretically optimal.</p></li>
+<li><p>Write a Python script that compares Standard Monte Carlo with stratified sampling for estimating the integral <span class="math inline">\(I=\int_0^1 \frac{1}{1+x}dx\)</span>, whose analytical solution is <span class="math inline">\(\operatorname{ln}(2)\approx 0.693147\)</span>. For stratified sampling, use 10 equally sized strata and print the “Variance Reduction Factor” (Variance of Standard / Variance of Stratified). Do the results align with the theoretical expected result?</p></li>
+<li><p>Implement the Metropolis-Hastings method for sampling from a distribution proportional to the Gamma(3,1) distribution <span class="math inline">\(\pi(x)\propto x^2 e^{-x}\)</span> for <span class="math inline">\(x&gt;0\)</span> and <span class="math inline">\(\pi(x)=0\)</span> for <span class="math inline">\(x\le 0\)</span>. Plot a histogram of your samples against the theoretical curve (normalized) to visually verify convergence and calculate the empirical mean.</p></li>
+</ol>
+
+
 </section>
 
 </main> <!-- /main -->
