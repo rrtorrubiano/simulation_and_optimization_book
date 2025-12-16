@@ -460,12 +460,12 @@ simulate the market for 1,000,000 times, we might still miss all crash events (e
 is considered to be a five-sigma event, its probability amounts to about 1 in 3.5 million). Therefore, 
 standard MC would come up with a probability of 0, which is incorrect.
 
-Instead of that, we sample from a probability distribution where markt crashes are common.
+Instead of that, we sample from a probability distribution where market crashes are common.
 The good news is that now, we will have plenty of points to work with. However, by doing this we introduce 
 a significant bias in the simulation, so our result will not be correct. The trick used by **importance 
 sampling** is to "un-bias" the simulation by assigning a *weight* to each sample which is basically
 proportional to its *likelihood*. Samples which are more likely according to the original distribution will
-get a high weight, whereas rare samples will be assigned a low weight. 
+get a higher weight, whereas rare samples will be assigned a low weight. 
 
 More formally, we want to calculate the expectation of a function of a random variable $f(x)$ under a 
 probability distribution characterized by its pdf $p(x)$.
@@ -492,7 +492,7 @@ in the estimator:
 
 $$
 \hat{I}=\frac{1}{n}\sum_{i=1}^n f(x_i)\cdot\frac{p(x_i)}{q(x_i)}=\frac{1}{n}\sum_{i=1}^n w_i f(x_i)
-$$ 
+$$ {#eq-importance-sampling}
 
 Note that our samples now come from $q(x)$ instead of $p(x)$ (because we sample from the biased distribution).
 Let's now consider as an example a five-sigma event under a standard normal distribution governed
@@ -995,5 +995,229 @@ Applications of MCMC include cryptography (deciphering substitution ciphers), de
 ### Foundations of MCMC
 
 The main idea of MCMC is the following: we want to sample the **target distribution** using a Markov chain where
-the **stationary distibution** is itself the distribution we want to sample from.
+the **stationary distibution** is itself the distribution we want to sample from. Let's denote by $\pi(x)$ our
+target distribution. The Markov chain we want to find is characterized by a **transition kernel** $T(x'|x)$. 
+The transition kernel is a generalization for the transition matrix $\mathbf{P}$ that applies for both
+continuous and discrete-state Markov chains. In the discrete case, $T(j|i)=P_{ij}$. In the continuous case, 
+$T(x'|x)$ is just the integral of the conditional pdf $f(x'|x)$ over the appropriate domain.
 
+Now we want to build our kernel in such a way that $\pi(x)$ is the stationary distribution of the chain. This 
+is expressed by:
+
+$$
+\pi(x')=\int T(x'|x) \pi(x) dx
+$$ {#eq-mcmc-stationarity}
+
+This means that when drawing a sample $x$ from $\pi(x)$, applying the transition rules of the chain 
+also results in a point $x'$ that is distributed according to $\pi$. Therefore, once that the chain enters 
+the target distribution, it will stay there forever. However, working directly with @eq-mcmc-stationarity
+can be challenging, therefore in practice we work with a simpler equilibrium condition (which is
+stronger than mere stationarity):
+
+$$
+T(x|x')\pi(x')=T(x'|x)\pi(x)
+$$ {#eq-mcmc-equilibrium}
+
+This means that the probability flow between any two points $x,x'$ should remain equal. In summary, 
+when this condition holds, then this implies @eq-mcmc-stationarity and $\pi$ becomes our stationary
+distribution as desired. However, we still haven't any guarantees that the chain, indeed, will 
+converge to $\pi$. As soon as it does, it will stay there forever, but will it reach that point of
+no return? To answer this question affirmatively, we need to pose another condition and that is
+**ergodicity**. In essence, this boils down to the following two critical requirements:
+
+1. The chain is **irreducible**: there must be a non-zero probability of reaching a state $x$ from any
+other state $x'$. This means that the chain cannot get trapped forever in an isolated environment.
+2. The chain is **aperiodic**: it must not get stuck in a cycle (i.e. a fixed loop).
+
+If these two requirements are met, the following theorem (**Ergodic Theorem**) applies: Let $\{X_t\}$ be
+a Markov chain that is irreducible, aperiodic and has a stationary distribution $\pi$. Then, for any
+starting point $X_0$, we have:
+
+$$ 
+\lim_{T\rightarrow\infty} \frac{1}{T}\sum_{t=1}^T g(X_t) = E_\pi \left[ g(X) \right]
+$$ {#eq-ergodic-thm}
+
+That is, in the limit the time average of the chain equals the mean of the target distribution.
+
+### Metropolis-Hastings
+
+We now focus on a specific algorithm for building a transition kernel $T$ for a Markov chain that
+fulfills the equilibrium condition @eq-mcmc-equilibrium and the conditions for ergodicity. For this, 
+a seminal approach is the **Metropolis-Hastings** algorithm. The main idea is to decompose the 
+kernel $T(x'|x)$ into two parts:
+
+1. A **proposal** distribution $q(x'|x)$, which is usually a distribution we know how to sample from (e.g. usually a Gaussian centered at the current state $N(x, \sigma)$).
+2. An **acceptance probability** $\alpha(x'|x)$ that expresses the probability that we accept the proposed move. 
+
+So we have:
+
+$$
+T(x'|x)=\alpha(x'|x)\cdot q(x'|x)
+$$
+
+Let's substitute this into @eq-mcmc-equilibrium:
+
+$$
+\alpha(x|x')q(x|x')\pi(x')=\alpha(x'|x)q(x'|x)\pi(x)
+$$ {#eq-mcmc-detailed}
+
+Metropolis-Hastings proposes the following rule to satisfy the previous condition:
+
+$$
+\alpha(x'|x)=\min \left(1, \frac{q(x|x')\pi(x')}{q(x'|x)\pi(x)}\right)
+$$ {#eq-metropolis-hastings}
+
+Because, in principle, this ratio is unbounded, we need to set a ceiling of 1 so that we get a valid probability. One of the main advantages of @eq-metropolis-hastings is that, since $\pi$ appears both 
+on the numerator and the denominator, any normalization constant $Z$ appearing as $\pi(x)=f(x)/Z$ cancels out, 
+so we don't need to estimate this constant anymore.
+
+The algorithm itself involves the following steps:
+
+1. Pick an arbitrary strating point $x_0$.
+2. For $t=0$ to $T$ (simulation length):
+    - Sample a candidate $x'$ from the proposal distribution $x'\sim q(x'|x_t)$.
+    - Calculate the acceptance probability $\alpha$ according to @eq-metropolis-hastings.
+    - Generate a uniform random number $u$ in the interval $[0,1]$.
+    - If $u\le \alpha$, **accept**: $x_{t+1}=x'$.
+    - Otherwise, **reject**: $x_{t+1}=x_t$.
+
+**Why Metropolis-Hastings works**
+
+Let's take a closer look at @eq-metropolis-hastings, and why it satisfies @eq-mcmc-equilibrium. We
+can divide the ratio into the following parts:
+
+$$
+\alpha=\min\left(1, \underbrace{\frac{\pi(x')}{\pi(x)}}_\text{Likelihood Ratio}\times\underbrace{\frac{q(x|x')}{q(x'|x)}}_\text{Correction Factor}\right)
+$$
+
+The likelihood ratio $\pi(x')/\pi(x)$ measures how much better the new sampled point $x'$ is in 
+relation to the current one $x$. When this ratio is greater than 1, this means that the new
+point has a higher probability density than the previous one, and we would normally accept. 
+
+The correction factor $q(x|x')/q(x'|x)$ ensures that, in case the proposal is not symmetric, the 
+simulation is not biased towards specific high-probability regions by correcting for the imbalance
+(i.e. $q(x'|x)$ is very large).
+
+Now let's denote the combined ratio by $r$, so $\alpha=\min(1,r)$ and focus on the detailed balance
+condition (@eq-mcmc-detailed), which states the the flow from $x\rightarrow x'$ should be equal
+than the flow $x'\rightarrow x$.
+
+- If $r\ge 1$, we get $\alpha(x'|x)=1$. Additionally, $\alpha(x|x')$ is $1/r$, which amounts to 
+$\pi(x)q(x'|x)/\pi(x')q(x|x')$. Substituting in @eq-mcmc-detailed we get:
+
+$$
+\frac{\pi(x)q(x'|x)}{\pi(x')q(x|x')}\cdot q(x|x')\pi(x')=1\cdot q(x'|x)\pi(x)
+$$
+
+which is clearly satisfied.
+
+- If $r<1$, we have that the minimum is less than 1, and therefore $\alpha(x'|x)=\pi(x')q(x|x')/\pi(x)q(x'|x)$. For $\alpha(x|x')$, we have $1/r>1$ and therefore $\alpha(x|x')=1$. Substituting in @eq-mcmc-detailed we get:
+
+$$
+1\cdot q(x|x')\pi(x')=\frac{\pi(x')q(x|x')}{\pi(x)q(x'|x)}\cdot q(x'|x)\pi(x)
+$$
+
+which is also satisfied.
+
+**Example**
+
+Let's sample from a bimodal distribution which is a mixture of two Gaussians. Without MCMC, classical 
+algorithms would frequently get stuck in one peak or the other. For instance, $\pi(x)=0.3 N(-2,1) + 
+0.7 N(2,1)$.
+
+```{python}
+import numpy as np
+import matplotlib.pyplot as plt
+import scipy.stats as stats
+
+def target_pdf(x):
+    return 0.3 * stats.norm.pdf(x, loc=-2, scale=1) + \
+           0.7 * stats.norm.pdf(x, loc=2, scale=0.5)
+
+def proposal_pdf(x, current_x, step_size):
+    return stats.norm.pdf(x, loc=current_x, scale=step_size)
+
+def propose(current_x, step_size):
+    return np.random.normal(current_x, step_size)
+
+def metropolis_hastings(n_samples, initial_x, step_size):
+    samples = [initial_x]
+    current_x = initial_x
+    accepted_count = 0
+    
+    for _ in range(n_samples):
+        proposed_x = propose(current_x, step_size)
+        
+        p_current = target_pdf(current_x)
+        p_proposed = target_pdf(proposed_x)
+
+        correction = proposal_pdf(current_x, proposed_x, step_size) / \
+            proposal_pdf(proposed_x, current_x, step_size)
+        
+        if p_current == 0:
+            ratio = 1 
+        else:
+            ratio = (p_proposed / p_current) * correction
+            
+        alpha = min(1, ratio)
+        
+        u = np.random.uniform(0, 1)
+        if u <= alpha:
+            current_x = proposed_x
+            accepted_count += 1
+        else:
+            pass 
+        
+        samples.append(current_x)
+        
+    return np.array(samples), accepted_count / n_samples
+
+```
+
+Now let's run a simulation for 10,000 steps.
+
+```{python}
+N = 10000
+start_x = 0
+step_size = 2.0 
+
+samples, acc_rate = metropolis_hastings(N, start_x, step_size)
+
+plt.subplot(1, 2, 1)
+plt.plot(samples, alpha=0.5, lw=0.5)
+plt.title(f"Trace Plot (Acceptance Rate: {acc_rate:.2f})")
+plt.xlabel("Iteration")
+plt.ylabel("Value of X")
+
+# Histogram vs True Density
+plt.subplot(1, 2, 2)
+# Histogram of MCMC samples
+plt.hist(samples, bins=50, density=True, alpha=0.6, color='g', label='MCMC Samples')
+# True curve
+x_range = np.linspace(-6, 6, 1000)
+plt.plot(x_range, target_pdf(x_range), 'r-', lw=2, label='True Target')
+plt.title("Estimated Density vs True Target")
+plt.legend()
+
+plt.tight_layout()
+plt.show()
+```
+
+## Chapter Summary
+
+In this chapter, we have explored Monte Carlo simulation in detail, including its rationale and
+several variance reduction techniques to improve simulation accuracy. These techniques include antithetic variates, importance sampling, stratified sampling, and latin hypercube sampling.
+Additionally, we explored Markov Chain Monte Carlo as a way of simulating specially challenging probability distributions, and took a closer look at the Metropolis-Hastings algorithm as one special way of implementing MCMC.
+
+## Exercises
+
+1. Prove that for the control variates variance reduction approach, the constant that minimizes the variance is indeed $c^*=\operatorname{Cov}(X,Y)/\operatorname{Var(X)}$. Hint: Use calculus.
+
+2. Consider the importance sampling variance reduction technique and let $f(x)>0$ be strictly positive. Let the
+proposal distribution be defined as $q^*(x)=f(x)p(x)/Z$, where $Z$ is the normalization constant required to make
+$q^*$ a probability distribution. Note that $Z=\int f(x)p(x)dx$ is exactly the integral we are trying to estimate.
+Substitute this proposal distribution $q^*$ into @eq-importance-sampling and explicitly calculate its variance. Explain why this choice of $q^*$ is theoretically optimal.
+
+3. Write a Python script that compares Standard Monte Carlo with stratified sampling for estimating the integral $I=\int_0^1 \frac{1}{1+x}dx$, whose analytical solution is $\operatorname{ln}(2)\approx 0.693147$. For stratified sampling, use 10 equally sized strata and print the "Variance Reduction Factor" (Variance of Standard / Variance of Stratified). Do the results align with the theoretical expected result?
+
+4. Implement the Metropolis-Hastings method for sampling from a distribution proportional to the Gamma(3,1) distribution $\pi(x)\propto x^2 e^{-x}$ for $x>0$ and $\pi(x)=0$ for $x\le 0$. Plot a histogram of your samples against the theoretical curve (normalized) to visually verify convergence and calculate the empirical mean.
