@@ -1,1 +1,32 @@
-# Discrete events {#sec-discrete-events}
+# Discrete events and Queuing Theory {#sec-discrete-events}
+
+## Introduction
+
+In the previous chapters, we have considered mostly continuous simulation approaches. These approaches are
+well suited for situations where systems can be described using simple equations. However, there are situations
+that are either too complex to be modeled in such a way, or too expensive or dangerous to experiment with in the 
+real world. Whether it is a hospital emergency room attempting to reduce patient wait times, 
+a manufacturing plant trying to optimize throughput, or a computer network managing data packets, 
+these systems share a common trait: they change state at specific, irregular points in time. 
+
+Unlike other modeling approaches that view the world as a continuous flow or a static snapshot, 
+**Discrete Event Simulation (DES)** views the world as a sequence of distinct events—arrivals, departures, 
+breakdowns, and completions—that occur at specific instants, triggering changes in the system's state. DES 
+becomes necessary when a system exhibits the following properties:
+
+- The state of the system **evolves over time**. A decision made at time $t$ affects the resources available
+at time $t+1$.
+- Entities (like customers, parts, data) compete for **limited resources** (counters, machines, bandwidth) 
+leading to the formation of *queues*.
+- The system is driven by **randomness**. Customers do not arrive at fixed intervals; machines do not take the exact same amount of time to process every part.
+
+We utilize DES when analytical solutions are mathematically intractable. For example, calculating the average wait time in a bank with one line and one teller is a simple mathematical exercise. However, if that bank has varying arrival rates depending on the time of day, tellers who take lunch breaks, and customers who may leave (balk) if the line is too long, the mathematical formulas break down. DES allows us to mimic this complex reality inside a computer to answer "What if?" questions without disrupting actual operations.
+
+Note that Monte Carlo simulation can be considered in general as **static**. It evaluates a problem at a single point in time or across a timeless dimension. For instance, estimating the value of $\pi$ by dropping distinct pins on a grid is a Monte Carlo experiment. It provides a probabilistic outcome of a specific scenario but does not model how that scenario evolves. By contrast, DES is **dynamic**, creating a history of the system operation over a duration.
+
+The mathematical foundation that represents the basis for DES is called **Queuing Theory**. It underpins the
+computational engine used by DES to solve complex simulation problems. Queuing Theory provides the analytical framework for understanding waiting lines. It offers exact mathematical formulas to predict performance measures such as server utilization or and average waiting times under specific, idealized assumptions (e.g., purely random arrivals and service times).
+
+In this chapter, we will introduce the fundamentals of Queuing Theory that will serve as a framework to 
+understand the principles of DES. While Queuing Theory provides the "laws of physics" for the system at hand,
+DES provides the laboratory in which we experiment with those laws under complex, realistic conditions. 
