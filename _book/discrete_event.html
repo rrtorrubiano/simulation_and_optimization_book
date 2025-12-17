@@ -250,6 +250,10 @@ window.Quarto = {
    
   <ul>
   <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="header-section-number">4.1</span> Introduction</a></li>
+  <li><a href="#queuing-theory" id="toc-queuing-theory" class="nav-link" data-scroll-target="#queuing-theory"><span class="header-section-number">4.2</span> Queuing Theory</a>
+  <ul class="collapse">
+  <li><a href="#anatomy-of-a-queuing-system" id="toc-anatomy-of-a-queuing-system" class="nav-link" data-scroll-target="#anatomy-of-a-queuing-system"><span class="header-section-number">4.2.1</span> Anatomy of a Queuing System</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -288,8 +292,29 @@ window.Quarto = {
 <p>Note that Monte Carlo simulation can be considered in general as <strong>static</strong>. It evaluates a problem at a single point in time or across a timeless dimension. For instance, estimating the value of <span class="math inline">\(\pi\)</span> by dropping distinct pins on a grid is a Monte Carlo experiment. It provides a probabilistic outcome of a specific scenario but does not model how that scenario evolves. By contrast, DES is <strong>dynamic</strong>, creating a history of the system operation over a duration.</p>
 <p>The mathematical foundation that represents the basis for DES is called <strong>Queuing Theory</strong>. It underpins the computational engine used by DES to solve complex simulation problems. Queuing Theory provides the analytical framework for understanding waiting lines. It offers exact mathematical formulas to predict performance measures such as server utilization or and average waiting times under specific, idealized assumptions (e.g., purely random arrivals and service times).</p>
 <p>In this chapter, we will introduce the fundamentals of Queuing Theory that will serve as a framework to understand the principles of DES. While Queuing Theory provides the “laws of physics” for the system at hand, DES provides the laboratory in which we experiment with those laws under complex, realistic conditions.</p>
+</section>
+<section id="queuing-theory" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="queuing-theory"><span class="header-section-number">4.2</span> Queuing Theory</h2>
+<p>Before we can build a valid discrete simulation model, we must understand the mathematical logic that governs the flow of entities. Queuing Theory is the study of waiting lines. It provides a set of analytical techniques used to describe the behavior of systems where entities arrive, wait for a resource, receive service, and depart. While we often associate queues with negative experiences—standing in line at a grocery store or waiting on hold for customer support—queuing theory views the queue not as a nuisance, but as a buffer. It is a necessary component that manages the mismatch between the irregular demand for service and the limited capacity to provide it. The fundamental goal of queuing theory is to quantify the trade-off between the cost of providing service (adding more servers) and the cost of waiting (lost time or unhappy customers).</p>
+<section id="anatomy-of-a-queuing-system" class="level3" data-number="4.2.1">
+<h3 data-number="4.2.1" class="anchored" data-anchor-id="anatomy-of-a-queuing-system"><span class="header-section-number">4.2.1</span> Anatomy of a Queuing System</h3>
+<p>We now decompose a queueing system into its basic constituent processes: the arrival, the queue and the service mechanism.</p>
+<ul>
+<li>The <strong>arrival process</strong> defines how entities appear. In most queuing models, we assume that arrivals are random and measure them using the <em>interarrival time</em>, which is the time elapsed between two consecutive arrivals.</li>
+<li>The <strong>queuing mechanism</strong> defines how the holding area looks like where entities wait for service. This queue might have finite or infinite capacity, and function according to a specific principle or set of rules. The most common is a First-In, First-Out (FIFO) mechanism, where the first entity that arrived at the queue will get service first, and all other entities will advance by one place on the waiting line. However, other (less frequent) mechanisms might be used like LIFO (Last-In, Fist-Out), SIRO (Service In Random Order) or some other Priority schemes.</li>
+<li>The <strong>service mechanism</strong> defines how entities are processed, e.g.&nbsp;in a serial way (only one server) or with several concurrent servers. Additionally, this mechanism is characterized by a <em>service time</em>, which is usually stochastic as well.</li>
+</ul>
+<p><strong>Revisiting the Supermarket</strong></p>
+<p>Coming back to the supermarket example of <a href="intro.html" class="quarto-xref"><span>Chapter 1</span></a>, we can now identify the system’s components as follows:</p>
+<ul>
+<li><strong>Arrival:</strong> Customers arrive randomly following exponentially distributed interarrival times.</li>
+<li><strong>Queueing mechanism:</strong> Customers are put into an infinite waiting room (the queue has infinite capacity) and they are served sequentially, using a FIFO mechanism.</li>
+<li><strong>Service:</strong> Once that the customers arrive at checkout, they are serviced by the next available of <span class="math inline">\(c\)</span> cashiers. Service times are exponentially distributed.</li>
+</ul>
+<p>In general, Queuing Theory provides a mathematical framework for ideal systems which can be handled analytically. However, this is not always the case. For these cases, DES offers a mechanistic approach to perform realistic system simulations. Nevertheless, Queuing Theory can also be used in this cases to provide a calibration benchmark or a “sanity check” for a simulation study by simplifying the model and checking that the results of the DES are the same than the ones predicted by the theory.</p>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->
