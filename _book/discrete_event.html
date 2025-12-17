@@ -253,6 +253,8 @@ window.Quarto = {
   <li><a href="#queuing-theory" id="toc-queuing-theory" class="nav-link" data-scroll-target="#queuing-theory"><span class="header-section-number">4.2</span> Queuing Theory</a>
   <ul class="collapse">
   <li><a href="#anatomy-of-a-queuing-system" id="toc-anatomy-of-a-queuing-system" class="nav-link" data-scroll-target="#anatomy-of-a-queuing-system"><span class="header-section-number">4.2.1</span> Anatomy of a Queuing System</a></li>
+  <li><a href="#kendalls-notation" id="toc-kendalls-notation" class="nav-link" data-scroll-target="#kendalls-notation"><span class="header-section-number">4.2.2</span> Kendall’s Notation</a></li>
+  <li><a href="#key-performance-measures" id="toc-key-performance-measures" class="nav-link" data-scroll-target="#key-performance-measures"><span class="header-section-number">4.2.3</span> Key Performance Measures</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -312,6 +314,33 @@ window.Quarto = {
 <li><strong>Service:</strong> Once that the customers arrive at checkout, they are serviced by the next available of <span class="math inline">\(c\)</span> cashiers. Service times are exponentially distributed.</li>
 </ul>
 <p>In general, Queuing Theory provides a mathematical framework for ideal systems which can be handled analytically. However, this is not always the case. For these cases, DES offers a mechanistic approach to perform realistic system simulations. Nevertheless, Queuing Theory can also be used in this cases to provide a calibration benchmark or a “sanity check” for a simulation study by simplifying the model and checking that the results of the DES are the same than the ones predicted by the theory.</p>
+</section>
+<section id="kendalls-notation" class="level3" data-number="4.2.2">
+<h3 data-number="4.2.2" class="anchored" data-anchor-id="kendalls-notation"><span class="header-section-number">4.2.2</span> Kendall’s Notation</h3>
+<p>Queuing systems can vary in some specific ways: for instance, different arrival patterns, number of servers, etc. In order to describe these different modalities, we will use a formal notation called <strong>Kendall’s Notation</strong>. This notation is based on three components in the format <strong><span class="math inline">\(A/B/c\)</span></strong>. Each of these components represent the following characteristics:</p>
+<ul>
+<li><strong><span class="math inline">\(A\)</span>:</strong> Denotes the probability distribution of the <em>arrival</em> times.</li>
+<li><strong><span class="math inline">\(B\)</span>:</strong> Denotes the probability distribution of the <em>service</em> times.</li>
+<li><strong><span class="math inline">\(c\)</span>:</strong> Denotes the number of parallel channels available (e.g.&nbsp;number of servers).</li>
+</ul>
+<p>Some symbols for common distributions used in practice for <span class="math inline">\(A\)</span> and <span class="math inline">\(B\)</span> include:</p>
+<ul>
+<li><strong><span class="math inline">\(M\)</span>:</strong> The <em>memoryless</em> (or Markovian) distribution. This implies for times the use of the exponential distribution, and for counts the Poisson distribution.</li>
+<li><strong><span class="math inline">\(D\)</span>:</strong> Denotes a deterministic mechanism where times are constant (zero variance). For instance, the service time in an automated car wash could take always the same 5 minutes per car.</li>
+<li><strong><span class="math inline">\(G\)</span>:</strong> Denotes any general distribution like Gaussian, Gamma, etc.</li>
+</ul>
+<p>Some examples include the <span class="math inline">\(M/M/1\)</span> model (exponential arrivals, exponential service times, and 1 server), <span class="math inline">\(M/M/c\)</span> (same as before but with <span class="math inline">\(c\)</span> servers in parallel) and <span class="math inline">\(M/D/1\)</span> (exponential arrivals, fixed service times, and 1 server).</p>
+</section>
+<section id="key-performance-measures" class="level3" data-number="4.2.3">
+<h3 data-number="4.2.3" class="anchored" data-anchor-id="key-performance-measures"><span class="header-section-number">4.2.3</span> Key Performance Measures</h3>
+<p>We now describe some measures used to quantify how well the system performs. These metrics measure, in general, two competing objectives: the efficiency of the resource and the waiting time of the customer.</p>
+<p>Let our input parameters be <span class="math inline">\(\lambda\)</span> (the mean arrival rate, e.g.&nbsp;10 customers per hour) and <span class="math inline">\(\mu\)</span> (the mean service rate per server, e.g.&nbsp;a bank teller handling on average 15 customers per hour). In the following, we will use the term <em>queue</em> to refer to the waiting line itself, whereas <em>queueing system</em> refers to the whole system (the queue plus the service).</p>
+<p><strong>Utilization factor</strong></p>
+<p>We denote the fraction of time each server is busy, or utilization factor by <span class="math inline">\(\rho\)</span>. It measures how efficiently the servers are being used:</p>
+<p><span class="math display">\[
+\rho=\frac{\lambda}{c\mu}
+\]</span></p>
+<p>Note that if the arrival rate exceeds the service rate, the queue size diverges to infinity (i.e.&nbsp;the condition <span class="math inline">\(\lambda \le \mu\)</span> is a sufficient condition for stability).</p>
 
 
 </section>

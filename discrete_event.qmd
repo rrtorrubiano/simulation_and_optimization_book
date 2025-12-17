@@ -62,3 +62,43 @@ they are served sequentially, using a FIFO mechanism.
 In general, Queuing Theory provides a mathematical framework for ideal systems which can be handled analytically. However, this is not always the case. For these cases, DES offers a mechanistic approach to perform realistic system simulations. Nevertheless, Queuing Theory can also be used in this cases to provide a calibration benchmark or a 
 "sanity check" for a simulation study by simplifying the model and checking that the results of the DES are the same
 than the ones predicted by the theory.
+
+### Kendall's Notation
+
+Queuing systems can vary in some specific ways: for instance, different arrival patterns, number of servers, etc. In order to 
+describe these different modalities, we will use a formal notation called **Kendall's Notation**. This notation is based
+on three components in the format **$A/B/c$**. Each of these components represent the following characteristics:
+
+- **$A$:** Denotes the probability distribution of the *arrival* times.
+- **$B$:** Denotes the probability distribution of the *service* times.
+- **$c$:** Denotes the number of parallel channels available (e.g. number of servers).
+
+Some symbols for common distributions used in practice for $A$ and $B$ include: 
+
+- **$M$:** The *memoryless* (or Markovian) distribution. This implies for times the use of the exponential distribution, and for counts the Poisson distribution.
+- **$D$:** Denotes a deterministic mechanism where times are constant (zero variance). For instance, the service
+time in an automated car wash could take always the same 5 minutes per car.
+- **$G$:** Denotes any general distribution like Gaussian, Gamma, etc.
+
+Some examples include the $M/M/1$ model (exponential arrivals, exponential service times, and 1 server), $M/M/c$ (same 
+as before but with $c$ servers in parallel) and $M/D/1$ (exponential arrivals, fixed service times, and 1 server).
+
+### Key Performance Measures
+
+We now describe some measures used to quantify how well the system performs. These metrics measure, in general, two competing objectives: the efficiency of the resource and the waiting time of the customer.
+
+Let our input parameters be $\lambda$ (the mean arrival rate, e.g. 10 customers per hour) and $\mu$ (the mean
+service rate per server, e.g. a bank teller handling on average 15 customers per hour). In the following, 
+we will use the term *queue* to refer to the waiting line itself, whereas *queueing system* refers to the whole system (the queue plus the service).
+
+**Utilization factor**
+
+We denote the fraction of time each server is busy, or utilization factor by $\rho$. It measures how efficiently the
+servers are being used:
+
+$$
+\rho=\frac{\lambda}{c\mu}
+$$
+
+Note that if the arrival rate exceeds the service rate, the queue size diverges to infinity (i.e. the condition 
+$\lambda \le \mu$ is a sufficient condition for stability).
