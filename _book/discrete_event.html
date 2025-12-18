@@ -340,7 +340,41 @@ window.Quarto = {
 <p><span class="math display">\[
 \rho=\frac{\lambda}{c\mu}
 \]</span></p>
-<p>Note that if the arrival rate exceeds the service rate, the queue size diverges to infinity (i.e.&nbsp;the condition <span class="math inline">\(\lambda \le \mu\)</span> is a sufficient condition for stability).</p>
+<p>Note that if the arrival rate exceeds the service rate, the queue size diverges to infinity (i.e.&nbsp;the condition <span class="math inline">\(\rho &lt; 1\)</span> is a sufficient condition for stability).</p>
+<p><strong>State metrics</strong></p>
+<p>We seek to minimize the following state metrics for any queuing system:</p>
+<ul>
+<li><span class="math inline">\(L_q\)</span>: The length of the queue, or average number of entities in the waiting line.</li>
+<li><span class="math inline">\(L\)</span>: The length of the system, or average total number of waiting entities and those being served.</li>
+<li><span class="math inline">\(W_q\)</span>: The waiting time in queue, or average time an entity spends in the waiting line before being served.</li>
+<li><span class="math inline">\(W\)</span>: The total time in the system, or the average time an entity spends in the system (waiting + served).</li>
+</ul>
+<p><strong>Little’s Law</strong></p>
+<p>One of the best known results in queuing theory is known as <strong>Little’s law</strong>, which established a fundamental relationship between the number of items in the system <span class="math inline">\(L\)</span>, the arrival rate <span class="math inline">\(\lambda\)</span> and the average time spent in the system <span class="math inline">\(W\)</span>:</p>
+<p><span id="eq-littles-law"><span class="math display">\[
+L=\lambda\times W
+\tag{4.1}\]</span></span></p>
+<p>This relation holds true regardless of the probability distributions involved. <a href="#fig-littles-law" class="quarto-xref">Figure&nbsp;<span>4.1</span></a> shows a geometric visualization of Little’s Law.</p>
+<div id="fig-littles-law" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-littles-law-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="figures/chapter_4/littles_law_illustration.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-littles-law-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4.1: Geometric Visualization of Little’s Law
+</figcaption>
+</figure>
+</div>
+<p>In this plot, we represent a realization of a <span class="math inline">\(M/M/1\)</span> process where the cumulative arrivals are denoted by <span class="math inline">\(A(t)\)</span> and the cumulative departures by <span class="math inline">\(D(t)\)</span>. From the horizontal perspective (the customer’s view), each horizontal section represents the arrival and departure of an entity (e.g.&nbsp;in the plot the green line represents the total time <span class="math inline">\(W_5\)</span> that Entity 5 spent in the system). If we sum for all <span class="math inline">\(N\)</span> customers, and we denote by <span class="math inline">\(W\)</span> the average total time per customer, we get an estimation of the total system time (the grey area) of <span class="math inline">\(\approx N\times W\)</span>.</p>
+<p>From the vertical perspective, each vertical section represents a moment in time, with its length equal to the number of entities in the system. If we now sum for all times, we also get an estimation of the total system time of <span class="math inline">\(\approx T \times L\)</span>, where <span class="math inline">\(T\)</span> is the duration of the simulation and <span class="math inline">\(L\)</span> is the average number of entities in the system. Equating both, we get:</p>
+<p><span class="math display">\[
+N\times W = T\times L
+\]</span></p>
+<p>and therefore</p>
+<p><span class="math display">\[
+L = \frac{N}{T}\times W
+\]</span></p>
+<p>where <span class="math inline">\(N/T\)</span> is exactly the arrival rate <span class="math inline">\(\lambda\)</span>, and we thus get <a href="#eq-littles-law" class="quarto-xref">Equation&nbsp;<span>4.1</span></a>.</p>
 
 
 </section>

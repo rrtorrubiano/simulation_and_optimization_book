@@ -101,4 +101,50 @@ $$
 $$
 
 Note that if the arrival rate exceeds the service rate, the queue size diverges to infinity (i.e. the condition 
-$\lambda \le \mu$ is a sufficient condition for stability).
+$\rho < 1$ is a sufficient condition for stability).
+
+**State metrics**
+
+We seek to minimize the following state metrics for any queuing system:
+
+- $L_q$: The length of the queue, or average number of entities in the waiting line.
+- $L$: The length of the system, or average total number of waiting entities and those being served.
+- $W_q$: The waiting time in queue, or average time an entity spends in the waiting line before being served.
+- $W$: The total time in the system, or the average time an entity spends in the system (waiting + served).
+
+**Little's Law**
+
+One of the best known results in queuing theory is known as **Little's law**, which established a fundamental
+relationship between the number of items in the system $L$, the arrival rate $\lambda$ and the average time
+spent in the system $W$:
+
+$$
+L=\lambda\times W
+$$ {#eq-littles-law}
+
+This relation holds true regardless of the probability distributions involved. @fig-littles-law shows a geometric
+visualization of Little's Law. 
+
+![Geometric Visualization of Little's Law](figures/chapter_4/littles_law_illustration){#fig-littles-law}
+
+In this plot, we represent a realization of a $M/M/1$ process where the cumulative arrivals are denoted by $A(t)$ and the cumulative departures by $D(t)$. From the horizontal perspective (the customer's view), each horizontal section
+represents the arrival and departure of an entity (e.g. in the plot the green line represents the total time 
+$W_5$ that Entity 5 spent in the system). If we sum for all $N$ customers, and we denote by $W$ the average total 
+time per customer, we get an estimation of the total system time (the grey area) of $\approx N\times W$.
+
+From the vertical perspective, each vertical section represents a moment in time, with its length equal to the
+number of entities in the system. If we now sum for all times, we also get an estimation of the total system time 
+of $\approx T \times L$, where $T$ is the duration of the simulation and $L$ is the average number of entities
+in the system. Equating both, we get:
+
+$$
+N\times W = T\times L
+$$
+
+and therefore
+
+$$
+L = \frac{N}{T}\times W
+$$
+
+where $N/T$ is exactly the arrival rate $\lambda$, and we thus get @eq-littles-law.
