@@ -20,6 +20,41 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -250,7 +285,7 @@ window.Quarto = {
    
   <ul>
   <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="header-section-number">4.1</span> Introduction</a></li>
-  <li><a href="#queuing-theory" id="toc-queuing-theory" class="nav-link" data-scroll-target="#queuing-theory"><span class="header-section-number">4.2</span> Queuing Theory</a>
+  <li><a href="#sec-queuing-theory" id="toc-sec-queuing-theory" class="nav-link" data-scroll-target="#sec-queuing-theory"><span class="header-section-number">4.2</span> Queuing Theory</a>
   <ul class="collapse">
   <li><a href="#anatomy-of-a-queuing-system" id="toc-anatomy-of-a-queuing-system" class="nav-link" data-scroll-target="#anatomy-of-a-queuing-system"><span class="header-section-number">4.2.1</span> Anatomy of a Queuing System</a></li>
   <li><a href="#kendalls-notation" id="toc-kendalls-notation" class="nav-link" data-scroll-target="#kendalls-notation"><span class="header-section-number">4.2.2</span> Kendall’s Notation</a></li>
@@ -258,6 +293,14 @@ window.Quarto = {
   <li><a href="#example-the-mm1-queue" id="toc-example-the-mm1-queue" class="nav-link" data-scroll-target="#example-the-mm1-queue"><span class="header-section-number">4.2.4</span> Example: The M/M/1 Queue</a></li>
   <li><a href="#summary" id="toc-summary" class="nav-link" data-scroll-target="#summary"><span class="header-section-number">4.2.5</span> Summary</a></li>
   </ul></li>
+  <li><a href="#discrete-event-simulation" id="toc-discrete-event-simulation" class="nav-link" data-scroll-target="#discrete-event-simulation"><span class="header-section-number">4.3</span> Discrete Event Simulation</a>
+  <ul class="collapse">
+  <li><a href="#components-of-a-des-model" id="toc-components-of-a-des-model" class="nav-link" data-scroll-target="#components-of-a-des-model"><span class="header-section-number">4.3.1</span> Components of a DES Model</a></li>
+  <li><a href="#the-des-worldview" id="toc-the-des-worldview" class="nav-link" data-scroll-target="#the-des-worldview"><span class="header-section-number">4.3.2</span> The DES Worldview</a></li>
+  <li><a href="#building-a-simulation-study" id="toc-building-a-simulation-study" class="nav-link" data-scroll-target="#building-a-simulation-study"><span class="header-section-number">4.3.3</span> Building a Simulation Study</a></li>
+  <li><a href="#analyzing-the-output" id="toc-analyzing-the-output" class="nav-link" data-scroll-target="#analyzing-the-output"><span class="header-section-number">4.3.4</span> Analyzing the Output</a></li>
+  </ul></li>
+  <li><a href="#comparative-study" id="toc-comparative-study" class="nav-link" data-scroll-target="#comparative-study"><span class="header-section-number">4.4</span> Comparative Study</a></li>
   </ul>
 </nav>
     </div>
@@ -297,8 +340,8 @@ window.Quarto = {
 <p>The mathematical foundation that represents the basis for DES is called <strong>Queuing Theory</strong>. It underpins the computational engine used by DES to solve complex simulation problems. Queuing Theory provides the analytical framework for understanding waiting lines. It offers exact mathematical formulas to predict performance measures such as server utilization or and average waiting times under specific, idealized assumptions (e.g., purely random arrivals and service times).</p>
 <p>In this chapter, we will introduce the fundamentals of Queuing Theory that will serve as a framework to understand the principles of DES. While Queuing Theory provides the “laws of physics” for the system at hand, DES provides the laboratory in which we experiment with those laws under complex, realistic conditions.</p>
 </section>
-<section id="queuing-theory" class="level2" data-number="4.2">
-<h2 data-number="4.2" class="anchored" data-anchor-id="queuing-theory"><span class="header-section-number">4.2</span> Queuing Theory</h2>
+<section id="sec-queuing-theory" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="sec-queuing-theory"><span class="header-section-number">4.2</span> Queuing Theory</h2>
 <p>Before we can build a valid discrete simulation model, we must understand the mathematical logic that governs the flow of entities. Queuing Theory is the study of waiting lines. It provides a set of analytical techniques used to describe the behavior of systems where entities arrive, wait for a resource, receive service, and depart. While we often associate queues with negative experiences—standing in line at a grocery store or waiting on hold for customer support—queuing theory views the queue not as a nuisance, but as a buffer. It is a necessary component that manages the mismatch between the irregular demand for service and the limited capacity to provide it. The fundamental goal of queuing theory is to quantify the trade-off between the cost of providing service (adding more servers) and the cost of waiting (lost time or unhappy customers).</p>
 <section id="anatomy-of-a-queuing-system" class="level3" data-number="4.2.1">
 <h3 data-number="4.2.1" class="anchored" data-anchor-id="anatomy-of-a-queuing-system"><span class="header-section-number">4.2.1</span> Anatomy of a Queuing System</h3>
@@ -428,9 +471,175 @@ L_q=\frac{\lambda^2}{\mu(\mu-\lambda)}
 <section id="summary" class="level3" data-number="4.2.5">
 <h3 data-number="4.2.5" class="anchored" data-anchor-id="summary"><span class="header-section-number">4.2.5</span> Summary</h3>
 <p>We have now seen the basic definitions behind Queuing Theory and the main performance measures that we seek to optimize. Depending on the actual form of the system (<span class="math inline">\(M/M/1\)</span>, <span class="math inline">\(M/M/c\)</span>, etc.) each measure takes a specific analytical form that can be calculated explicitly. However, with increasing complexity it becomes more difficult to get exact analytical expressions for these quantities. For these scenarios, we use DES as a simulation tool as we will explore in the next sections.</p>
-
-
 </section>
+</section>
+<section id="discrete-event-simulation" class="level2" data-number="4.3">
+<h2 data-number="4.3" class="anchored" data-anchor-id="discrete-event-simulation"><span class="header-section-number">4.3</span> Discrete Event Simulation</h2>
+<p>While Queuing Theory provides the laws of physics for waiting lines, it has a significant limitation: it requires the world to be well-behaved. The moment we introduce real-world messiness—dynamic arrival rates (e.g., the lunch rush), complex routing logic (e.g., a part returning to a machine for rework), or resource dependencies (e.g., a machine needs both an operator and a tool)—the analytical formulas of Queuing Theory become mathematically unsolvable.</p>
+<p>When the assumptions of Queuing Theory aren’t valid anymore, we turn to <strong>Discrete Event Simulation (DES)</strong>. Discrete Event Simulation is a computational technique used to model the operation of a system as a discrete sequence of events in time. The defining characteristic of DES is how it handles state changes. In a continuous system (like water flowing into a tank), the state changes continuously every millisecond. In a discrete system, the state is piecewise constant. The number of people in a line remains exactly the same for a period of time, then changes instantaneously when a person arrives or departs. Therefore, a DES model assumes that nothing interesting happens between events. This assumption allows the computer to skip over periods of inactivity, making the simulation highly efficient.</p>
+<section id="components-of-a-des-model" class="level3" data-number="4.3.1">
+<h3 data-number="4.3.1" class="anchored" data-anchor-id="components-of-a-des-model"><span class="header-section-number">4.3.1</span> Components of a DES Model</h3>
+<p>In order to define a DES model, we need to map the physical elements of the system to simulation components.</p>
+<ol type="1">
+<li><p><strong>Entities:</strong> The dynamic objects that flow through the system (e.g.&nbsp;customers of a bank, data packets in a computer network, etc.). Entities arrive, move through the system, queue for resources, and leave the system (depart).</p></li>
+<li><p><strong>Attributes:</strong> Local data tags that describe the unique characteristics of a specific entity (e.g.&nbsp;the arrival time of an entity, the severity of a patient, etc). With attributes, we can treat in the simulation different entitites differently.</p></li>
+<li><p><strong>Resources:</strong> Stationary elements that provide service to entities and have limited capacity (e.g.&nbsp;tellers, machines, doctos, etc). Resources have normally at least two states: idle (free) and busy (occupied).</p></li>
+<li><p><strong>Global variables:</strong> Data tags that belong to the whole system instead of individual entities. They normally track the aggregated state of the system (e.g.&nbsp;the current length of the queue, number of busy servers, etc).</p></li>
+<li><p><strong>Events:</strong> An instantaneous occurrence that changes the state of the system. Events like arrivals and departures are considered as primary events, whereas other types of events (breakdowns, shift changes, etc) are considered as secondary events.</p></li>
+</ol>
+</section>
+<section id="the-des-worldview" class="level3" data-number="4.3.2">
+<h3 data-number="4.3.2" class="anchored" data-anchor-id="the-des-worldview"><span class="header-section-number">4.3.2</span> The DES Worldview</h3>
+<p>In a DES simulation, time is not considered to flow like a clock does. Between events, nothing interesting (from the point of view of the simulation) happens, so the next “tick” of the clock actually happens with the next event. In order to be able to manage these discrete jumps, it is usual for DES to maintain a <strong>Future Event List (FEL)</strong>. Intuitively, this is a sort of “To-Do List” where all known future events are sorted chronologically.</p>
+<p>The general simulation loop then becomes as follows:</p>
+<ol type="1">
+<li>Check the FEL to find the event with the smalles time stamp.</li>
+<li>Advance the simulation clock to that time.</li>
+<li>Execute the logic associated with that event (e.g., free the server, update statistics, etc).</li>
+<li>Generate possible new events and place them into the FEL.</li>
+<li>Repeat until simulation end is reached.</li>
+</ol>
+</section>
+<section id="building-a-simulation-study" class="level3" data-number="4.3.3">
+<h3 data-number="4.3.3" class="anchored" data-anchor-id="building-a-simulation-study"><span class="header-section-number">4.3.3</span> Building a Simulation Study</h3>
+<p>A widely held misconception about DES is that “simulation” is synonymous with “coding.” In reality, writing the code is often the shortest phase of a project. A simulation study is a structured systems engineering process. If the conceptualization is flawed or the data is inaccurate, the most sophisticated code in the world will yield useless results.</p>
+<p>To ensure reliability, a simulation study generally follows a standard five-step life cycle.</p>
+<ol type="1">
+<li><p><strong>Problem formulation:</strong> Before we write a single line of code, we must define the objectives and scope of the simulation. What specific question are we trying to answer? (e.g.&nbsp;if we add a new machine, will that bring the total waiting time to under 5 seconds?). What is inside the model, and what is outside? (e.g.&nbsp;do we need to model that materials need some time for disposal, or is this done instantly?).</p></li>
+<li><p><strong>Data collection:</strong> This is typically the most time-consuming and difficult phase, where the goal is to gather real-world data to drive the model. This involves e.g.&nbsp;stopwatch studies, analyzing historical logs, and interviewing subject matter experts.</p></li>
+<li><p><strong>Model translation</strong> This is the phase where the conceptual model is translated into a computer representation (the “coding” phase). This involves defining the entities, resources, and event logic within the chosen simulation software (e.g., SimPy, Arena, AnyLogic, or C++).</p></li>
+<li><p><strong>Verification and validation:</strong> This is the quality control phase. Verification answers the question whether the code does what is intended to do. Comparing the model against Queuing Theory formulas is a primary method of verification. On the other hand, validation is concerned with accuracy, i.e.&nbsp;does the model behave like the real system?</p></li>
+<li><p><strong>Experimentation and analysis:</strong> Once the model is valid, it becomes a virtual laboratory. We run scenarios (e.g., “Increase arrival rate by 20%”) and analyze the resulting output statistics to make specific recommendations.</p></li>
+</ol>
+<p><strong>The Markovian Assumption</strong></p>
+<p>In <a href="#sec-queuing-theory" class="quarto-xref"><span>Section 4.2</span></a>, we relied heavily on the Exponential Distribution (Markovian) because it makes the mathematics solvable. However, in a simulation study, we are not bound by analytical convenience. Instead, we should and must use distributions that closer match reality.</p>
+<p>Specifically, while arrivals do mostly follow a Poisson process (exponential interarrivals), scheduled arrivals do not. Regarding service times, humans are rarely exponential. A highly skilled worker might be consistent with low variance (Normal distribution), while machine repair times often follow a Weibull or Lognormal distribution. In this case, the main recommendation is to fit historical data to a probability curve. If we simply guess the distribution (e.g., assuming a machine always takes exactly 5 minutes when it actually varies between 2 and 12), the simulation results will underestimate the congestion caused by variance.</p>
+</section>
+<section id="analyzing-the-output" class="level3" data-number="4.3.4">
+<h3 data-number="4.3.4" class="anchored" data-anchor-id="analyzing-the-output"><span class="header-section-number">4.3.4</span> Analyzing the Output</h3>
+<p>Analyzing the output of a simulation is fundamentally different from reading a single number. Because DES is driven by random numbers, the output is also a random variable. Therfore, we need to express the results in the language of statistics and probability theory. Specifically, we need to use <strong>confidence intervals</strong>. E.g., instead of saying “The wait time is 10 minutes”, the simulation result should read something like: “We are 95% confident that the true average wait time lies between 9.2 and 10.8 minutes.” This requires running multiple replications (iterations) of the model to generate a statistically significant sample size, and using standard confidence interval tools to calculate the intervals.</p>
+<p>It is also important to define a <strong>Warm-Up Period</strong>. In a steady-state simulation, the model usually starts “empty and idle.” This creates of course an initial bias. If we simulate a busy factory but start with zero parts in the system, the first few simulated hours will show misleadingly low queue times while the factory fills up. To correct this, the Warm-up Period (or transient period) is used to run the simulation for a specific time (e.g., 24 hours) to let the queues build up, delete the statistics from this period, and only collect data once the system reaches a stable state.</p>
+</section>
+</section>
+<section id="comparative-study" class="level2" data-number="4.4">
+<h2 data-number="4.4" class="anchored" data-anchor-id="comparative-study"><span class="header-section-number">4.4</span> Comparative Study</h2>
+<p>To consolidate our understanding, we will now perform a comparative study. We will define a simple queuing system, solve it using the mathematical formulas derived in <a href="#sec-queuing-theory" class="quarto-xref"><span>Section 4.2</span></a>, and then build a Discrete Event Simulation (DES) in Python to solve it numerically.</p>
+<p>Consider a small 24-hour IT Help Desk with a single technician. Support tickets arrive randomly following a Poisson process with a mean rate of 5 tickets per hour (<span class="math inline">\(\lambda=5\)</span>). The technician resolves tickets with service times that are exponentially distributed with a mean rate of <span class="math inline">\(\mu=6\)</span> tickets per hour. The queuing discipline is FIFO. Under these conditions, the system can be well described by a <span class="math inline">\(M/M/1\)</span> queuing model.</p>
+<p>Our goal is to determine the average waiting time in the queue (<span class="math inline">\(W_q\)</span>) and the average number of tickets in the system (<span class="math inline">\(L\)</span>). Using the formulas derived in <a href="#sec-queuing-theory" class="quarto-xref"><span>Section 4.2</span></a>, we get:</p>
+<p><span class="math display">\[
+\rho=\frac{5}{6}=0.8333\dots
+\]</span></p>
+<p>So the technician is busy on average 83.3% of the time.</p>
+<p><span class="math display">\[
+\begin{aligned}
+L &amp;= \frac{\rho}{1-\rho}=\frac{0.8333}{1-0.8333}=5 \\
+W_q &amp;= \frac{\lambda}{\mu(\mu-\lambda)}=\frac{5}{6(6-5)}=\frac{5}{6}
+\end{aligned}
+\]</span></p>
+<p>The average number of tickets in the system is 5, and the average waiting time is <span class="math inline">\(5/6\)</span> hours or 50 minutes. Let’s now build an equivalent DES system to replicate these results computationally. We start by defining the system parameters and some helpers:</p>
+<div id="96224416" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> random</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> heapq  </span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Configuration ---</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>RANDOM_SEED <span class="op">=</span> <span class="dv">42</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>TOTAL_TIME <span class="op">=</span> <span class="fl">50000.0</span>  <span class="co"># minutes</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>ARRIVAL_RATE <span class="op">=</span> <span class="fl">5.0</span> <span class="op">/</span> <span class="fl">60.0</span>  <span class="co"># lambda (customers per minute)</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>SERVICE_RATE <span class="op">=</span> <span class="fl">6.0</span> <span class="op">/</span> <span class="fl">60.0</span>  <span class="co"># mu (customers per minute)</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>WARMUP_TIME <span class="op">=</span> <span class="fl">5000.0</span>   <span class="co"># Time to discard (Transient State)</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>clock <span class="op">=</span> <span class="fl">0.0</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>queue <span class="op">=</span> []  <span class="co"># Stores arrival times of waiting customers</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>server_busy <span class="op">=</span> <span class="va">False</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>fel <span class="op">=</span> []  <span class="co"># Future Event List</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>total_wait_time <span class="op">=</span> <span class="fl">0.0</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>total_customers_served <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>area_q_t <span class="op">=</span> <span class="fl">0.0</span>  <span class="co"># Area under Queue Length curve (for calculating Lq)</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>last_event_time <span class="op">=</span> <span class="fl">0.0</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>warmup_cleared <span class="op">=</span> <span class="va">False</span> <span class="co"># Flag to track if we have reset the stats</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> schedule_event(time, event_type):</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Adds an event to the FEL, sorted by time."""</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>    heapq.heappush(fel, (time, event_type))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>The main simulation loop can be implemented as follows:</p>
+<div id="551a7b01" class="cell" data-execution_count="2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> run_simulation():</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">global</span> clock, server_busy, total_customers_served, area_q_t, last_event_time, warmup_cleared</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    random.seed(RANDOM_SEED)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    interarrival <span class="op">=</span> random.expovariate(ARRIVAL_RATE)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    schedule_event(clock <span class="op">+</span> interarrival, <span class="st">'ARRIVAL'</span>)</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> clock <span class="op">&lt;</span> TOTAL_TIME <span class="kw">and</span> fel:</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>        event_time, event_type <span class="op">=</span> heapq.heappop(fel)</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>        time_delta <span class="op">=</span> event_time <span class="op">-</span> last_event_time</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>        queue_len <span class="op">=</span> <span class="bu">len</span>(queue)</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> server_busy:</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>            queue_len <span class="op">+=</span> <span class="dv">1</span> <span class="co"># System Length = Queue + Service</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>            </span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>        area_q_t <span class="op">+=</span> queue_len <span class="op">*</span> time_delta</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>        clock <span class="op">=</span> event_time</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>        last_event_time <span class="op">=</span> clock</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="kw">not</span> warmup_cleared <span class="kw">and</span> clock <span class="op">&gt;</span> WARMUP_TIME:</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>            area_q_t <span class="op">=</span> <span class="fl">0.0</span></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>            total_customers_served <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>            warmup_cleared <span class="op">=</span> <span class="va">True</span></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> event_type <span class="op">==</span> <span class="st">'ARRIVAL'</span>:</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>            next_arrival <span class="op">=</span> clock <span class="op">+</span> random.expovariate(ARRIVAL_RATE)</span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>            schedule_event(next_arrival, <span class="st">'ARRIVAL'</span>)</span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> <span class="kw">not</span> server_busy:</span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>                server_busy <span class="op">=</span> <span class="va">True</span></span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>                service_time <span class="op">=</span> random.expovariate(SERVICE_RATE)</span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>                schedule_event(clock <span class="op">+</span> service_time, <span class="st">'DEPARTURE'</span>)</span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>            <span class="cf">else</span>:</span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>                queue.append(clock)</span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>        <span class="cf">elif</span> event_type <span class="op">==</span> <span class="st">'DEPARTURE'</span>:</span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> warmup_cleared:</span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>                total_customers_served <span class="op">+=</span> <span class="dv">1</span></span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>                </span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> <span class="bu">len</span>(queue) <span class="op">&gt;</span> <span class="dv">0</span>:</span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a>                _ <span class="op">=</span> queue.pop(<span class="dv">0</span>) <span class="co"># Entity enters service</span></span>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a>                service_time <span class="op">=</span> random.expovariate(SERVICE_RATE)</span>
+<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a>                schedule_event(clock <span class="op">+</span> service_time, <span class="st">'DEPARTURE'</span>)</span>
+<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a>            <span class="cf">else</span>:</span>
+<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a>                server_busy <span class="op">=</span> <span class="va">False</span></span>
+<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a>    collection_duration <span class="op">=</span> clock <span class="op">-</span> WARMUP_TIME</span>
+<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a>    L_sim <span class="op">=</span> area_q_t <span class="op">/</span> collection_duration</span>
+<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a>    W_sim <span class="op">=</span> L_sim <span class="op">/</span> ARRIVAL_RATE</span>
+<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a>    Wq_sim <span class="op">=</span> W_sim <span class="op">-</span> (<span class="dv">1</span> <span class="op">/</span> SERVICE_RATE)</span>
+<span id="cb2-51"><a href="#cb2-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-52"><a href="#cb2-52" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"--- Simulation Results (Steady State Only) ---"</span>)</span>
+<span id="cb2-53"><a href="#cb2-53" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"Total Time: </span><span class="sc">{</span>TOTAL_TIME<span class="sc">}</span><span class="ss"> | Warm-up: </span><span class="sc">{</span>WARMUP_TIME<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb2-54"><a href="#cb2-54" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"Valid Data Duration: </span><span class="sc">{</span>collection_duration<span class="sc">:.1f}</span><span class="ss"> min"</span>)</span>
+<span id="cb2-55"><a href="#cb2-55" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"Total Customers Served (in valid period): </span><span class="sc">{</span>total_customers_served<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb2-56"><a href="#cb2-56" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"-"</span> <span class="op">*</span> <span class="dv">30</span>)</span>
+<span id="cb2-57"><a href="#cb2-57" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"Simulated L (Avg in System): </span><span class="sc">{</span>L_sim<span class="sc">:.4f}</span><span class="ss"> tickets"</span>)</span>
+<span id="cb2-58"><a href="#cb2-58" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"Simulated Wq (Avg Wait in Queue): </span><span class="sc">{</span>Wq_sim<span class="sc">:.4f}</span><span class="ss"> min"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>The FEL is implemented using the <code>fel</code> variable. We start by scheduling the first arrival and entering the main loop. We then extract the first element from the FEL. If the server happens to be busy, we queue the element and schedule the next arrival. Otherwise, we serve the element and schedule its departure from the system. The departure event schedules the next departure if there are still elements waiting in the queue, otherwise it sets the state variable <code>server_busy</code> again to <code>False</code>.</p>
+<p>We now run the simulation</p>
+<div id="1ceffcb2" class="cell" data-execution_count="3">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>run_simulation()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>--- Simulation Results (Steady State Only) ---
+Total Time: 50000.0 | Warm-up: 5000.0
+Valid Data Duration: 45019.7 min
+Total Customers Served (in valid period): 3716
+------------------------------
+Simulated L (Avg in System): 3.6191 tickets
+Simulated Wq (Avg Wait in Queue): 33.4287 min</code></pre>
+</div>
+</div>
+
+
 </section>
 
 </main> <!-- /main -->
