@@ -105,12 +105,41 @@ $\rho < 1$ is a sufficient condition for stability).
 
 **State metrics**
 
-We seek to minimize the following state metrics for any queuing system:
+We now assume that the system is in a steady state, i.e. the system has been running for long enough so that 
+the initial conditions no longer influence current state probabilities. The state of the system is modeled
+as a random variable. Let $P_n$ denote the steady state probability that there are exactly $n$ entities in the 
+system. We seek to minimize the following state metrics for any queuing system:
 
-- $L_q$: The length of the queue, or average number of entities in the waiting line.
-- $L$: The length of the system, or average total number of waiting entities and those being served.
-- $W_q$: The waiting time in queue, or average time an entity spends in the waiting line before being served.
-- $W$: The total time in the system, or the average time an entity spends in the system (waiting + served).
+- $L$: The length of the system, or average total number of waiting entities and those being served. This is 
+the expected value of the number of entities:
+
+$$
+L=\sum_{n=0}^\infty n\cdot P_n
+$$
+
+- $L_q$: The length of the queue, or average number of entities in the waiting line. We define this quantity 
+as the expected value of entities waiting in the line, excluding the ones being served:
+
+$$
+L_q = \sum_{n=c+1}^\infty (n-c)\cdot P_n
+$$
+
+- $W$: The total time in the system, or the average time an entity spends in the system (waiting + served). This 
+is the sum of the expected time waiting in the queue plus the expected service time.
+
+$$
+W=E[\text{Waiting Time}]+E[\text{Service Time}]
+$$
+
+
+- $W_q$: The waiting time in queue, or average time an entity spends in the waiting line before being served. This
+can be expressed by:
+
+$$
+W_q = W - \frac{1}{\mu}
+$$
+
+or the time waiting until one of the servers becomes free.
 
 **Little's Law**
 
@@ -148,3 +177,56 @@ L = \frac{N}{T}\times W
 $$
 
 where $N/T$ is exactly the arrival rate $\lambda$, and we thus get @eq-littles-law.
+
+### Example: The M/M/1 Queue
+
+As an example, we now calculate $L$, $L_q$, $W$ and $W_q$ explicitly for the case of an $M/M/1$ queue. For
+the arrivals, we assume a Poisson process with rate $\lambda$, exponential service times with rate $\mu$ and
+1 server. This results in an utilization of $\rho=\lambda/\mu$ and we assume $\rho<1$ so that the queue remains
+stable.
+
+The steady state probability $P_n$ becomes then
+
+$$
+P_n=(1-\rho)\rho^n
+$$
+
+where $(1-\rho)$ is the probability that the system is empty. The length of the system $L$ becomes then:
+
+$$
+L=\sum_{n=0}^\infty n\cdot P_n = \sum_{n=0}^\infty n\cdot (1-\rho)\rho^n=(1-\rho)\sum_{n=0}^\infty n \rho^n
+$$
+
+because this is a geometric summation, we get
+
+$$
+L=(1-\rho)\frac{\rho}{(1-\rho)^2}=\frac{\rho}{(1-\rho)}=\frac{\lambda}{\mu-\lambda}
+$$
+
+Using Little's Law, we can now easily find $W$:
+
+$$
+W=\frac{L}{\lambda}=\frac{1}{\mu-\lambda}
+$$
+
+Similarly, the total time in the queue $W_q$ can be calculated as follows:
+
+$$
+W_q = W-\frac{1}{\mu}=\frac{1}{\mu-\lambda}-\frac{1}{\mu}=\frac{\lambda}{\mu(\mu-\lambda)}
+$$
+
+Applying Little's Law for the queue ($L_q=\lambda W_q$), we get:
+
+$$
+L_q=\frac{\lambda^2}{\mu(\mu-\lambda)}
+$$
+
+
+
+### Summary
+
+We have now seen the basic definitions behind Queuing Theory and the main performance measures that we seek to
+optimize. Depending on the actual form of the system ($M/M/1$, $M/M/c$, etc.) each measure takes
+a specific analytical form that can be calculated explicitly. However, with increasing complexity it becomes
+more difficult to get exact analytical expressions for these quantities. For these scenarios, we use DES as a
+simulation tool as we will explore in the next sections.

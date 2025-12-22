@@ -255,6 +255,8 @@ window.Quarto = {
   <li><a href="#anatomy-of-a-queuing-system" id="toc-anatomy-of-a-queuing-system" class="nav-link" data-scroll-target="#anatomy-of-a-queuing-system"><span class="header-section-number">4.2.1</span> Anatomy of a Queuing System</a></li>
   <li><a href="#kendalls-notation" id="toc-kendalls-notation" class="nav-link" data-scroll-target="#kendalls-notation"><span class="header-section-number">4.2.2</span> Kendall’s Notation</a></li>
   <li><a href="#key-performance-measures" id="toc-key-performance-measures" class="nav-link" data-scroll-target="#key-performance-measures"><span class="header-section-number">4.2.3</span> Key Performance Measures</a></li>
+  <li><a href="#example-the-mm1-queue" id="toc-example-the-mm1-queue" class="nav-link" data-scroll-target="#example-the-mm1-queue"><span class="header-section-number">4.2.4</span> Example: The M/M/1 Queue</a></li>
+  <li><a href="#summary" id="toc-summary" class="nav-link" data-scroll-target="#summary"><span class="header-section-number">4.2.5</span> Summary</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -342,13 +344,32 @@ window.Quarto = {
 \]</span></p>
 <p>Note that if the arrival rate exceeds the service rate, the queue size diverges to infinity (i.e.&nbsp;the condition <span class="math inline">\(\rho &lt; 1\)</span> is a sufficient condition for stability).</p>
 <p><strong>State metrics</strong></p>
-<p>We seek to minimize the following state metrics for any queuing system:</p>
+<p>We now assume that the system is in a steady state, i.e.&nbsp;the system has been running for long enough so that the initial conditions no longer influence current state probabilities. The state of the system is modeled as a random variable. Let <span class="math inline">\(P_n\)</span> denote the steady state probability that there are exactly <span class="math inline">\(n\)</span> entities in the system. We seek to minimize the following state metrics for any queuing system:</p>
 <ul>
-<li><span class="math inline">\(L_q\)</span>: The length of the queue, or average number of entities in the waiting line.</li>
-<li><span class="math inline">\(L\)</span>: The length of the system, or average total number of waiting entities and those being served.</li>
-<li><span class="math inline">\(W_q\)</span>: The waiting time in queue, or average time an entity spends in the waiting line before being served.</li>
-<li><span class="math inline">\(W\)</span>: The total time in the system, or the average time an entity spends in the system (waiting + served).</li>
+<li><span class="math inline">\(L\)</span>: The length of the system, or average total number of waiting entities and those being served. This is the expected value of the number of entities:</li>
 </ul>
+<p><span class="math display">\[
+L=\sum_{n=0}^\infty n\cdot P_n
+\]</span></p>
+<ul>
+<li><span class="math inline">\(L_q\)</span>: The length of the queue, or average number of entities in the waiting line. We define this quantity as the expected value of entities waiting in the line, excluding the ones being served:</li>
+</ul>
+<p><span class="math display">\[
+L_q = \sum_{n=c+1}^\infty (n-c)\cdot P_n
+\]</span></p>
+<ul>
+<li><span class="math inline">\(W\)</span>: The total time in the system, or the average time an entity spends in the system (waiting + served). This is the sum of the expected time waiting in the queue plus the expected service time.</li>
+</ul>
+<p><span class="math display">\[
+W=E[\text{Waiting Time}]+E[\text{Service Time}]
+\]</span></p>
+<ul>
+<li><span class="math inline">\(W_q\)</span>: The waiting time in queue, or average time an entity spends in the waiting line before being served. This can be expressed by:</li>
+</ul>
+<p><span class="math display">\[
+W_q = W - \frac{1}{\mu}
+\]</span></p>
+<p>or the time waiting until one of the servers becomes free.</p>
 <p><strong>Little’s Law</strong></p>
 <p>One of the best known results in queuing theory is known as <strong>Little’s law</strong>, which established a fundamental relationship between the number of items in the system <span class="math inline">\(L\)</span>, the arrival rate <span class="math inline">\(\lambda\)</span> and the average time spent in the system <span class="math inline">\(W\)</span>:</p>
 <p><span id="eq-littles-law"><span class="math display">\[
@@ -375,6 +396,38 @@ N\times W = T\times L
 L = \frac{N}{T}\times W
 \]</span></p>
 <p>where <span class="math inline">\(N/T\)</span> is exactly the arrival rate <span class="math inline">\(\lambda\)</span>, and we thus get <a href="#eq-littles-law" class="quarto-xref">Equation&nbsp;<span>4.1</span></a>.</p>
+</section>
+<section id="example-the-mm1-queue" class="level3" data-number="4.2.4">
+<h3 data-number="4.2.4" class="anchored" data-anchor-id="example-the-mm1-queue"><span class="header-section-number">4.2.4</span> Example: The M/M/1 Queue</h3>
+<p>As an example, we now calculate <span class="math inline">\(L\)</span>, <span class="math inline">\(L_q\)</span>, <span class="math inline">\(W\)</span> and <span class="math inline">\(W_q\)</span> explicitly for the case of an <span class="math inline">\(M/M/1\)</span> queue. For the arrivals, we assume a Poisson process with rate <span class="math inline">\(\lambda\)</span>, exponential service times with rate <span class="math inline">\(\mu\)</span> and 1 server. This results in an utilization of <span class="math inline">\(\rho=\lambda/\mu\)</span> and we assume <span class="math inline">\(\rho&lt;1\)</span> so that the queue remains stable.</p>
+<p>The steady state probability <span class="math inline">\(P_n\)</span> becomes then</p>
+<p><span class="math display">\[
+P_n=(1-\rho)\rho^n
+\]</span></p>
+<p>where <span class="math inline">\((1-\rho)\)</span> is the probability that the system is empty. The length of the system <span class="math inline">\(L\)</span> becomes then:</p>
+<p><span class="math display">\[
+L=\sum_{n=0}^\infty n\cdot P_n = \sum_{n=0}^\infty n\cdot (1-\rho)\rho^n=(1-\rho)\sum_{n=0}^\infty n \rho^n
+\]</span></p>
+<p>because this is a geometric summation, we get</p>
+<p><span class="math display">\[
+L=(1-\rho)\frac{\rho}{(1-\rho)^2}=\frac{\rho}{(1-\rho)}=\frac{\lambda}{\mu-\lambda}
+\]</span></p>
+<p>Using Little’s Law, we can now easily find <span class="math inline">\(W\)</span>:</p>
+<p><span class="math display">\[
+W=\frac{L}{\lambda}=\frac{1}{\mu-\lambda}
+\]</span></p>
+<p>Similarly, the total time in the queue <span class="math inline">\(W_q\)</span> can be calculated as follows:</p>
+<p><span class="math display">\[
+W_q = W-\frac{1}{\mu}=\frac{1}{\mu-\lambda}-\frac{1}{\mu}=\frac{\lambda}{\mu(\mu-\lambda)}
+\]</span></p>
+<p>Applying Little’s Law for the queue (<span class="math inline">\(L_q=\lambda W_q\)</span>), we get:</p>
+<p><span class="math display">\[
+L_q=\frac{\lambda^2}{\mu(\mu-\lambda)}
+\]</span></p>
+</section>
+<section id="summary" class="level3" data-number="4.2.5">
+<h3 data-number="4.2.5" class="anchored" data-anchor-id="summary"><span class="header-section-number">4.2.5</span> Summary</h3>
+<p>We have now seen the basic definitions behind Queuing Theory and the main performance measures that we seek to optimize. Depending on the actual form of the system (<span class="math inline">\(M/M/1\)</span>, <span class="math inline">\(M/M/c\)</span>, etc.) each measure takes a specific analytical form that can be calculated explicitly. However, with increasing complexity it becomes more difficult to get exact analytical expressions for these quantities. For these scenarios, we use DES as a simulation tool as we will explore in the next sections.</p>
 
 
 </section>
