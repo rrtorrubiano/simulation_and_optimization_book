@@ -327,10 +327,10 @@ import heapq
 
 # --- Configuration ---
 RANDOM_SEED = 42
-TOTAL_TIME = 50000.0  # minutes
+TOTAL_TIME = 20000.0  # minutes
 ARRIVAL_RATE = 5.0 / 60.0  # lambda (customers per minute)
 SERVICE_RATE = 6.0 / 60.0  # mu (customers per minute)
-WARMUP_TIME = 5000.0   # Time to discard (Transient State)
+WARMUP_TIME = 100.0   # Time to discard (Transient State)
 
 clock = 0.0
 queue = []  # Stores arrival times of waiting customers
@@ -416,10 +416,35 @@ The FEL is implemented using the `fel` variable. We start by scheduling the firs
 the main loop. We then extract the first element from the FEL. If the server happens to be busy, we queue the 
 element and schedule the next arrival. Otherwise, we serve the element and schedule its departure from the system.
 The departure event schedules the next departure if there are still elements waiting in the queue, otherwise
-it sets the state variable `server_busy` again to `False`.
+it sets the state variable `server_busy` again to `False`. Note that we are calculating `L_sim` (the simulated 
+length of the system) by just calculating the area under the curve that describes the current length of 
+the system and dividing by the total time to get the average. The other quantities are given by Little's Law.
 
 We now run the simulation
 
 ```{python}
 run_simulation()
 ```
+
+As can be seen, the result are close to the theoretical 5 tickets and 50 minutes. The more steps we simulate, the closer
+will the system get to the true analytical results. Note that we are discarding the events that happened before
+`WARMUP_TIME` so that the system has enough time to leave the initial, empty state and reach a steady state.
+
+However, what is then the point of DES, if we can calculate everything analytically? The reason is that, in practice,
+very often we can't. For instance, imagine that additionally we have the rule that the technician takes a 10-minute break every 2 hours, but only if no high-priority tickets are waiting. Queuing Theory can't handle this problem, so we need to resort to DES instead. In the simulation code, it would be enough to add some additional logic to model this case accurately.
+
+## Summary
+
+In this chapter, we have explored the complementary relationship between the mathematical elegance of Queuing Theory and the computational power of Discrete Event Simulation (DES).
+We began by establishing the fundamental vocabulary of systems engineering: entities, resources, and queues. We learned that while Queuing Theory provides exact, closed-form solutions for performance metrics like $L$ and $W_q$, it is bounded by the assumptions. When a system involves complex routing, time-varying arrival rates, or resource dependencies, analytical formulas become intractable.
+This is where Discrete Event Simulation takes over. By modeling a system not as a continuous flow but as a sequence of distinct events managed by a Future Event List (FEL) and a Next-Event Time Advance clock, we can reconstruct complex reality inside a computer.
+However, we also demonstrated that simulation is not a replacement for theory, but an extension of it. Through the $M/M/1$ Case Study, we showed that Queuing Theory serves a critical role as a verification tool. By simplifying a simulation model to match standard theoretical assumptions, we can mathematically validate the underlying code before re-introducing real-world complexities.
+
+## Exercises
+
+1. Consider a cloud computing server that processes requests (jobs). The arrivals follow a Poisson distribution with a mean rate of $\lambda$ jobs per minute, and the service times are exponentially distributed with a mean rate of $\mu$ jobs per minute. Assume $\lambda=4$ jobs/min and $\mu=5$ jobs/min. Calculate the utilization factor $\rho$, the 
+average waiting time in the queue $W_q$ and the average number of jobs in the system $L$.
+
+2. Due to a marketing campaign, the arrival rate increases slightly to $\lambda=4.8$ jobs/min. The server speeds remains at $\mu=5$. Calculate the new average waiting time in the queue $W_q$. By what percentage did the waiting time increase? Compare it to the traffic increase and explain the difference.
+
+3. Modify the provided Python code to simulate a $M/M/3$ model instead (i.e. with 3 parallel servers). What needs to be changed in the code? Compare the simulated Average Waiting Time $W_q$ in the case $\mu=5$ with 3 servers and $M/M/1$ with $\mu=15$. Are they the same? Why?

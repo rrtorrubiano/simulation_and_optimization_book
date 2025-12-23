@@ -301,6 +301,8 @@ window.Quarto = {
   <li><a href="#analyzing-the-output" id="toc-analyzing-the-output" class="nav-link" data-scroll-target="#analyzing-the-output"><span class="header-section-number">4.3.4</span> Analyzing the Output</a></li>
   </ul></li>
   <li><a href="#comparative-study" id="toc-comparative-study" class="nav-link" data-scroll-target="#comparative-study"><span class="header-section-number">4.4</span> Comparative Study</a></li>
+  <li><a href="#summary-1" id="toc-summary-1" class="nav-link" data-scroll-target="#summary-1"><span class="header-section-number">4.5</span> Summary</a></li>
+  <li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises"><span class="header-section-number">4.6</span> Exercises</a></li>
   </ul>
 </nav>
     </div>
@@ -537,16 +539,16 @@ W_q &amp;= \frac{\lambda}{\mu(\mu-\lambda)}=\frac{5}{6(6-5)}=\frac{5}{6}
 \end{aligned}
 \]</span></p>
 <p>The average number of tickets in the system is 5, and the average waiting time is <span class="math inline">\(5/6\)</span> hours or 50 minutes. Let’s now build an equivalent DES system to replicate these results computationally. We start by defining the system parameters and some helpers:</p>
-<div id="96224416" class="cell" data-execution_count="1">
+<div id="867429ca" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> random</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> heapq  </span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Configuration ---</span></span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>RANDOM_SEED <span class="op">=</span> <span class="dv">42</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>TOTAL_TIME <span class="op">=</span> <span class="fl">50000.0</span>  <span class="co"># minutes</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>TOTAL_TIME <span class="op">=</span> <span class="fl">20000.0</span>  <span class="co"># minutes</span></span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>ARRIVAL_RATE <span class="op">=</span> <span class="fl">5.0</span> <span class="op">/</span> <span class="fl">60.0</span>  <span class="co"># lambda (customers per minute)</span></span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>SERVICE_RATE <span class="op">=</span> <span class="fl">6.0</span> <span class="op">/</span> <span class="fl">60.0</span>  <span class="co"># mu (customers per minute)</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>WARMUP_TIME <span class="op">=</span> <span class="fl">5000.0</span>   <span class="co"># Time to discard (Transient State)</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>WARMUP_TIME <span class="op">=</span> <span class="fl">100.0</span>   <span class="co"># Time to discard (Transient State)</span></span>
 <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>clock <span class="op">=</span> <span class="fl">0.0</span></span>
 <span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>queue <span class="op">=</span> []  <span class="co"># Stores arrival times of waiting customers</span></span>
@@ -564,7 +566,7 @@ W_q &amp;= \frac{\lambda}{\mu(\mu-\lambda)}=\frac{5}{6(6-5)}=\frac{5}{6}
 <span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>    heapq.heappush(fel, (time, event_type))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>The main simulation loop can be implemented as follows:</p>
-<div id="551a7b01" class="cell" data-execution_count="2">
+<div id="0b8a2d76" class="cell" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> run_simulation():</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">global</span> clock, server_busy, total_customers_served, area_q_t, last_event_time, warmup_cleared</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    </span>
@@ -624,20 +626,34 @@ W_q &amp;= \frac{\lambda}{\mu(\mu-\lambda)}=\frac{5}{6(6-5)}=\frac{5}{6}
 <span id="cb2-57"><a href="#cb2-57" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"Simulated L (Avg in System): </span><span class="sc">{</span>L_sim<span class="sc">:.4f}</span><span class="ss"> tickets"</span>)</span>
 <span id="cb2-58"><a href="#cb2-58" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"Simulated Wq (Avg Wait in Queue): </span><span class="sc">{</span>Wq_sim<span class="sc">:.4f}</span><span class="ss"> min"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>The FEL is implemented using the <code>fel</code> variable. We start by scheduling the first arrival and entering the main loop. We then extract the first element from the FEL. If the server happens to be busy, we queue the element and schedule the next arrival. Otherwise, we serve the element and schedule its departure from the system. The departure event schedules the next departure if there are still elements waiting in the queue, otherwise it sets the state variable <code>server_busy</code> again to <code>False</code>.</p>
+<p>The FEL is implemented using the <code>fel</code> variable. We start by scheduling the first arrival and entering the main loop. We then extract the first element from the FEL. If the server happens to be busy, we queue the element and schedule the next arrival. Otherwise, we serve the element and schedule its departure from the system. The departure event schedules the next departure if there are still elements waiting in the queue, otherwise it sets the state variable <code>server_busy</code> again to <code>False</code>. Note that we are calculating <code>L_sim</code> (the simulated length of the system) by just calculating the area under the curve that describes the current length of the system and dividing by the total time to get the average. The other quantities are given by Little’s Law.</p>
 <p>We now run the simulation</p>
-<div id="1ceffcb2" class="cell" data-execution_count="3">
+<div id="da5a03db" class="cell" data-execution_count="3">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>run_simulation()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>--- Simulation Results (Steady State Only) ---
-Total Time: 50000.0 | Warm-up: 5000.0
-Valid Data Duration: 45019.7 min
-Total Customers Served (in valid period): 3716
+Total Time: 20000.0 | Warm-up: 100.0
+Valid Data Duration: 19927.2 min
+Total Customers Served (in valid period): 1666
 ------------------------------
-Simulated L (Avg in System): 3.6191 tickets
-Simulated Wq (Avg Wait in Queue): 33.4287 min</code></pre>
+Simulated L (Avg in System): 5.5395 tickets
+Simulated Wq (Avg Wait in Queue): 56.4742 min</code></pre>
 </div>
 </div>
+<p>As can be seen, the result are close to the theoretical 5 tickets and 50 minutes. The more steps we simulate, the closer will the system get to the true analytical results. Note that we are discarding the events that happened before <code>WARMUP_TIME</code> so that the system has enough time to leave the initial, empty state and reach a steady state.</p>
+<p>However, what is then the point of DES, if we can calculate everything analytically? The reason is that, in practice, very often we can’t. For instance, imagine that additionally we have the rule that the technician takes a 10-minute break every 2 hours, but only if no high-priority tickets are waiting. Queuing Theory can’t handle this problem, so we need to resort to DES instead. In the simulation code, it would be enough to add some additional logic to model this case accurately.</p>
+</section>
+<section id="summary-1" class="level2" data-number="4.5">
+<h2 data-number="4.5" class="anchored" data-anchor-id="summary-1"><span class="header-section-number">4.5</span> Summary</h2>
+<p>In this chapter, we have explored the complementary relationship between the mathematical elegance of Queuing Theory and the computational power of Discrete Event Simulation (DES). We began by establishing the fundamental vocabulary of systems engineering: entities, resources, and queues. We learned that while Queuing Theory provides exact, closed-form solutions for performance metrics like <span class="math inline">\(L\)</span> and <span class="math inline">\(W_q\)</span>, it is bounded by the assumptions. When a system involves complex routing, time-varying arrival rates, or resource dependencies, analytical formulas become intractable. This is where Discrete Event Simulation takes over. By modeling a system not as a continuous flow but as a sequence of distinct events managed by a Future Event List (FEL) and a Next-Event Time Advance clock, we can reconstruct complex reality inside a computer. However, we also demonstrated that simulation is not a replacement for theory, but an extension of it. Through the <span class="math inline">\(M/M/1\)</span> Case Study, we showed that Queuing Theory serves a critical role as a verification tool. By simplifying a simulation model to match standard theoretical assumptions, we can mathematically validate the underlying code before re-introducing real-world complexities.</p>
+</section>
+<section id="exercises" class="level2" data-number="4.6">
+<h2 data-number="4.6" class="anchored" data-anchor-id="exercises"><span class="header-section-number">4.6</span> Exercises</h2>
+<ol type="1">
+<li><p>Consider a cloud computing server that processes requests (jobs). The arrivals follow a Poisson distribution with a mean rate of <span class="math inline">\(\lambda\)</span> jobs per minute, and the service times are exponentially distributed with a mean rate of <span class="math inline">\(\mu\)</span> jobs per minute. Assume <span class="math inline">\(\lambda=4\)</span> jobs/min and <span class="math inline">\(\mu=5\)</span> jobs/min. Calculate the utilization factor <span class="math inline">\(\rho\)</span>, the average waiting time in the queue <span class="math inline">\(W_q\)</span> and the average number of jobs in the system <span class="math inline">\(L\)</span>.</p></li>
+<li><p>Due to a marketing campaign, the arrival rate increases slightly to <span class="math inline">\(\lambda=4.8\)</span> jobs/min. The server speeds remains at <span class="math inline">\(\mu=5\)</span>. Calculate the new average waiting time in the queue <span class="math inline">\(W_q\)</span>. By what percentage did the waiting time increase? Compare it to the traffic increase and explain the difference.</p></li>
+<li><p>Modify the provided Python code to simulate a <span class="math inline">\(M/M/3\)</span> model instead (i.e.&nbsp;with 3 parallel servers). What needs to be changed in the code? Compare the simulated Average Waiting Time <span class="math inline">\(W_q\)</span> in the case <span class="math inline">\(\mu=5\)</span> with 3 servers and <span class="math inline">\(M/M/1\)</span> with <span class="math inline">\(\mu=15\)</span>. Are they the same? Why?</p></li>
+</ol>
 
 
 </section>
