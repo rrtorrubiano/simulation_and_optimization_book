@@ -15,7 +15,6 @@ book:
         - simulation_basics.qmd
         - monte_carlo.qmd
         - discrete_event.qmd
-        - agent_based.qmd
     - part: "PART II: OPTIMIZATION"
       chapters:
         - optimization_basics.qmd
