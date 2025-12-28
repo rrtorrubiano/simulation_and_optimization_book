@@ -363,5 +363,27 @@
       "PART I: SIMULATION",
       "<span class='chapter-number'>4</span>  <span class='chapter-title'>Discrete events and Queuing Theory</span>"
     ]
+  },
+  {
+    "objectID": "optimization_basics.html",
+    "href": "optimization_basics.html",
+    "title": "5  Optimization basics",
+    "section": "",
+    "text": "5.1 Introduction\nWe now switch our focus to the theory and practice of optimization as one of the building blocks of modern AI. Optimization is the mathematical discipline concerned with finding the “best” solution from a set of available alternatives. It is the invisible utility that powers the modern world. When you type a query into a search engine, an optimization algorithm determines the most relevant ranking of results. When a packet travels across the internet, routing protocols solve shortest-path optimization problems to minimize latency. When a logistics company schedules thousands of deliveries, they are solving complex integer programming problems to minimize fuel consumption and time.\nOptimization is not only a new toolbox of solvers: it’s a fundamental language for modeling the world. Beyond the digital realm, optimization bridges software with the physical world. This is the domain of Operations Research, where mathematical models dictate the efficiency of e.g.\nHowever, one of the most compelling reasons for a modern computer scientist to master optimization lies in the current revolution in Artificial Intelligence and Machine Learning (ML). It is no exaggeration to say that Machine Learning is optimization. While the architecture of a model (e.g., a Convolutional Neural Network or a Transformer) dictates how information flows, optimization dictates what the model actually learns. When we “train” a model, we are mathematically traversing a high-dimensional landscape, searching for a specific set of parameters (weights and biases) that minimizes a loss function. Whether it is a simple Linear Regression minimizing mean squared error or a Large Language Model (LLM) minimizing next-token prediction error, the mechanism is an optimization algorithm—typically a variant of Stochastic Gradient Descent (SGD). In Reinforcement Learning (RL), agents are explicitly designed to maximize a cumulative reward function over time, often requiring complex policy optimization techniques.\nAs we proceed through this part of the book, you will learn that finding the true best solution is not always computationally feasible. In Linear Programming, we can often find the exact global optimum efficiently. In Integer Programming, the problem becomes NP-hard, forcing us to rely on clever search techniques like Branch and Bound. In the rugged, non-convex landscapes of Deep Learning, we often settle for local optima, relying on Heuristics to guide us.\nUnderstanding the mathematical foundations of optimization—convexity, gradients, duality, and complexity—allows you to distinguish between a problem that can be solved perfectly in milliseconds and one that requires an approximation to solve before the heat death of the universe. This chapter provides the roadmap for making those distinctions.",
+    "crumbs": [
+      "PART II: OPTIMIZATION",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Optimization basics</span>"
+    ]
+  },
+  {
+    "objectID": "optimization_basics.html#introduction",
+    "href": "optimization_basics.html#introduction",
+    "title": "5  Optimization basics",
+    "section": "",
+    "text": "Energy grids, where the goal is to balance electricity generation with demand in real-time to prevent blackouts while minimizing costs.\nSuppy chains, where the goal is to determine how many units of a product to ship from a specific set of warehouses to a set of retailers.\nFinance, where the goal is to construct investment portfolios that maximize returns for a specific level of risk.",
+    "crumbs": [
+      "PART II: OPTIMIZATION",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Optimization basics</span>"
+    ]
   }
 ]
