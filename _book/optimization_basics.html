@@ -71,6 +71,35 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
@@ -215,6 +244,7 @@ ul.task-list li input[type="checkbox"] {
    
   <ul>
   <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="header-section-number">5.1</span> Introduction</a></li>
+  <li><a href="#general-problem-formulation" id="toc-general-problem-formulation" class="nav-link" data-scroll-target="#general-problem-formulation"><span class="header-section-number">5.2</span> General Problem Formulation</a></li>
   </ul>
 </nav>
     </div>
@@ -252,6 +282,28 @@ ul.task-list li input[type="checkbox"] {
 <p>However, one of the most compelling reasons for a modern computer scientist to master optimization lies in the current revolution in Artificial Intelligence and Machine Learning (ML). It is no exaggeration to say that <strong>Machine Learning is optimization</strong>. While the architecture of a model (e.g., a Convolutional Neural Network or a Transformer) dictates how information flows, optimization dictates <em>what</em> the model actually learns. When we “train” a model, we are mathematically traversing a high-dimensional landscape, searching for a specific set of parameters (weights and biases) that minimizes a loss function. Whether it is a simple Linear Regression minimizing mean squared error or a Large Language Model (LLM) minimizing next-token prediction error, the mechanism is an optimization algorithm—typically a variant of Stochastic Gradient Descent (SGD). In Reinforcement Learning (RL), agents are explicitly designed to maximize a cumulative reward function over time, often requiring complex policy optimization techniques.</p>
 <p>As we proceed through this part of the book, you will learn that finding the true best solution is not always computationally feasible. In Linear Programming, we can often find the exact global optimum efficiently. In Integer Programming, the problem becomes NP-hard, forcing us to rely on clever search techniques like Branch and Bound. In the rugged, non-convex landscapes of Deep Learning, we often settle for local optima, relying on Heuristics to guide us.</p>
 <p>Understanding the mathematical foundations of optimization—convexity, gradients, duality, and complexity—allows you to distinguish between a problem that can be solved perfectly in milliseconds and one that requires an approximation to solve before the heat death of the universe. This chapter provides the roadmap for making those distinctions.</p>
+</section>
+<section id="general-problem-formulation" class="level2" data-number="5.2">
+<h2 data-number="5.2" class="anchored" data-anchor-id="general-problem-formulation"><span class="header-section-number">5.2</span> General Problem Formulation</h2>
+<p>We will now start developing the mathematical machinery needed to understand this part of the book. To treat optimization as a computational discipline, we must abstract away the specific details of the application (whether it is protein folding or portfolio management) and map the problem into a standardized mathematical structure.</p>
+<p>Almost all optimization problems can be expressed in the following canonical form:</p>
+<p><span class="math display">\[
+\begin{aligned}
+\min_x &amp; f(x) \\
+\text{subject to: } &amp; g_i(x) \le 0\text{, for }i=1,\dots, m \\
+&amp; h_j(x) = 0\text{, for }j=1,\dots, p
+\end{aligned}
+\]</span></p>
+<p>This canonical structure contains several distinct components that dictate the difficulty and the strategy of the solution.</p>
+<p>The <strong>decision variables</strong> <span class="math inline">\(x\in\mathbb{R}^n\)</span> represent the unknowns we wish to determine. In computer science contexts, these are often referred to as <em>parameters</em> or <em>weights</em>. In linear programming, <span class="math inline">\(x\)</span> might represent the flow of traffic across <span class="math inline">\(n\)</span> network edges. In deep learning, <span class="math inline">\(x\)</span> might represent the billions of parameters of a deep neural network. In integer programming, <span class="math inline">\(x\)</span> is restricted to integer values <span class="math inline">\(\mathbb{Z}^n\)</span> which might represent discrete choices (e.g.&nbsp;to select a specific server, whether to invest in an asset or not).</p>
+<p>The <strong>objective function</strong> <span class="math inline">\(f:\mathbb{R}^n\rightarrow\mathbb{R}\)</span> represents the <em>cost</em> or <em>quality</em> of the solution. Usually, the convention is that we solve minimization problems, so if the problem requires to maximize a measure of utility <span class="math inline">\(u(x)\)</span> instead, we minimize the negative <span class="math inline">\(\min_x -u(x)\)</span>. The specific form of the objective function is an important part of the difficulty of the problem. If <span class="math inline">\(f\)</span> is just is a linear “plane”, the direction of improvement is constant. However, if <span class="math inline">\(f\)</span> is a rugged “mountain landscape” (common in non-convex neural network loss surfaces), the direction changes constantly depending on where you are in the space.</p>
+<p>The <strong>constraints</strong> <span class="math inline">\(g_i\)</span> and <span class="math inline">\(h_j\)</span> represents limits or restrictions we are bound to in real systems, like physical, financial and logical limits. Inequality constraints (<span class="math inline">\(g_i(x)\le 0\)</span>) usually represent resource limits or thresholds. For instance, if we want to express that the latency has to be under 100 ms, we might write <span class="math inline">\(\operatorname{latency}(x)\le 100\)</span>, or in the canonical form <span class="math inline">\(\operatorname{latency}(x)-100\le 0\)</span>. On the other side, equality constraints (<span class="math inline">\(h_j(x)=0\)</span>) usually represent strict structural requirements. For instance, the conservation of flow equations we saw in <span class="quarto-unresolved-ref">?sec-sec-monte-carlo</span>. If both <span class="math inline">\(m=0\)</span> and <span class="math inline">\(p=0\)</span>, we call the problem <em>unconstrained</em> and handle it usually by means of techniques like gradient descent.</p>
+<p>The intersection of all constraints is usually referred to as the <strong>feasible region</strong>, denoted by <span class="math inline">\(\Omega\)</span>:</p>
+<p><span class="math display">\[
+\Omega=\{ x\in\mathbb{R}^n \text{ }| \text{ } g_i(x)\le 0\text{, } \forall i\text{, }h_j(x)=0\text{, }\forall j  \}
+\]</span></p>
+<p>Our task is then to find a point <span class="math inline">\(x^*\in\Omega\)</span>, such that <span class="math inline">\(f(x^*)\le f(x)\)</span> for all <span class="math inline">\(x\in\Omega\)</span>. We then call <span class="math inline">\(x^*\)</span> a <strong>global optimum</strong> of <span class="math inline">\(f\)</span> to distinguish it from <strong>local optima</strong> where the point is merely better than its immediate neighbours.</p>
+<p>If <span class="math inline">\(f\)</span> and its constraints turn out to be <strong>convex</strong>, there are usually guarantees that any local minimum will be a global minimum as well, usually making the problem solvable in polynomial time. However, when this is not the case (e.g.&nbsp;deep learning), finding the global optimum becomes NP-hard (although usually reasonable approximations are good enough in practice).</p>
 
 
 </section>

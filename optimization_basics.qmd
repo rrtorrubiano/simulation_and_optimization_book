@@ -27,3 +27,52 @@ However, one of the most compelling reasons for a modern computer scientist to m
 As we proceed through this part of the book, you will learn that finding the true best solution is not always computationally feasible. In Linear Programming, we can often find the exact global optimum efficiently. In Integer Programming, the problem becomes NP-hard, forcing us to rely on clever search techniques like Branch and Bound. In the rugged, non-convex landscapes of Deep Learning, we often settle for local optima, relying on Heuristics to guide us.
 
 Understanding the mathematical foundations of optimization—convexity, gradients, duality, and complexity—allows you to distinguish between a problem that can be solved perfectly in milliseconds and one that requires an approximation to solve before the heat death of the universe. This chapter provides the roadmap for making those distinctions.
+
+## General Problem Formulation
+
+We will now start developing the mathematical machinery needed to understand this part of the book. To treat optimization as a computational discipline, we must abstract away the specific details of the application (whether it is protein folding or portfolio management) and map the problem into a standardized mathematical structure.
+
+Almost all optimization problems can be expressed in the following canonical form:
+
+$$
+\begin{aligned}
+\min_x & f(x) \\
+\text{subject to: } & g_i(x) \le 0\text{, for }i=1,\dots, m \\
+& h_j(x) = 0\text{, for }j=1,\dots, p
+\end{aligned}
+$$
+
+This canonical structure contains several distinct components that dictate the difficulty and the strategy of the solution.
+
+The **decision variables** $x\in\mathbb{R}^n$ represent the unknowns we wish to determine. In computer science contexts, these are often referred to as *parameters* or *weights*. In linear programming, $x$ might represent 
+the flow of traffic across $n$ network edges. In deep learning, $x$ might represent the billions of parameters
+of a deep neural network. In integer programming, $x$ is restricted to integer values $\mathbb{Z}^n$ which
+might represent discrete choices (e.g. to select a specific server, whether to invest in an asset or not).
+
+The **objective function** $f:\mathbb{R}^n\rightarrow\mathbb{R}$ represents the *cost* or *quality* of the solution.
+Usually, the convention is that we solve minimization problems, so if the problem requires to maximize a 
+measure of utility $u(x)$ instead, we minimize the negative $\min_x -u(x)$. The specific form of the objective
+function is an important part of the difficulty of the problem. If $f$ is just is a linear "plane", the direction of improvement is constant. However, if $f$ is a rugged "mountain landscape" (common in non-convex neural network loss surfaces), the direction changes constantly depending on where you are in the space.
+
+The **constraints** $g_i$ and $h_j$ represents limits or restrictions we are bound to in real systems, like 
+physical, financial and logical limits. Inequality constraints ($g_i(x)\le 0$) usually represent resource limits
+or thresholds. For instance, if we want to express that the latency has to be under 100 ms, we might write
+$\operatorname{latency}(x)\le 100$, or in the canonical form $\operatorname{latency}(x)-100\le 0$. On the other
+side, equality constraints ($h_j(x)=0$) usually represent strict structural requirements. For instance, the
+conservation of flow equations we saw in @sec-sec-monte-carlo. If both $m=0$ and $p=0$, we call the problem
+*unconstrained* and handle it usually by means of techniques like gradient descent.
+
+The intersection of all constraints is usually referred to as the **feasible region**, denoted by $\Omega$:
+
+$$
+\Omega=\{ x\in\mathbb{R}^n \text{ }| \text{ } g_i(x)\le 0\text{, } \forall i\text{, }h_j(x)=0\text{, }\forall j  \}
+$$
+
+Our task is then to find a point $x^*\in\Omega$, such that $f(x^*)\le f(x)$ for all $x\in\Omega$. We then call 
+$x^*$ a **global optimum** of $f$ to distinguish it from **local optima** where the point is merely better than
+its immediate neighbours. 
+
+If $f$ and its constraints turn out to be **convex**, there are usually guarantees that any local minimum will 
+be a global minimum as well, usually making the problem solvable in polynomial time. However, when this is not 
+the case (e.g. deep learning), finding the global optimum becomes NP-hard (although usually reasonable 
+approximations are good enough in practice).
