@@ -73,6 +73,60 @@ $x^*$ a **global optimum** of $f$ to distinguish it from **local optima** where 
 its immediate neighbours. 
 
 If $f$ and its constraints turn out to be **convex**, there are usually guarantees that any local minimum will 
-be a global minimum as well, usually making the problem solvable in polynomial time. However, when this is not 
-the case (e.g. deep learning), finding the global optimum becomes NP-hard (although usually reasonable 
+be a global minimum as well, making the problem solvable efficiently. A function $f$ is said to be convex if it satisfies the following property: For any $t\in[0,1]$ and any two points $x_1,x_2$ in the
+domain of the function, we have:
+
+$$
+f(tx_1+(1-t)x_2)\le tf(x_1)+(1-t)f(x_2)
+$$ {#eq-convexity}
+
+Prominent examples of convex functions include linear, quadratic and exponential functions. Intuitively, this means that if we draw a line segment between any points in the function's curve
+$f(x_1)$ and $f(x_2)$, this line will always be either above or on the curve itself.
+When the function to optimize or any of the constraints are non-convex 
+(e.g. deep learning), finding the global optimum becomes NP-hard (although usually reasonable 
 approximations are good enough in practice).
+
+## Classification of Problems
+
+Depending on the form of the function to be optimized, the constraints and the domains of the decision
+variables, we obtain different types of optimization problems. We will now explore the different classifications used for characterizing optimization problems.
+
+### Continuous vs. Discrete
+One of the most significant criteria
+is whether the decision variables are continuous or discrete.
+
+In **continuous optimization** problems, the decision variables live in a continuous space (usually $\mathbb{R}^n$). If the objective function is smooth (i.e. differentiable), we can then calculate gradients and use
+a method like gradient descent to find an optimum of the function. For example, training a neural network under the usual circumstances is a continuous optimization problem.
+
+In **discrete optimization** problems, the decision variables belong to a discrete set like $\mathbb{Z}$ or 
+$\{0,1\}$ and therefore combinatorial in nature. In this case, we can't rely on gradients to optimize the function, and other (more computationally complex) are needed. For instance, the traveling salesman problem already presented in @sec-introduction is a typical example of a discrete optimization problem. These problems often face *combinatorial explosion*. As the number of variables increases, the number of possible configurations grows exponentially. Consequently, many discrete problems are NP-Hard.
+
+In **mixed-integer optimization**, the decision variables contain both discrete and continuous variables. For instance, a power plant might optimize the continuous amount of power to generate (Megawatts) while making discrete decisions about which generators to turn on or off. Mixed-integer problems are therefore
+combinatorial in nature as well and face the same kind of problems than purely discrete optimization problems.
+
+### Unconstrained vs. Constrained
+
+When the feasible region is equals to the domain of the objective function, we say that the problem 
+is **unconstrained**. In this case, we just want to find the minimum of $f$ anywhere in the domain 
+of the function. This is usually the case in neural network training, where our goal is to find
+network weights which are normally not constrained in any specific way.
+
+By contrast, **constrained optimization** problems place a special focus on finding optimal solutions
+that satisfy a specific set of conditions. For example, a self-driving car controller might minimize travel time (objective) subject to the strict constraint that the car must stay within the lane boundaries (constraints). Solving these requires specialized techniques like Lagrange Multipliers or projection methods.
+
+### Deterministic vs. Stochastic
+
+In **deterministic optimization** problems, we assume that the objective function and constraints are known perfectly and do not change. There is no uncertainty when evaluating the objective function: any given input
+will deterministically produce the same output.
+
+In **stochastic optimization**, the objective function involves some random quantity, so we usually 
+resort to minimizing expectations instead. This is the native language of ML. Since we cannot calculate the loss over the true data distribution (which is unknown), we estimate it using finite, noisy batches of data. Stochastic Gradient Descent (SGD) is named precisely because it treats the true gradient as a random variable to be estimated.
+
+### Linearity and Convexity
+
+Finally, it is the *geometry* of the function and the constraints which largely determines the computational
+complexity of the problem. There are three cases that we might face:
+
+- Both the objective and the constraints are **linear**: We call this **linear programming (LP)** and there are efficient methods for solving this type of problems.
+- All functions are convex, but some are **non-linear**: The objective is curved, but has only one minimum. These are solvable in polynomial time.
+- There is some **non-convex** function: The landscape has hills, valleys, and saddle points. Finding the global minimum is generally intractable. Most modern DL falls into this category, forcing us to rely on heuristics and accept "good enough" approximations or local optima.

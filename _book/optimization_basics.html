@@ -245,6 +245,13 @@ window.Quarto = {
   <ul>
   <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="header-section-number">5.1</span> Introduction</a></li>
   <li><a href="#general-problem-formulation" id="toc-general-problem-formulation" class="nav-link" data-scroll-target="#general-problem-formulation"><span class="header-section-number">5.2</span> General Problem Formulation</a></li>
+  <li><a href="#classification-of-problems" id="toc-classification-of-problems" class="nav-link" data-scroll-target="#classification-of-problems"><span class="header-section-number">5.3</span> Classification of Problems</a>
+  <ul class="collapse">
+  <li><a href="#continuous-vs.-discrete" id="toc-continuous-vs.-discrete" class="nav-link" data-scroll-target="#continuous-vs.-discrete"><span class="header-section-number">5.3.1</span> Continuous vs.&nbsp;Discrete</a></li>
+  <li><a href="#unconstrained-vs.-constrained" id="toc-unconstrained-vs.-constrained" class="nav-link" data-scroll-target="#unconstrained-vs.-constrained"><span class="header-section-number">5.3.2</span> Unconstrained vs.&nbsp;Constrained</a></li>
+  <li><a href="#deterministic-vs.-stochastic" id="toc-deterministic-vs.-stochastic" class="nav-link" data-scroll-target="#deterministic-vs.-stochastic"><span class="header-section-number">5.3.3</span> Deterministic vs.&nbsp;Stochastic</a></li>
+  <li><a href="#linearity-and-convexity" id="toc-linearity-and-convexity" class="nav-link" data-scroll-target="#linearity-and-convexity"><span class="header-section-number">5.3.4</span> Linearity and Convexity</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -303,9 +310,43 @@ window.Quarto = {
 \Omega=\{ x\in\mathbb{R}^n \text{ }| \text{ } g_i(x)\le 0\text{, } \forall i\text{, }h_j(x)=0\text{, }\forall j  \}
 \]</span></p>
 <p>Our task is then to find a point <span class="math inline">\(x^*\in\Omega\)</span>, such that <span class="math inline">\(f(x^*)\le f(x)\)</span> for all <span class="math inline">\(x\in\Omega\)</span>. We then call <span class="math inline">\(x^*\)</span> a <strong>global optimum</strong> of <span class="math inline">\(f\)</span> to distinguish it from <strong>local optima</strong> where the point is merely better than its immediate neighbours.</p>
-<p>If <span class="math inline">\(f\)</span> and its constraints turn out to be <strong>convex</strong>, there are usually guarantees that any local minimum will be a global minimum as well, usually making the problem solvable in polynomial time. However, when this is not the case (e.g.&nbsp;deep learning), finding the global optimum becomes NP-hard (although usually reasonable approximations are good enough in practice).</p>
+<p>If <span class="math inline">\(f\)</span> and its constraints turn out to be <strong>convex</strong>, there are usually guarantees that any local minimum will be a global minimum as well, making the problem solvable efficiently. A function <span class="math inline">\(f\)</span> is said to be convex if it satisfies the following property: For any <span class="math inline">\(t\in[0,1]\)</span> and any two points <span class="math inline">\(x_1,x_2\)</span> in the domain of the function, we have:</p>
+<p><span id="eq-convexity"><span class="math display">\[
+f(tx_1+(1-t)x_2)\le tf(x_1)+(1-t)f(x_2)
+\tag{5.1}\]</span></span></p>
+<p>Prominent examples of convex functions include linear, quadratic and exponential functions. Intuitively, this means that if we draw a line segment between any points in the function’s curve <span class="math inline">\(f(x_1)\)</span> and <span class="math inline">\(f(x_2)\)</span>, this line will always be either above or on the curve itself. When the function to optimize or any of the constraints are non-convex (e.g.&nbsp;deep learning), finding the global optimum becomes NP-hard (although usually reasonable approximations are good enough in practice).</p>
+</section>
+<section id="classification-of-problems" class="level2" data-number="5.3">
+<h2 data-number="5.3" class="anchored" data-anchor-id="classification-of-problems"><span class="header-section-number">5.3</span> Classification of Problems</h2>
+<p>Depending on the form of the function to be optimized, the constraints and the domains of the decision variables, we obtain different types of optimization problems. We will now explore the different classifications used for characterizing optimization problems.</p>
+<section id="continuous-vs.-discrete" class="level3" data-number="5.3.1">
+<h3 data-number="5.3.1" class="anchored" data-anchor-id="continuous-vs.-discrete"><span class="header-section-number">5.3.1</span> Continuous vs.&nbsp;Discrete</h3>
+<p>One of the most significant criteria is whether the decision variables are continuous or discrete.</p>
+<p>In <strong>continuous optimization</strong> problems, the decision variables live in a continuous space (usually <span class="math inline">\(\mathbb{R}^n\)</span>). If the objective function is smooth (i.e.&nbsp;differentiable), we can then calculate gradients and use a method like gradient descent to find an optimum of the function. For example, training a neural network under the usual circumstances is a continuous optimization problem.</p>
+<p>In <strong>discrete optimization</strong> problems, the decision variables belong to a discrete set like <span class="math inline">\(\mathbb{Z}\)</span> or <span class="math inline">\(\{0,1\}\)</span> and therefore combinatorial in nature. In this case, we can’t rely on gradients to optimize the function, and other (more computationally complex) are needed. For instance, the traveling salesman problem already presented in <a href="intro.html" class="quarto-xref"><span>Chapter 1</span></a> is a typical example of a discrete optimization problem. These problems often face <em>combinatorial explosion</em>. As the number of variables increases, the number of possible configurations grows exponentially. Consequently, many discrete problems are NP-Hard.</p>
+<p>In <strong>mixed-integer optimization</strong>, the decision variables contain both discrete and continuous variables. For instance, a power plant might optimize the continuous amount of power to generate (Megawatts) while making discrete decisions about which generators to turn on or off. Mixed-integer problems are therefore combinatorial in nature as well and face the same kind of problems than purely discrete optimization problems.</p>
+</section>
+<section id="unconstrained-vs.-constrained" class="level3" data-number="5.3.2">
+<h3 data-number="5.3.2" class="anchored" data-anchor-id="unconstrained-vs.-constrained"><span class="header-section-number">5.3.2</span> Unconstrained vs.&nbsp;Constrained</h3>
+<p>When the feasible region is equals to the domain of the objective function, we say that the problem is <strong>unconstrained</strong>. In this case, we just want to find the minimum of <span class="math inline">\(f\)</span> anywhere in the domain of the function. This is usually the case in neural network training, where our goal is to find network weights which are normally not constrained in any specific way.</p>
+<p>By contrast, <strong>constrained optimization</strong> problems place a special focus on finding optimal solutions that satisfy a specific set of conditions. For example, a self-driving car controller might minimize travel time (objective) subject to the strict constraint that the car must stay within the lane boundaries (constraints). Solving these requires specialized techniques like Lagrange Multipliers or projection methods.</p>
+</section>
+<section id="deterministic-vs.-stochastic" class="level3" data-number="5.3.3">
+<h3 data-number="5.3.3" class="anchored" data-anchor-id="deterministic-vs.-stochastic"><span class="header-section-number">5.3.3</span> Deterministic vs.&nbsp;Stochastic</h3>
+<p>In <strong>deterministic optimization</strong> problems, we assume that the objective function and constraints are known perfectly and do not change. There is no uncertainty when evaluating the objective function: any given input will deterministically produce the same output.</p>
+<p>In <strong>stochastic optimization</strong>, the objective function involves some random quantity, so we usually resort to minimizing expectations instead. This is the native language of ML. Since we cannot calculate the loss over the true data distribution (which is unknown), we estimate it using finite, noisy batches of data. Stochastic Gradient Descent (SGD) is named precisely because it treats the true gradient as a random variable to be estimated.</p>
+</section>
+<section id="linearity-and-convexity" class="level3" data-number="5.3.4">
+<h3 data-number="5.3.4" class="anchored" data-anchor-id="linearity-and-convexity"><span class="header-section-number">5.3.4</span> Linearity and Convexity</h3>
+<p>Finally, it is the <em>geometry</em> of the function and the constraints which largely determines the computational complexity of the problem. There are three cases that we might face:</p>
+<ul>
+<li>Both the objective and the constraints are <strong>linear</strong>: We call this <strong>linear programming (LP)</strong> and there are efficient methods for solving this type of problems.</li>
+<li>All functions are convex, but some are <strong>non-linear</strong>: The objective is curved, but has only one minimum. These are solvable in polynomial time.</li>
+<li>There is some <strong>non-convex</strong> function: The landscape has hills, valleys, and saddle points. Finding the global minimum is generally intractable. Most modern DL falls into this category, forcing us to rely on heuristics and accept “good enough” approximations or local optima.</li>
+</ul>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->
