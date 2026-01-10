@@ -171,3 +171,54 @@ $$
 $$
 
 which represents the magnitue of the largest single component of $x$. It is frequently used in robust optimization and analyzing worst-case scenarios (e.g., adversarial attacks on neural networks).
+
+### Matrix Calculus
+
+In general, in order to miminize a function $f(x)$, we need to know how $f$ changes with slight perturbations
+of $x$. In high dimensions, single-variable derivatives are replaced by vectors and matrices of derivatives.
+
+The **gradient** is the vector of first-order partial derivatives:
+
+$$
+\nabla f(x)=\left[\begin{array}{c}
+\dfrac{\partial f(x)}{\partial x_1}\\
+\dfrac{\partial f(x)}{\partial x_2}\\
+\vdots \\
+\dfrac{\partial f(x)}{\partial x_n}
+\end{array}\right]
+$$
+
+The gradient has a distinct geometric interpretation: it points in the direction of steepest ascent. Consequently, the direction of steepest descent, which is the path used by nearly all training algorithms in DL is $-\nabla f(x)$.
+
+While the gradient tells us the slope, it tells us nothing about the curvature.  This information is captured by the **Hessian**, the symmetric $n\times n$ matrix of second-order partial derivatives:
+
+$$
+\nabla^2 f(x)=
+\begin{bmatrix} 
+    \dfrac{\partial^2 f}{\partial x_1^2} & \dfrac{\partial^2 f}{\partial x_1 \partial x_2} & \dots \\
+    \vdots & \ddots & \\
+    \dfrac{\partial^2 f}{\partial x_n\partial x_1} &        & \dfrac{\partial^2 f}{\partial x_n^2}
+\end{bmatrix}
+$$
+
+Intuitively, ff the Hessian is "large" (high curvature), the gradient changes rapidly, and algorithms must take small steps to avoid overshooting. If the Hessian is "small" (flat curvature), algorithms can take larger steps.
+
+### Eigenvalues and Definiteness
+
+In optimization, it is usually important to know whether the Hessian is *positive definite*. This is the matrix
+analogue of a number (scalar) being positive. In a nutshell, (semi-)positive definiteness of the Hessian will 
+indicate convexity (in general) and also if a local optimum is a maximum or a minimum.
+
+We say that a symmetric matrix $A$ is **positive semidefinite (PSD)** if and only if $x^T A x \ge 0$ for all $x$ different from zero. Alternatively, $A$ is PSD if and only if all eigenvalues are non-negative $\lambda_i\ge 0$.
+
+For a square matrix $A$, an eigenvector $v$ and eigenvalue $\lambda$ satisfy $Av=\lambda v$. The eigenvalues represent the "scaling factors" of the matrix along its principal axes. In the context of a loss landscape, the eigenvalues of the Hessian describe the curvature in different directions: large $\lambda$ (in absolute value) indicates steep curvature, while small $\lambda$ (in absolute value) indicates flat curvature.
+
+Let $x$ be such that $\nabla f(x)=0$ (i.e. $x$ is a singular point). In order to check if $x$ is a maximum, 
+minimum or a saddle point, we check the Hessian:
+
+- If $\nabla^2f(x)$ is positive definite, then $x$ is a **local minimum**.
+- If $\nabla^2f(x)$ is positive negative, then $x$ is a **local maximum**.
+- If $\nabla^2f(x)$ has mixed signs, then $x$ is a **saddle point**.
+
+Importantly, a function is convex if and only if *its Hessian is positive semidefinite everywhere*. This guarantees that any local minimum is **global**.
+
