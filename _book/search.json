@@ -407,5 +407,16 @@
       "PART II: OPTIMIZATION",
       "<span class='chapter-number'>5</span>  <span class='chapter-title'>Optimization basics</span>"
     ]
+  },
+  {
+    "objectID": "optimization_basics.html#mathematical-prerequisites",
+    "href": "optimization_basics.html#mathematical-prerequisites",
+    "title": "5  Optimization basics",
+    "section": "5.4 Mathematical Prerequisites",
+    "text": "5.4 Mathematical Prerequisites\nIn this section, we will review some mathematical background knowledge that will be needed across this part of the book. We will frame some fundamental concepts in linear algebra and calculus though the lens of optimization theory to provide a strong foundation for the chapters to come.\nIn optimization, we treat data and parameters as vectors in space. We use norms to measure errors, gradients to find directions of improvement, and Hessians to understand the landscape’s terrain.\n\n5.4.1 Vector spaces and norms\nOptimization algorithms operate in vector spaces like \\(\\mathbb{R}^n\\). To determine if one solution is “better” or “closer” to the target than another, we need a rigorous way to measure size and distance. This is the role of the norm, which is a function \\(\\lVert \\cdot \\rVert:\\mathbb{R}^n\\rightarrow\\mathbb{R}\\) that takes a vector and returns a non-negative value that indicates its “size”. Some typical examples of norms widely used in ML and optimization are the \\(L_2\\), \\(L_1\\) and \\(L_\\infty\\) norms.\nThe \\(L_2\\) norm is also known as Euclidean norm and is defined by:\n\\[\n\\lVert x \\rVert _2 = \\sqrt{\\sum_{i=1}^n x_i^2} = \\sqrt{x^Tx}\n\\]\nThis norm can be interpreted as the usual, “straight-line” distance. Geometrically, constraining the \\(L_2\\) norm of a vector using an upper value e.g. \\(\\lVert x \\rVert _2 \\le 1\\) results in a sphere.\nThe \\(L_1\\) norm is also known as the Manhattan norm and is defined by:\n\\[\n\\lVert x \\rVert _1 = \\sum_{i=1}^n |x_i|\n\\]\nInstead of using the sums of squares like the \\(L_2\\) norm, the \\(L_1\\) norm just uses the absolute values. Geometrically, a region like \\(\\lVert x \\rVert _1 \\le 1\\) can be interpreted as a polytope (i.e. a “diamond” form).\nLastly, the infinity norm is defined by:\n\\[\n\\lVert x \\rVert _\\infty = \\max_i |x_i|\n\\]\nwhich represents the magnitue of the largest single component of \\(x\\). It is frequently used in robust optimization and analyzing worst-case scenarios (e.g., adversarial attacks on neural networks).",
+    "crumbs": [
+      "PART II: OPTIMIZATION",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Optimization basics</span>"
+    ]
   }
 ]

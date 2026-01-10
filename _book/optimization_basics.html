@@ -252,6 +252,10 @@ window.Quarto = {
   <li><a href="#deterministic-vs.-stochastic" id="toc-deterministic-vs.-stochastic" class="nav-link" data-scroll-target="#deterministic-vs.-stochastic"><span class="header-section-number">5.3.3</span> Deterministic vs.&nbsp;Stochastic</a></li>
   <li><a href="#linearity-and-convexity" id="toc-linearity-and-convexity" class="nav-link" data-scroll-target="#linearity-and-convexity"><span class="header-section-number">5.3.4</span> Linearity and Convexity</a></li>
   </ul></li>
+  <li><a href="#mathematical-prerequisites" id="toc-mathematical-prerequisites" class="nav-link" data-scroll-target="#mathematical-prerequisites"><span class="header-section-number">5.4</span> Mathematical Prerequisites</a>
+  <ul class="collapse">
+  <li><a href="#vector-spaces-and-norms" id="toc-vector-spaces-and-norms" class="nav-link" data-scroll-target="#vector-spaces-and-norms"><span class="header-section-number">5.4.1</span> Vector spaces and norms</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -344,6 +348,30 @@ f(tx_1+(1-t)x_2)\le tf(x_1)+(1-t)f(x_2)
 <li>All functions are convex, but some are <strong>non-linear</strong>: The objective is curved, but has only one minimum. These are solvable in polynomial time.</li>
 <li>There is some <strong>non-convex</strong> function: The landscape has hills, valleys, and saddle points. Finding the global minimum is generally intractable. Most modern DL falls into this category, forcing us to rely on heuristics and accept “good enough” approximations or local optima.</li>
 </ul>
+</section>
+</section>
+<section id="mathematical-prerequisites" class="level2" data-number="5.4">
+<h2 data-number="5.4" class="anchored" data-anchor-id="mathematical-prerequisites"><span class="header-section-number">5.4</span> Mathematical Prerequisites</h2>
+<p>In this section, we will review some mathematical background knowledge that will be needed across this part of the book. We will frame some fundamental concepts in linear algebra and calculus though the lens of optimization theory to provide a strong foundation for the chapters to come.</p>
+<p>In optimization, we treat data and parameters as vectors in space. We use norms to measure errors, gradients to find directions of improvement, and Hessians to understand the landscape’s terrain.</p>
+<section id="vector-spaces-and-norms" class="level3" data-number="5.4.1">
+<h3 data-number="5.4.1" class="anchored" data-anchor-id="vector-spaces-and-norms"><span class="header-section-number">5.4.1</span> Vector spaces and norms</h3>
+<p>Optimization algorithms operate in vector spaces like <span class="math inline">\(\mathbb{R}^n\)</span>. To determine if one solution is “better” or “closer” to the target than another, we need a rigorous way to measure size and distance. This is the role of the <strong>norm</strong>, which is a function <span class="math inline">\(\lVert \cdot \rVert:\mathbb{R}^n\rightarrow\mathbb{R}\)</span> that takes a vector and returns a non-negative value that indicates its “size”. Some typical examples of norms widely used in ML and optimization are the <span class="math inline">\(L_2\)</span>, <span class="math inline">\(L_1\)</span> and <span class="math inline">\(L_\infty\)</span> norms.</p>
+<p>The <span class="math inline">\(L_2\)</span> norm is also known as <strong>Euclidean norm</strong> and is defined by:</p>
+<p><span class="math display">\[
+\lVert x \rVert _2 = \sqrt{\sum_{i=1}^n x_i^2} = \sqrt{x^Tx}
+\]</span></p>
+<p>This norm can be interpreted as the usual, “straight-line” distance. Geometrically, constraining the <span class="math inline">\(L_2\)</span> norm of a vector using an upper value e.g.&nbsp;<span class="math inline">\(\lVert x \rVert _2 \le 1\)</span> results in a sphere.</p>
+<p>The <span class="math inline">\(L_1\)</span> norm is also known as the <strong>Manhattan norm</strong> and is defined by:</p>
+<p><span class="math display">\[
+\lVert x \rVert _1 = \sum_{i=1}^n |x_i|
+\]</span></p>
+<p>Instead of using the sums of squares like the <span class="math inline">\(L_2\)</span> norm, the <span class="math inline">\(L_1\)</span> norm just uses the absolute values. Geometrically, a region like <span class="math inline">\(\lVert x \rVert _1 \le 1\)</span> can be interpreted as a polytope (i.e.&nbsp;a “diamond” form).</p>
+<p>Lastly, the <strong>infinity norm</strong> is defined by:</p>
+<p><span class="math display">\[
+\lVert x \rVert _\infty = \max_i |x_i|
+\]</span></p>
+<p>which represents the magnitue of the largest single component of <span class="math inline">\(x\)</span>. It is frequently used in robust optimization and analyzing worst-case scenarios (e.g., adversarial attacks on neural networks).</p>
 
 
 </section>
