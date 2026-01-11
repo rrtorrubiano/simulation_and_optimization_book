@@ -66,7 +66,7 @@ The intersection of all constraints is usually referred to as the **feasible reg
 
 $$
 \Omega=\{ x\in\mathbb{R}^n \text{ }| \text{ } g_i(x)\le 0\text{, } \forall i\text{, }h_j(x)=0\text{, }\forall j  \}
-$$
+$$ {#eq-feasible-region}
 
 Our task is then to find a point $x^*\in\Omega$, such that $f(x^*)\le f(x)$ for all $x\in\Omega$. We then call 
 $x^*$ a **global optimum** of $f$ to distinguish it from **local optima** where the point is merely better than
@@ -222,3 +222,40 @@ minimum or a saddle point, we check the Hessian:
 
 Importantly, a function is convex if and only if *its Hessian is positive semidefinite everywhere*. This guarantees that any local minimum is **global**.
 
+## Why Convexity Is Good?
+
+In mathematics in general, the distinction between easy and hard problems is done based on whether the problems are
+linear (easy) or non-linear (hard). However, in optimization, this distinction would be misleading. The defining property for optimization problems to be easily solvable or not is actually **convexity**. If a problem is convex, we can generally solve it efficiently and guarantee that our solution is the global optimum. If it is non-convex, we are entering a world of NP-hardness, local traps, and heuristics.
+
+Optimization problems are constrained to a feasible region $\Omega$ (see @eq-feasible-region). The geometry of this region dictates how we can move through the search space. In general, a set $C\subseteq\mathbb{R}^n$ is said to be **convex** if and only if for any two points $x,y\in C$, the line segment that joins those two points is entirely
+contained in $C$. More formally:
+
+$$
+\theta x + (1-\theta)y \in C\text{,    for all }x,y\in C\text{, and }\theta \in [0,1]
+$$ 
+
+Intuitively, a circle and a square are convex; a star shape or a crescent moon are not.
+
+While convex sets describe the constraints, convex functions describe the objective $f(x)$. For the sake of completeness, we re-state the definition of a convex function: for all $x,y$ in the domain of the function, we have:
+
+$$
+f(\theta x+(1-\theta)y) \le \theta f(x) + (1-\theta)f(y)\text{, }\forall \theta \in [0,1]
+$$
+
+To analyze algorithms, we rely on differential definitions of convexity. The **first-order condition** states that
+
+$$
+f(y) \ge f(x) + \nabla f(x)^T(y-x)
+$$
+
+which means that the tangent plane (the first-order Taylor approximation of the function around any point $x$) is always *below* the function everywhere (for all $y$). So if we have that $x$ is a singular point ($\nabla f(x)=0$),
+this automatically means that $x$ is a global minimum (since $f(y)\ge f(x)$).
+
+The **second-order condition** states that the Hessian is positive semidefinite everywhere $\nabla^2 f(x) \succeq 0$, which means that the curvature is always "upwards". This implies that the function is convex everywhere.
+
+Now if the objective function $f(x)$ is convex *and* the feasible region $\Omega$ is a convex set, we have:
+
+1. Any local minimum is a **global minimum**.
+2. The set of global minima is itself a **convex set** (so any convex combination of global minima is itself a global minimum).
+
+This means that, in a convex optimization problem (e.g., linear regression, Support Vector Machines, Linear Programming), we do not need to worry about initialization. We can start the algorithm anywhere in the feasible region, follow the negative gradient, and we are mathematically guaranteed to converge to the best possible solution. However, in a non-convex optimization problem (e.g., DL), this guarantee vanishes. The loss landscape of a neural network is riddled with local minima, saddle points, and flat plateaus. A gradient descent algorithm might get stuck in a suboptimal valley, which is why training deep networks requires "tricks" like random restarts, momentum, and stochastic noise to escape local traps.

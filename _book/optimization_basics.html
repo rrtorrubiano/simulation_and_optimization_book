@@ -258,6 +258,7 @@ window.Quarto = {
   <li><a href="#matrix-calculus" id="toc-matrix-calculus" class="nav-link" data-scroll-target="#matrix-calculus"><span class="header-section-number">5.4.2</span> Matrix Calculus</a></li>
   <li><a href="#eigenvalues-and-definiteness" id="toc-eigenvalues-and-definiteness" class="nav-link" data-scroll-target="#eigenvalues-and-definiteness"><span class="header-section-number">5.4.3</span> Eigenvalues and Definiteness</a></li>
   </ul></li>
+  <li><a href="#why-convexity-is-good" id="toc-why-convexity-is-good" class="nav-link" data-scroll-target="#why-convexity-is-good"><span class="header-section-number">5.5</span> Why Convexity Is Good?</a></li>
   </ul>
 </nav>
     </div>
@@ -312,14 +313,14 @@ window.Quarto = {
 <p>The <strong>objective function</strong> <span class="math inline">\(f:\mathbb{R}^n\rightarrow\mathbb{R}\)</span> represents the <em>cost</em> or <em>quality</em> of the solution. Usually, the convention is that we solve minimization problems, so if the problem requires to maximize a measure of utility <span class="math inline">\(u(x)\)</span> instead, we minimize the negative <span class="math inline">\(\min_x -u(x)\)</span>. The specific form of the objective function is an important part of the difficulty of the problem. If <span class="math inline">\(f\)</span> is just is a linear “plane”, the direction of improvement is constant. However, if <span class="math inline">\(f\)</span> is a rugged “mountain landscape” (common in non-convex neural network loss surfaces), the direction changes constantly depending on where you are in the space.</p>
 <p>The <strong>constraints</strong> <span class="math inline">\(g_i\)</span> and <span class="math inline">\(h_j\)</span> represents limits or restrictions we are bound to in real systems, like physical, financial and logical limits. Inequality constraints (<span class="math inline">\(g_i(x)\le 0\)</span>) usually represent resource limits or thresholds. For instance, if we want to express that the latency has to be under 100 ms, we might write <span class="math inline">\(\operatorname{latency}(x)\le 100\)</span>, or in the canonical form <span class="math inline">\(\operatorname{latency}(x)-100\le 0\)</span>. On the other side, equality constraints (<span class="math inline">\(h_j(x)=0\)</span>) usually represent strict structural requirements. For instance, the conservation of flow equations we saw in <span class="quarto-unresolved-ref">?sec-sec-monte-carlo</span>. If both <span class="math inline">\(m=0\)</span> and <span class="math inline">\(p=0\)</span>, we call the problem <em>unconstrained</em> and handle it usually by means of techniques like gradient descent.</p>
 <p>The intersection of all constraints is usually referred to as the <strong>feasible region</strong>, denoted by <span class="math inline">\(\Omega\)</span>:</p>
-<p><span class="math display">\[
+<p><span id="eq-feasible-region"><span class="math display">\[
 \Omega=\{ x\in\mathbb{R}^n \text{ }| \text{ } g_i(x)\le 0\text{, } \forall i\text{, }h_j(x)=0\text{, }\forall j  \}
-\]</span></p>
+\tag{5.1}\]</span></span></p>
 <p>Our task is then to find a point <span class="math inline">\(x^*\in\Omega\)</span>, such that <span class="math inline">\(f(x^*)\le f(x)\)</span> for all <span class="math inline">\(x\in\Omega\)</span>. We then call <span class="math inline">\(x^*\)</span> a <strong>global optimum</strong> of <span class="math inline">\(f\)</span> to distinguish it from <strong>local optima</strong> where the point is merely better than its immediate neighbours.</p>
 <p>If <span class="math inline">\(f\)</span> and its constraints turn out to be <strong>convex</strong>, there are usually guarantees that any local minimum will be a global minimum as well, making the problem solvable efficiently. A function <span class="math inline">\(f\)</span> is said to be convex if it satisfies the following property: For any <span class="math inline">\(t\in[0,1]\)</span> and any two points <span class="math inline">\(x_1,x_2\)</span> in the domain of the function, we have:</p>
 <p><span id="eq-convexity"><span class="math display">\[
 f(tx_1+(1-t)x_2)\le tf(x_1)+(1-t)f(x_2)
-\tag{5.1}\]</span></span></p>
+\tag{5.2}\]</span></span></p>
 <p>Prominent examples of convex functions include linear, quadratic and exponential functions. Intuitively, this means that if we draw a line segment between any points in the function’s curve <span class="math inline">\(f(x_1)\)</span> and <span class="math inline">\(f(x_2)\)</span>, this line will always be either above or on the curve itself. When the function to optimize or any of the constraints are non-convex (e.g.&nbsp;deep learning), finding the global optimum becomes NP-hard (although usually reasonable approximations are good enough in practice).</p>
 </section>
 <section id="classification-of-problems" class="level2" data-number="5.3">
@@ -411,9 +412,34 @@ f(tx_1+(1-t)x_2)\le tf(x_1)+(1-t)f(x_2)
 <li>If <span class="math inline">\(\nabla^2f(x)\)</span> has mixed signs, then <span class="math inline">\(x\)</span> is a <strong>saddle point</strong>.</li>
 </ul>
 <p>Importantly, a function is convex if and only if <em>its Hessian is positive semidefinite everywhere</em>. This guarantees that any local minimum is <strong>global</strong>.</p>
-
-
 </section>
+</section>
+<section id="why-convexity-is-good" class="level2" data-number="5.5">
+<h2 data-number="5.5" class="anchored" data-anchor-id="why-convexity-is-good"><span class="header-section-number">5.5</span> Why Convexity Is Good?</h2>
+<p>In mathematics in general, the distinction between easy and hard problems is done based on whether the problems are linear (easy) or non-linear (hard). However, in optimization, this distinction would be misleading. The defining property for optimization problems to be easily solvable or not is actually <strong>convexity</strong>. If a problem is convex, we can generally solve it efficiently and guarantee that our solution is the global optimum. If it is non-convex, we are entering a world of NP-hardness, local traps, and heuristics.</p>
+<p>Optimization problems are constrained to a feasible region <span class="math inline">\(\Omega\)</span> (see <a href="#eq-feasible-region" class="quarto-xref">Equation&nbsp;<span>5.1</span></a>). The geometry of this region dictates how we can move through the search space. In general, a set <span class="math inline">\(C\subseteq\mathbb{R}^n\)</span> is said to be <strong>convex</strong> if and only if for any two points <span class="math inline">\(x,y\in C\)</span>, the line segment that joins those two points is entirely contained in <span class="math inline">\(C\)</span>. More formally:</p>
+<p><span class="math display">\[
+\theta x + (1-\theta)y \in C\text{,    for all }x,y\in C\text{, and }\theta \in [0,1]
+\]</span></p>
+<p>Intuitively, a circle and a square are convex; a star shape or a crescent moon are not.</p>
+<p>While convex sets describe the constraints, convex functions describe the objective <span class="math inline">\(f(x)\)</span>. For the sake of completeness, we re-state the definition of a convex function: for all <span class="math inline">\(x,y\)</span> in the domain of the function, we have:</p>
+<p><span class="math display">\[
+f(\theta x+(1-\theta)y) \le \theta f(x) + (1-\theta)f(y)\text{, }\forall \theta \in [0,1]
+\]</span></p>
+<p>To analyze algorithms, we rely on differential definitions of convexity. The <strong>first-order condition</strong> states that</p>
+<p><span class="math display">\[
+f(y) \ge f(x) + \nabla f(x)^T(y-x)
+\]</span></p>
+<p>which means that the tangent plane (the first-order Taylor approximation of the function around any point <span class="math inline">\(x\)</span>) is always <em>below</em> the function everywhere (for all <span class="math inline">\(y\)</span>). So if we have that <span class="math inline">\(x\)</span> is a singular point (<span class="math inline">\(\nabla f(x)=0\)</span>), this automatically means that <span class="math inline">\(x\)</span> is a global minimum (since <span class="math inline">\(f(y)\ge f(x)\)</span>).</p>
+<p>The <strong>second-order condition</strong> states that the Hessian is positive semidefinite everywhere <span class="math inline">\(\nabla^2 f(x) \succeq 0\)</span>, which means that the curvature is always “upwards”. This implies that the function is convex everywhere.</p>
+<p>Now if the objective function <span class="math inline">\(f(x)\)</span> is convex <em>and</em> the feasible region <span class="math inline">\(\Omega\)</span> is a convex set, we have:</p>
+<ol type="1">
+<li>Any local minimum is a <strong>global minimum</strong>.</li>
+<li>The set of global minima is itself a <strong>convex set</strong> (so any convex combination of global minima is itself a global minimum).</li>
+</ol>
+<p>This means that, in a convex optimization problem (e.g., linear regression, Support Vector Machines, Linear Programming), we do not need to worry about initialization. We can start the algorithm anywhere in the feasible region, follow the negative gradient, and we are mathematically guaranteed to converge to the best possible solution. However, in a non-convex optimization problem (e.g., DL), this guarantee vanishes. The loss landscape of a neural network is riddled with local minima, saddle points, and flat plateaus. A gradient descent algorithm might get stuck in a suboptimal valley, which is why training deep networks requires “tricks” like random restarts, momentum, and stochastic noise to escape local traps.</p>
+
+
 </section>
 
 </main> <!-- /main -->
