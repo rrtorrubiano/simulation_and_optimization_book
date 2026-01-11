@@ -259,3 +259,16 @@ Now if the objective function $f(x)$ is convex *and* the feasible region $\Omega
 2. The set of global minima is itself a **convex set** (so any convex combination of global minima is itself a global minimum).
 
 This means that, in a convex optimization problem (e.g., linear regression, Support Vector Machines, Linear Programming), we do not need to worry about initialization. We can start the algorithm anywhere in the feasible region, follow the negative gradient, and we are mathematically guaranteed to converge to the best possible solution. However, in a non-convex optimization problem (e.g., DL), this guarantee vanishes. The loss landscape of a neural network is riddled with local minima, saddle points, and flat plateaus. A gradient descent algorithm might get stuck in a suboptimal valley, which is why training deep networks requires "tricks" like random restarts, momentum, and stochastic noise to escape local traps.
+
+## Optimality Conditions
+
+We now turn our attention to the problem of certifying if a singular point $x$ found by an optimization algorithm is indeed a global minimum (i.e. a stopping condition). In a sorting algorithm, we stop when the list is ordered. In optimization, we stop when we satisfy a specific set of mathematical conditions. These conditions differ depending on whether we are free to move anywhere (unconstrained) or are bounded by limits (constrained). Therefore, we will distinguish between unconstrained and constrained optimization problems, since the optimality conditions here differ most significantly.
+
+### Unconstrained optimization
+
+In the case where we have no boundaries (constraints), we rely on calculus to identify "flat" spots in the landscape.
+The first condition is a necessary condition related to stationarity. If a candidate point $x*$ is a local minimizer and $f$ is continuously differentiable, then the gradient must vanish: $\nabla f(x^*)=0$. However, this condition is not enough, since $x^*$ could now be a maximum, a minimum or a saddle point.
+
+The sufficient condition is the previously mentioned second-order condition for positive semidefiniteness of the Hessian: if $\nabla f(x^*)=0$ *and* $\nabla^2 f(x^*)$ is positive definite (i.e. all eigenvalues are positive), then $x^*$ is a **strict local** minimizer.
+
+In high-dimensional non-convex optimization (like DL), the Hessian often has both positive and negative eigenvalues. These are saddle points. In high dimensions, local minima are actually rare, and the vast majority of critical points are saddle points. Standard Gradient Descent can get "stuck" near saddle points because the gradient is zero, but the Hessian reveals there is still a direction to escape (which is the eigenvector corresponding to the negative eigenvalue).

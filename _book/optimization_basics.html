@@ -259,6 +259,10 @@ window.Quarto = {
   <li><a href="#eigenvalues-and-definiteness" id="toc-eigenvalues-and-definiteness" class="nav-link" data-scroll-target="#eigenvalues-and-definiteness"><span class="header-section-number">5.4.3</span> Eigenvalues and Definiteness</a></li>
   </ul></li>
   <li><a href="#why-convexity-is-good" id="toc-why-convexity-is-good" class="nav-link" data-scroll-target="#why-convexity-is-good"><span class="header-section-number">5.5</span> Why Convexity Is Good?</a></li>
+  <li><a href="#optimality-conditions" id="toc-optimality-conditions" class="nav-link" data-scroll-target="#optimality-conditions"><span class="header-section-number">5.6</span> Optimality Conditions</a>
+  <ul class="collapse">
+  <li><a href="#unconstrained-optimization" id="toc-unconstrained-optimization" class="nav-link" data-scroll-target="#unconstrained-optimization"><span class="header-section-number">5.6.1</span> Unconstrained optimization</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -438,8 +442,17 @@ f(y) \ge f(x) + \nabla f(x)^T(y-x)
 <li>The set of global minima is itself a <strong>convex set</strong> (so any convex combination of global minima is itself a global minimum).</li>
 </ol>
 <p>This means that, in a convex optimization problem (e.g., linear regression, Support Vector Machines, Linear Programming), we do not need to worry about initialization. We can start the algorithm anywhere in the feasible region, follow the negative gradient, and we are mathematically guaranteed to converge to the best possible solution. However, in a non-convex optimization problem (e.g., DL), this guarantee vanishes. The loss landscape of a neural network is riddled with local minima, saddle points, and flat plateaus. A gradient descent algorithm might get stuck in a suboptimal valley, which is why training deep networks requires “tricks” like random restarts, momentum, and stochastic noise to escape local traps.</p>
+</section>
+<section id="optimality-conditions" class="level2" data-number="5.6">
+<h2 data-number="5.6" class="anchored" data-anchor-id="optimality-conditions"><span class="header-section-number">5.6</span> Optimality Conditions</h2>
+<p>We now turn our attention to the problem of certifying if a singular point <span class="math inline">\(x\)</span> found by an optimization algorithm is indeed a global minimum (i.e.&nbsp;a stopping condition). In a sorting algorithm, we stop when the list is ordered. In optimization, we stop when we satisfy a specific set of mathematical conditions. These conditions differ depending on whether we are free to move anywhere (unconstrained) or are bounded by limits (constrained). Therefore, we will distinguish between unconstrained and constrained optimization problems, since the optimality conditions here differ most significantly.</p>
+<section id="unconstrained-optimization" class="level3" data-number="5.6.1">
+<h3 data-number="5.6.1" class="anchored" data-anchor-id="unconstrained-optimization"><span class="header-section-number">5.6.1</span> Unconstrained optimization</h3>
+<p>In the case where we have no boundaries (constraints), we rely on calculus to identify “flat” spots in the landscape. The first condition is a necessary condition related to stationarity. If a candidate point <span class="math inline">\(x*\)</span> is a local minimizer and <span class="math inline">\(f\)</span> is continuously differentiable, then the gradient must vanish: <span class="math inline">\(\nabla f(x^*)=0\)</span>. However, this condition is not enough, since <span class="math inline">\(x^*\)</span> could now be a maximum, a minimum or a saddle point.</p>
+<p>The sufficient condition is the previously mentioned second-order condition for positive semidefiniteness of the Hessian: if <span class="math inline">\(\nabla f(x^*)=0\)</span> <em>and</em> <span class="math inline">\(\nabla^2 f(x^*)\)</span> is positive definite (i.e.&nbsp;all eigenvalues are positive), then <span class="math inline">\(x^*\)</span> is a <strong>strict local</strong> minimizer.</p>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->

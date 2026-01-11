@@ -429,5 +429,16 @@
       "PART II: OPTIMIZATION",
       "<span class='chapter-number'>5</span>  <span class='chapter-title'>Optimization basics</span>"
     ]
+  },
+  {
+    "objectID": "optimization_basics.html#optimality-conditions",
+    "href": "optimization_basics.html#optimality-conditions",
+    "title": "5  Optimization basics",
+    "section": "5.6 Optimality Conditions",
+    "text": "5.6 Optimality Conditions\nWe now turn our attention to the problem of certifying if a singular point \\(x\\) found by an optimization algorithm is indeed a global minimum (i.e. a stopping condition). In a sorting algorithm, we stop when the list is ordered. In optimization, we stop when we satisfy a specific set of mathematical conditions. These conditions differ depending on whether we are free to move anywhere (unconstrained) or are bounded by limits (constrained). Therefore, we will distinguish between unconstrained and constrained optimization problems, since the optimality conditions here differ most significantly.\n\n5.6.1 Unconstrained optimization\nIn the case where we have no boundaries (constraints), we rely on calculus to identify “flat” spots in the landscape. The first condition is a necessary condition related to stationarity. If a candidate point \\(x*\\) is a local minimizer and \\(f\\) is continuously differentiable, then the gradient must vanish: \\(\\nabla f(x^*)=0\\). However, this condition is not enough, since \\(x^*\\) could now be a maximum, a minimum or a saddle point.\nThe sufficient condition is the previously mentioned second-order condition for positive semidefiniteness of the Hessian: if \\(\\nabla f(x^*)=0\\) and \\(\\nabla^2 f(x^*)\\) is positive definite (i.e. all eigenvalues are positive), then \\(x^*\\) is a strict local minimizer.",
+    "crumbs": [
+      "PART II: OPTIMIZATION",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Optimization basics</span>"
+    ]
   }
 ]
