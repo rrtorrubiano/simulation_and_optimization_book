@@ -264,7 +264,11 @@ window.Quarto = {
   <li><a href="#unconstrained-optimization" id="toc-unconstrained-optimization" class="nav-link" data-scroll-target="#unconstrained-optimization"><span class="header-section-number">5.6.1</span> Unconstrained optimization</a></li>
   <li><a href="#constrained-optimization-the-kkt-conditions" id="toc-constrained-optimization-the-kkt-conditions" class="nav-link" data-scroll-target="#constrained-optimization-the-kkt-conditions"><span class="header-section-number">5.6.2</span> Constrained Optimization: The KKT Conditions</a></li>
   </ul></li>
-  <li><a href="#optimization-in-ai-and-ml" id="toc-optimization-in-ai-and-ml" class="nav-link" data-scroll-target="#optimization-in-ai-and-ml"><span class="header-section-number">5.7</span> Optimization in AI and ML</a></li>
+  <li><a href="#optimization-in-ai-and-ml" id="toc-optimization-in-ai-and-ml" class="nav-link" data-scroll-target="#optimization-in-ai-and-ml"><span class="header-section-number">5.7</span> Optimization in AI and ML</a>
+  <ul class="collapse">
+  <li><a href="#gradient-descent" id="toc-gradient-descent" class="nav-link" data-scroll-target="#gradient-descent"><span class="header-section-number">5.7.1</span> Gradient descent</a></li>
+  <li><a href="#regularization" id="toc-regularization" class="nav-link" data-scroll-target="#regularization"><span class="header-section-number">5.7.2</span> Regularization</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -501,8 +505,33 @@ g_i(x^*)\le 0\text{, for all }i\text{, }h_j(x^*)=0\text{, for all }j
 <li><p><strong>The Loss Function:</strong> We define a scalar function <span class="math inline">\(L(\theta)\)</span> that measures the discrepancy between the model’s predictions and the ground truth. In regression problems, this function takes often the form of the mean squared error (MSE). In classification problems, we use other functions like the cross-entropy loss.</p></li>
 </ol>
 <p>The goal is then to find <span class="math inline">\(\theta^* = \arg \min_\theta L(\theta)\)</span>.</p>
+<section id="gradient-descent" class="level3" data-number="5.7.1">
+<h3 data-number="5.7.1" class="anchored" data-anchor-id="gradient-descent"><span class="header-section-number">5.7.1</span> Gradient descent</h3>
+<p>Since solving analytically (e.g.&nbsp;by setting <span class="math inline">\(\nabla L(\theta)=0\)</span> and solving for <span class="math inline">\(\theta\)</span>) is most commonly not feasible, we rely on iterative algorithms like <strong>Gradient Descent</strong>. The most basic (and computationally efficient) variant is to move in the direction of steepest descent by following the negative gradient:</p>
+<p><span class="math display">\[
+\theta_{t+1} = \theta_t + \eta \nabla L(\theta_t)
+\]</span></p>
+<p>where <span class="math inline">\(\eta\)</span> is called <em>step size</em>. The main idea is therefore to move in small steps towards the minimum so that we don’t get lost on the way by taking too large steps.</p>
+<p>In modern ML, calculating the gradient exactly requires summing over the entire dataset, which might be composed of millions of data points (images, documents, etc). This is computationally prohibitive. Instead, we estimate the gradient using a small random subset (also called a <em>minibatch</em>) of data.</p>
+<p><span class="math display">\[
+\theta_{t+1} = \theta_t + \eta \hat{g}_t
+\]</span></p>
+<p>where <span class="math inline">\(E[\hat{g}_t]=\nabla L(\theta)\)</span>. This is called <strong>Stochastic Gradient Descent (SGD)</strong> and is a cornerstone of modern ML training procedures. Because the gradient is noisy, SGD does not settle at a single point but “bounces around” the minimum. This noise can actually be beneficial, helping the algorithm escape shallow local minima and saddle points.</p>
+</section>
+<section id="regularization" class="level3" data-number="5.7.2">
+<h3 data-number="5.7.2" class="anchored" data-anchor-id="regularization"><span class="header-section-number">5.7.2</span> Regularization</h3>
+<p>One of the biggest challenges in ML is overfitting: memorizing the training data rather than learning general patterns. We combat this using <strong>regularization</strong>, which is mathematically equivalent to constrained optimization. Consider for instance Ridge Regression, which involves adding a penalty term to the loss function:</p>
+<p><span class="math display">\[
+\min_\theta L(\theta) + \lambda \lVert \theta \rVert_2^2
+\]</span></p>
+<p>Does this ring a bell? This is, in fact, equivalent to using Lagrange multipliers to solve the equivalent constrained optimization problem:</p>
+<p><span class="math display">\[
+\min_\theta L(\theta)\text{ subject to } \lVert \theta \rVert_2^2 \le C
+\]</span></p>
+<p>By constraining the Euclidean norm of the weights, we force the model to be smooth and more simple. Similarly, Lasso regression uses the <span class="math inline">\(L_1\)</span> norm instead. As discussed in Section 2.1, the geometry of the <span class="math inline">\(L_1\)</span> ball (a diamond) tends to touch the loss contours at the axes, forcing many weights to become exactly zero. This performs automatic feature selection, identifying the most important variables in the dataset.</p>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->
