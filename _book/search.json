@@ -473,5 +473,16 @@
       "PART II: OPTIMIZATION",
       "<span class='chapter-number'>5</span>  <span class='chapter-title'>Optimization basics</span>"
     ]
+  },
+  {
+    "objectID": "exact_methods.html",
+    "href": "exact_methods.html",
+    "title": "6  Exact methods",
+    "section": "",
+    "text": "6.1 Introduction\nLinear Programming (LP) is arguably the most successful algorithmic framework in history. Developed independently by Kantorovich and Dantzig in the 1940s, it remains the standard tool for allocating resources, from routing internet traffic to optimizing global supply chains. At the core of LP lies the assumption that the world behaves in a linear way. For instance, if it costs 10€ to run a server, it will costs 100€ to run 10 servers (proportionality). This also means that we discard scale effects or diminishing returns. Additionally, we assume that total costs are always the sum of individual costs. There are no second- or higher-order interactions between the variables. While these assumptions may seem restrictive, they approximate a vast number of real-world systems well enough to be useful.\nA linear program in standard form is normally expressed as:\n\\[\n\\begin{align}\n\\min_x\\text{ } & c^T x \\\\\n\\text{subject to  } & Ax\\le b \\\\\n& x\\ge 0\n\\end{align}\n\\]",
+    "crumbs": [
+      "PART II: OPTIMIZATION",
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Exact methods</span>"
+    ]
   }
 ]
