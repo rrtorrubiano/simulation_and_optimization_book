@@ -269,6 +269,8 @@ window.Quarto = {
   <li><a href="#gradient-descent" id="toc-gradient-descent" class="nav-link" data-scroll-target="#gradient-descent"><span class="header-section-number">5.7.1</span> Gradient descent</a></li>
   <li><a href="#regularization" id="toc-regularization" class="nav-link" data-scroll-target="#regularization"><span class="header-section-number">5.7.2</span> Regularization</a></li>
   </ul></li>
+  <li><a href="#summary" id="toc-summary" class="nav-link" data-scroll-target="#summary"><span class="header-section-number">5.8</span> Summary</a></li>
+  <li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises"><span class="header-section-number">5.9</span> Exercises</a></li>
   </ul>
 </nav>
     </div>
@@ -529,9 +531,36 @@ g_i(x^*)\le 0\text{, for all }i\text{, }h_j(x^*)=0\text{, for all }j
 \min_\theta L(\theta)\text{ subject to } \lVert \theta \rVert_2^2 \le C
 \]</span></p>
 <p>By constraining the Euclidean norm of the weights, we force the model to be smooth and more simple. Similarly, Lasso regression uses the <span class="math inline">\(L_1\)</span> norm instead. As discussed in Section 2.1, the geometry of the <span class="math inline">\(L_1\)</span> ball (a diamond) tends to touch the loss contours at the axes, forcing many weights to become exactly zero. This performs automatic feature selection, identifying the most important variables in the dataset.</p>
-
-
 </section>
+</section>
+<section id="summary" class="level2" data-number="5.8">
+<h2 data-number="5.8" class="anchored" data-anchor-id="summary"><span class="header-section-number">5.8</span> Summary</h2>
+<p>Optimization is the mathematical tool that transforms the question of “is this possible?” into “what is the best way to do this?”. This chapter established the mathematical framework necessary to understand and design the algorithms that power everything from network routing to Large Language Models.</p>
+<p>We began by reviewing the essential tools of multivariate calculus and linear algebra, focusing on how gradients define the direction of improvement and how Hessians and eigenvalues characterize the curvature of the search landscape. We identified convexity as the fundamental concept in optimization theory. Unlike the distinction between linear and non-linear, the distinction between convex and non-convex determines tractability: convex problems guarantee that any local minimum is a global minimum, allowing for efficient polynomial-time solutions.</p>
+<p>We stated the Karush-Kuhn-Tucker (KKT) conditions, the universal set of requirements (stationarity, primal/dual feasibility, and complementary slackness) that certify whether a solution is optimal in constrained environments. We also explored the computational complexity of these problems, noting how discrete variables (Integer Programming) and high-dimensional non-convex landscapes (Deep Learning) introduce NP-hardness and the “curse of dimensionality”, forcing us to rely on approximations and heuristics.</p>
+<p>Finally, we connected these abstract principles to AI and ML, demonstrating that training a machine learning model is fundamentally an optimization task. By framing learning as loss minimization, we saw how concepts like Stochastic Gradient Descent and regularization are direct applications of the calculus and geometric constraints discussed throughout the chapter. This foundation sets the stage for other specialized techniques covered in the remainder of this book.</p>
+</section>
+<section id="exercises" class="level2" data-number="5.9">
+<h2 data-number="5.9" class="anchored" data-anchor-id="exercises"><span class="header-section-number">5.9</span> Exercises</h2>
+<ol type="1">
+<li><p>A data center has <span class="math inline">\(N\)</span> servers. Each server <span class="math inline">\(i\)</span> has a maximum CPU capacity <span class="math inline">\(C_i\)</span> and a maximum RAM capacity <span class="math inline">\(R_i\)</span>. It is needed to schedule <span class="math inline">\(M\)</span> different jobs. Each job <span class="math inline">\(j\)</span> requires <span class="math inline">\(c_i\)</span> units of CPU and <span class="math inline">\(r_j\)</span> units of RAM to run. Let <span class="math inline">\(x_{ij}\)</span> be a binary variable indicating if job <span class="math inline">\(j\)</span> is assigned to server <span class="math inline">\(i\)</span> (<span class="math inline">\(x_{ij}=1\)</span>) or not (<span class="math inline">\(x_{ij}=0\)</span>). Write down the full mathematical optimization model. Identify the objective function, the decision variables, and the constraints. Is this a convex optimization problem? Why?</p></li>
+<li><p>Consider the following function <span class="math inline">\(f:\mathbb{R}^2\rightarrow \mathbb{R}\)</span>: <span class="math display">\[
+f(x,y)=x^3+y^3-3xy
+\]</span> Compute the gradient <span class="math inline">\(\nabla f(x,y)\)</span> and the Hessian <span class="math inline">\(\nabla^2 f(x,y)\)</span>. Find all critical points (<span class="math inline">\(\nabla f(x,y)=0\)</span>). Evaluate the Hessian at the critical points and calculate the eigenvalues of the Hessian there. Then, classify each critical point as maximum, minimum or saddle point. Is <span class="math inline">\(f(x,y)\)</span> globally convex?</p></li>
+<li><p>Solve the following constrained optimization problem using the KKT conditions: <span class="math display">\[
+\begin{aligned}
+\min_{x,y} &amp; f(x,y)=x^2+y^2 \\
+\text{subject to  } &amp; 2x+y \ge 5
+\end{aligned}
+\]</span> Specifically, formulate the Lagrangian <span class="math inline">\(\mathcal{L}(x,y,\lambda)\)</span> and write down the four KKT conditions for this problem. Solve the system of equations and consider two cases based on complementary slackness: either <span class="math inline">\(\lambda=0\)</span> (constraint is inactive) or <span class="math inline">\(\lambda &gt; 0\)</span> (constraint is active). Verify which case yields a valid solution and state the optimal <span class="math inline">\(x^*,y^*\)</span>.</p></li>
+<li><p>In ML, Ridge Regression aims to fit a linear model <span class="math inline">\(y=Xw\)</span> while at the same time keeping the weights small to prevent overfitting. This can be formulated using the following objective function: <span class="math display">\[
+L(w)=\lVert y - Xw \rVert_2^2 + \lambda \lVert w \rVert_2^2
+\]</span> where <span class="math inline">\(y\in\mathbb{R}^m\)</span> is the vector of labels, <span class="math inline">\(X\in\mathbb{R}^{m\times n}\)</span> is the training data matrix, <span class="math inline">\(w\in\mathbb{R}^n\)</span> is the weight vector, and <span class="math inline">\(\lambda&gt;0\)</span> is a regularization hyperparameter. Compute the gradient <span class="math inline">\(\nabla_w L(w)\)</span> with respect to <span class="math inline">\(w\)</span> (Hint: <span class="math inline">\(\lVert v \rVert_2^2=v^T v\)</span>) and equate it to zero to solve for <span class="math inline">\(w\)</span>. If you solved correctly, you should get: <span class="math display">\[
+w^*=(X^TX+\lambda I)^{-1}X^Ty
+\]</span> What does the <span class="math inline">\(\lambda I\)</span> term mean in terms of invertibility and convexity?</p></li>
+</ol>
+
+
 </section>
 
 </main> <!-- /main -->

@@ -451,5 +451,27 @@
       "PART II: OPTIMIZATION",
       "<span class='chapter-number'>5</span>  <span class='chapter-title'>Optimization basics</span>"
     ]
+  },
+  {
+    "objectID": "optimization_basics.html#summary",
+    "href": "optimization_basics.html#summary",
+    "title": "5  Optimization basics",
+    "section": "5.8 Summary",
+    "text": "5.8 Summary\nOptimization is the mathematical tool that transforms the question of “is this possible?” into “what is the best way to do this?”. This chapter established the mathematical framework necessary to understand and design the algorithms that power everything from network routing to Large Language Models.\nWe began by reviewing the essential tools of multivariate calculus and linear algebra, focusing on how gradients define the direction of improvement and how Hessians and eigenvalues characterize the curvature of the search landscape. We identified convexity as the fundamental concept in optimization theory. Unlike the distinction between linear and non-linear, the distinction between convex and non-convex determines tractability: convex problems guarantee that any local minimum is a global minimum, allowing for efficient polynomial-time solutions.\nWe stated the Karush-Kuhn-Tucker (KKT) conditions, the universal set of requirements (stationarity, primal/dual feasibility, and complementary slackness) that certify whether a solution is optimal in constrained environments. We also explored the computational complexity of these problems, noting how discrete variables (Integer Programming) and high-dimensional non-convex landscapes (Deep Learning) introduce NP-hardness and the “curse of dimensionality”, forcing us to rely on approximations and heuristics.\nFinally, we connected these abstract principles to AI and ML, demonstrating that training a machine learning model is fundamentally an optimization task. By framing learning as loss minimization, we saw how concepts like Stochastic Gradient Descent and regularization are direct applications of the calculus and geometric constraints discussed throughout the chapter. This foundation sets the stage for other specialized techniques covered in the remainder of this book.",
+    "crumbs": [
+      "PART II: OPTIMIZATION",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Optimization basics</span>"
+    ]
+  },
+  {
+    "objectID": "optimization_basics.html#exercises",
+    "href": "optimization_basics.html#exercises",
+    "title": "5  Optimization basics",
+    "section": "5.9 Exercises",
+    "text": "5.9 Exercises\n\nA data center has \\(N\\) servers. Each server \\(i\\) has a maximum CPU capacity \\(C_i\\) and a maximum RAM capacity \\(R_i\\). It is needed to schedule \\(M\\) different jobs. Each job \\(j\\) requires \\(c_i\\) units of CPU and \\(r_j\\) units of RAM to run. Let \\(x_{ij}\\) be a binary variable indicating if job \\(j\\) is assigned to server \\(i\\) (\\(x_{ij}=1\\)) or not (\\(x_{ij}=0\\)). Write down the full mathematical optimization model. Identify the objective function, the decision variables, and the constraints. Is this a convex optimization problem? Why?\nConsider the following function \\(f:\\mathbb{R}^2\\rightarrow \\mathbb{R}\\): \\[\nf(x,y)=x^3+y^3-3xy\n\\] Compute the gradient \\(\\nabla f(x,y)\\) and the Hessian \\(\\nabla^2 f(x,y)\\). Find all critical points (\\(\\nabla f(x,y)=0\\)). Evaluate the Hessian at the critical points and calculate the eigenvalues of the Hessian there. Then, classify each critical point as maximum, minimum or saddle point. Is \\(f(x,y)\\) globally convex?\nSolve the following constrained optimization problem using the KKT conditions: \\[\n\\begin{aligned}\n\\min_{x,y} & f(x,y)=x^2+y^2 \\\\\n\\text{subject to  } & 2x+y \\ge 5\n\\end{aligned}\n\\] Specifically, formulate the Lagrangian \\(\\mathcal{L}(x,y,\\lambda)\\) and write down the four KKT conditions for this problem. Solve the system of equations and consider two cases based on complementary slackness: either \\(\\lambda=0\\) (constraint is inactive) or \\(\\lambda &gt; 0\\) (constraint is active). Verify which case yields a valid solution and state the optimal \\(x^*,y^*\\).\nIn ML, Ridge Regression aims to fit a linear model \\(y=Xw\\) while at the same time keeping the weights small to prevent overfitting. This can be formulated using the following objective function: \\[\nL(w)=\\lVert y - Xw \\rVert_2^2 + \\lambda \\lVert w \\rVert_2^2\n\\] where \\(y\\in\\mathbb{R}^m\\) is the vector of labels, \\(X\\in\\mathbb{R}^{m\\times n}\\) is the training data matrix, \\(w\\in\\mathbb{R}^n\\) is the weight vector, and \\(\\lambda&gt;0\\) is a regularization hyperparameter. Compute the gradient \\(\\nabla_w L(w)\\) with respect to \\(w\\) (Hint: \\(\\lVert v \\rVert_2^2=v^T v\\)) and equate it to zero to solve for \\(w\\). If you solved correctly, you should get: \\[\nw^*=(X^TX+\\lambda I)^{-1}X^Ty\n\\] What does the \\(\\lambda I\\) term mean in terms of invertibility and convexity?",
+    "crumbs": [
+      "PART II: OPTIMIZATION",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Optimization basics</span>"
+    ]
   }
 ]
