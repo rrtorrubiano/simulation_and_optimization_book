@@ -14,5 +14,11 @@ $$
 \end{align}
 $$
 
+In this model, $x\in\mathbb{R}^n$ are the decision variables, which we wish to determine. The vector $c\in\mathbb{R}^n$ is the **cost vector**. The matrix $A\in\mathbb{R}^{m\times n}$ contains all the linear constraints (one per row), describing how the variables interact with resources. The vector $b\in\mathbb{R}^m$ thus represents a **resource limit vector**, establishing an upper bound on resource usage. The non-negativity constraint $x\ge 0$ implies that we can't produce negative units of a product.
 
+At first sight, this formulation seems somewhat restrictive. The reason is that it assumes a very specific interpretation in terms of minimimization of costs and limits on resources, and some solvers actually expect the problem to be described in this form. However, with some changes, we can express more general problems:
+
+- Maximization instead of minimization: replace $\min_x c^Tx$ with $\max_x -c^Tx$.
+- Use of equality constraints: a constraint $a^Tx=b$ can be expressed by two inequality constraints $a^Tx\le b$ and $-a^Tx\le -b$.
+- If $x$ can be negative, we can replace x with two non-negative variables $u,v$ such that $x=u-v$.
 
