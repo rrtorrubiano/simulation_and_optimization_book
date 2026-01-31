@@ -60,25 +60,119 @@ The Simplex method can be summarized in the following steps:
 3. **Pivoting**: If an adjacent vertex offers a better objective function value, move to that vertex by performing a pivot operation.
 4. **Iteration**: Repeat the optimality check and pivoting steps until the optimal solution is found.
 
-Let's dive a bit deeper into the pivot operation. In a system with $n$ variable and $m$ constraints, a vertex is obtained by setting $n-m$ variables to zero (these are called the non-basic variables) and solving for the remaining $m$ variables (the basic variables). The pivot operation involves selecting one non-basic variable to enter the basis (i.e., become a basic variable) and one basic variable to leave the basis (i.e., become a non-basic variable). This is done in such a way that the new vertex remains feasible and improves the objective function value.
+Let's dive a bit deeper into the pivot operation. In a system with $n$ variables and $m$ constraints, a vertex is obtained by setting $n-m$ variables to zero (these are called the non-basic variables) and solving for the remaining $m$ variables (the basic variables). The pivot operation involves selecting one non-basic variable to enter the basis (i.e., become a basic variable) and one basic variable to leave the basis (i.e., become a non-basic variable). This is done in such a way that the new vertex remains feasible and improves the objective function value.
 
-The Simplex method is efficient in practice and can solve large-scale linear programs quickly, although its worst-case time complexity is indeed exponential. However, it remains one of the most widely used algorithms for solving LPs due to its practical performance and simplicity. Let's see an example of how to implement the Simplex method in Python using the `scipy.optimize.linprog` function.
+### A Step-by-Step Example
+
+Consider the following example problem: Imagine a factory that produces two products, A and B. We denote by $x_1$ the number of units of product A and by $x_2$ the number of units of product B. The profit from each unit of product A is 3€, and from each unit of product B is 2€. There are in total 4 machine hours to produce, and it takes 1 hour to produce one unit of product A and 1 hour to produce one unit of product B. The factory has a limited amount of resources: product A requires 2 units of raw material per unit produced, and product B requires 1 unit of raw material per unit produced. The factory has a total of 6 units of raw material available. 
+
+We can formulate this problem as a linear program as follows:
+
+$$
+\begin{align}
+\max_{x_1,x_2}\text{ } & Z = 3x_1 + 2x_2 \\
+\text{subject to  } & 1x_1 + 1x_2 \le 4 \quad \text{(Machine hours constraint)}\\
+& 2x_1 + 1x_2 \le 6 \quad \text{(Raw material constraint)}\\
+& x_1, x_2 \ge 0
+\end{align}
+$$
+
+
+**Step 1: Standarization**
+
+As a first step, we move the objective function to the left side to express it in standard form:
+$$
+\begin{align}
+Z -3x_1 - 2x_2 + 0s_1 + 0s_2 & = 0 \quad \text{(Objective function)}
+\end{align}
+$$
+
+The Simplex method requires all constraints to be in the form of equalities. We can convert the inequalities into equalities by introducing slack variables. Let $s_1$ be the slack variable for the machine hours constraint and $s_2$ be the slack variable for the raw material constraint. The constraints become:
+$$
+\begin{align}
+1x_1 + 1x_2 + s_1 & = 4 \quad \text{(Machine hours constraint)}\\
+2x_1 + 1x_2 + s_2 & = 6 \quad \text{(Raw material constraint)}\\
+s_1, s_2 & \ge 0
+\end{align}
+$$
+
+So we have $n=4$ variables ($x_1, x_2, s_1, s_2$) and $m=2$ constraints. This means that we need to set $n-m=2$ variables to zero to find a vertex.
+
+**Step 2: Initial Basic Feasible Solution**
+
+We can start by setting the decision variables $x_1$ and $x_2$ to zero, which gives us the initial basic feasible solution (solving the system of equations for $s_1$ and $s_2$):
+$$
+\begin{align}
+x_1 & = 0 \\
+x_2 & = 0 \\
+s_1 & = 4 \\
+s_2 & = 6
+\end{align}
+$$
+
+We now represent the current state as a \emph{tableau}, which is a compact way to keep track of the coefficients of the variables in the constraints and the objective function:
+
+| Basis | $x_1$ | $x_2$ | $s_1$ | $s_2$ | Solution |
+|-------|----|----|----|----|----------|
+|  $s_1$   | 1  | 1  | 1  | 0  |    4     |
+|  $s_2$   | 2  | 1  | 0  | 1  |    6     |
+|   $Z$   | -3 | -2 | 0  | 0  |    0     |
+
+**Step 3: Optimality Check and Pivoting**
+
+Looking at the objective function row (the last row), we see that both $x_1$ and $x_2$ have negative coefficients (-3 and -2, respectively). This indicates that increasing either variable will improve the objective function value. We choose to increase $x_1$ since it has the most negative coefficient. **This is the variable that will enter the basis**.
+
+Next, we need to determine which variable will leave the basis. This will be the variable that, when decreased, causes the solution to become infeasible. For this, we perform the minimum ratio test by dividing the solution values by the corresponding coefficients of $x_1$ in each constraint row:
+- For $s_1$: $4 / 1 = 4$
+- For $s_2$: $6 / 2 = 3$
+The minimum ratio is 3, so $s_2$ will leave the basis. We now perform a pivot operation to update the tableau. The main idea of the pivot operation is to make the coefficient of the entering variable ($x_1$) equal to 1 in the leaving variable's row ($s_2$) and 0 in all other rows by performing row additions and subtractions.
+
+- We divide the entire row of $s_2$ by 2 to make the coefficient of $x_1$ equal to 1: $[1, 0.5, 0, 0.5, 3]$.
+- Next, we update the row of $s_1$ by subtracting 1 times the new row of $s_2$ from it: $[0, 0.5, 1, -0.5, 1]$.
+- Finally, we update the objective function row by adding 3 times the new row of $s_2$ to it: $[0, -0.5, 0, 1.5, 9]$.
+
+The updated tableau looks like this:
+
+| Basis | $x_1$ | $x_2$ | $s_1$ | $s_2$ | Solution |
+|-------|----|----|----|----|----------|
+|  $s_1$   | 0  | 0.5| 1  | -0.5 |    1     |
+|  $x_1$   | 1  | 0.5| 0  | 0.5 |    3     |
+|   $Z$   | 0  | -0.5| 0  | 1.5 |    9     | 
+
+Now we have moved along the $x_1$ axis to a new vertex, which is (3,0) with an objective function value of 9. To find this new vertex, we need to solve the system of equations again using the new basis variables $x_1$ and $s_1$.
+
+Continuing with the optimality check, we see that $x_2$ still has a negative coefficient (-0.5) in the objective function row. This means we can still improve the objective function by increasing $x_2$. We repeat the pivoting process. The minimum ratio test gives us:
+- For $s_1$: $1 / 0.5 = 2$
+- For $x_1$: $3 / 0.5 = 6$
+The minimum ratio is 2, so $s_1$ will leave the basis. Performing the pivot operation, we get the new tableau:
+
+| Basis | $x_1$ | $x_2$ | $s_1$ | $s_2$ | Solution |
+|-------|----|----|----|----|----------|
+|  $x_2$   | 0  | 1  | 2  | -1 |    2     |
+|  $x_1$   | 1 | 0  | -1  | 1 | 2 |  
+|   $Z$   | 0  | 0  | 1  | 1 |    10    |
+
+At this point, all coefficients in the objective function row are non-negative, indicating that we have reached the optimal solution. The optimal solution is $x_1 = 2$ and $x_2 = 2$, with a maximum profit of 10€.
+
+### Solving LPs using the Simplex Method in Python
+
+The Simplex method is efficient in practice and can solve large-scale linear programs quickly, although its worst-case time complexity is indeed exponential. However, it remains one of the most widely used algorithms for solving LPs due to its practical performance and simplicity. Let's see how to solve the example using the Simplex method in Python implemented in the `scipy.optimize.linprog` function.
 
 ```{python}
 import numpy as np
 from scipy.optimize import linprog
 
 # Coefficients for the objective function (to be maximized)
-c = [-5, -8]  # Negated for maximization
+c = [-3, -2]  # Negated for maximization
 # Coefficients for the inequality constraints
-A = [[2, 1],
-     [1, 3]]
+A = [[1, 1],
+     [2, 1]]
 # Right-hand side of the inequality constraints
-b = [100, 80]
+b = [4, 6]
 # Solve the linear program using the Simplex method
 res = linprog(c, A_ub=A, b_ub=b, method='highs')
 # Print the results
 print("Optimal value (max revenue):", -res.fun)  # Negate to get the original maximized value
-print("Optimal solution (CPU Jobs, RAM Jobs):", res.x)
+print("Optimal solution (Product A, Product B):", res.x)
 
 ```

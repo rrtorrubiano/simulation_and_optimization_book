@@ -282,7 +282,11 @@ window.Quarto = {
   <ul class="collapse">
   <li><a href="#using-geometry-to-solve-lps" id="toc-using-geometry-to-solve-lps" class="nav-link" data-scroll-target="#using-geometry-to-solve-lps"><span class="header-section-number">6.1.1</span> Using Geometry to Solve LPs</a></li>
   </ul></li>
-  <li><a href="#the-simplex-method" id="toc-the-simplex-method" class="nav-link" data-scroll-target="#the-simplex-method"><span class="header-section-number">6.2</span> The Simplex Method</a></li>
+  <li><a href="#the-simplex-method" id="toc-the-simplex-method" class="nav-link" data-scroll-target="#the-simplex-method"><span class="header-section-number">6.2</span> The Simplex Method</a>
+  <ul class="collapse">
+  <li><a href="#a-step-by-step-example" id="toc-a-step-by-step-example" class="nav-link" data-scroll-target="#a-step-by-step-example"><span class="header-section-number">6.2.1</span> A Step-by-Step Example</a></li>
+  <li><a href="#solving-lps-using-the-simplex-method-in-python" id="toc-solving-lps-using-the-simplex-method-in-python" class="nav-link" data-scroll-target="#solving-lps-using-the-simplex-method-in-python"><span class="header-section-number">6.2.2</span> Solving LPs using the Simplex Method in Python</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -359,31 +363,197 @@ window.Quarto = {
 <li><strong>Pivoting</strong>: If an adjacent vertex offers a better objective function value, move to that vertex by performing a pivot operation.</li>
 <li><strong>Iteration</strong>: Repeat the optimality check and pivoting steps until the optimal solution is found.</li>
 </ol>
-<p>Let’s dive a bit deeper into the pivot operation. In a system with <span class="math inline">\(n\)</span> variable and <span class="math inline">\(m\)</span> constraints, a vertex is obtained by setting <span class="math inline">\(n-m\)</span> variables to zero (these are called the non-basic variables) and solving for the remaining <span class="math inline">\(m\)</span> variables (the basic variables). The pivot operation involves selecting one non-basic variable to enter the basis (i.e., become a basic variable) and one basic variable to leave the basis (i.e., become a non-basic variable). This is done in such a way that the new vertex remains feasible and improves the objective function value.</p>
-<p>The Simplex method is efficient in practice and can solve large-scale linear programs quickly, although its worst-case time complexity is indeed exponential. However, it remains one of the most widely used algorithms for solving LPs due to its practical performance and simplicity. Let’s see an example of how to implement the Simplex method in Python using the <code>scipy.optimize.linprog</code> function.</p>
-<div id="4c434360" class="cell" data-execution_count="1">
+<p>Let’s dive a bit deeper into the pivot operation. In a system with <span class="math inline">\(n\)</span> variables and <span class="math inline">\(m\)</span> constraints, a vertex is obtained by setting <span class="math inline">\(n-m\)</span> variables to zero (these are called the non-basic variables) and solving for the remaining <span class="math inline">\(m\)</span> variables (the basic variables). The pivot operation involves selecting one non-basic variable to enter the basis (i.e., become a basic variable) and one basic variable to leave the basis (i.e., become a non-basic variable). This is done in such a way that the new vertex remains feasible and improves the objective function value.</p>
+<section id="a-step-by-step-example" class="level3" data-number="6.2.1">
+<h3 data-number="6.2.1" class="anchored" data-anchor-id="a-step-by-step-example"><span class="header-section-number">6.2.1</span> A Step-by-Step Example</h3>
+<p>Consider the following example problem: Imagine a factory that produces two products, A and B. We denote by <span class="math inline">\(x_1\)</span> the number of units of product A and by <span class="math inline">\(x_2\)</span> the number of units of product B. The profit from each unit of product A is 3€, and from each unit of product B is 2€. There are in total 4 machine hours to produce, and it takes 1 hour to produce one unit of product A and 1 hour to produce one unit of product B. The factory has a limited amount of resources: product A requires 2 units of raw material per unit produced, and product B requires 1 unit of raw material per unit produced. The factory has a total of 6 units of raw material available.</p>
+<p>We can formulate this problem as a linear program as follows:</p>
+<p><span class="math display">\[
+\begin{align}
+\max_{x_1,x_2}\text{ } &amp; Z = 3x_1 + 2x_2 \\
+\text{subject to  } &amp; 1x_1 + 1x_2 \le 4 \quad \text{(Machine hours constraint)}\\
+&amp; 2x_1 + 1x_2 \le 6 \quad \text{(Raw material constraint)}\\
+&amp; x_1, x_2 \ge 0
+\end{align}
+\]</span></p>
+<p><strong>Step 1: Standarization</strong></p>
+<p>As a first step, we move the objective function to the left side to express it in standard form: <span class="math display">\[
+\begin{align}
+Z -3x_1 - 2x_2 + 0s_1 + 0s_2 &amp; = 0 \quad \text{(Objective function)}
+\end{align}
+\]</span></p>
+<p>The Simplex method requires all constraints to be in the form of equalities. We can convert the inequalities into equalities by introducing slack variables. Let <span class="math inline">\(s_1\)</span> be the slack variable for the machine hours constraint and <span class="math inline">\(s_2\)</span> be the slack variable for the raw material constraint. The constraints become: <span class="math display">\[
+\begin{align}
+1x_1 + 1x_2 + s_1 &amp; = 4 \quad \text{(Machine hours constraint)}\\
+2x_1 + 1x_2 + s_2 &amp; = 6 \quad \text{(Raw material constraint)}\\
+s_1, s_2 &amp; \ge 0
+\end{align}
+\]</span></p>
+<p>So we have <span class="math inline">\(n=4\)</span> variables (<span class="math inline">\(x_1, x_2, s_1, s_2\)</span>) and <span class="math inline">\(m=2\)</span> constraints. This means that we need to set <span class="math inline">\(n-m=2\)</span> variables to zero to find a vertex.</p>
+<p><strong>Step 2: Initial Basic Feasible Solution</strong></p>
+<p>We can start by setting the decision variables <span class="math inline">\(x_1\)</span> and <span class="math inline">\(x_2\)</span> to zero, which gives us the initial basic feasible solution (solving the system of equations for <span class="math inline">\(s_1\)</span> and <span class="math inline">\(s_2\)</span>): <span class="math display">\[
+\begin{align}
+x_1 &amp; = 0 \\
+x_2 &amp; = 0 \\
+s_1 &amp; = 4 \\
+s_2 &amp; = 6
+\end{align}
+\]</span></p>
+<p>We now represent the current state as a , which is a compact way to keep track of the coefficients of the variables in the constraints and the objective function:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Basis</th>
+<th><span class="math inline">\(x_1\)</span></th>
+<th><span class="math inline">\(x_2\)</span></th>
+<th><span class="math inline">\(s_1\)</span></th>
+<th><span class="math inline">\(s_2\)</span></th>
+<th>Solution</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(s_1\)</span></td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+<td>4</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(s_2\)</span></td>
+<td>2</td>
+<td>1</td>
+<td>0</td>
+<td>1</td>
+<td>6</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(Z\)</span></td>
+<td>-3</td>
+<td>-2</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Step 3: Optimality Check and Pivoting</strong></p>
+<p>Looking at the objective function row (the last row), we see that both <span class="math inline">\(x_1\)</span> and <span class="math inline">\(x_2\)</span> have negative coefficients (-3 and -2, respectively). This indicates that increasing either variable will improve the objective function value. We choose to increase <span class="math inline">\(x_1\)</span> since it has the most negative coefficient. <strong>This is the variable that will enter the basis</strong>.</p>
+<p>Next, we need to determine which variable will leave the basis. This will be the variable that, when decreased, causes the solution to become infeasible. For this, we perform the minimum ratio test by dividing the solution values by the corresponding coefficients of <span class="math inline">\(x_1\)</span> in each constraint row: - For <span class="math inline">\(s_1\)</span>: <span class="math inline">\(4 / 1 = 4\)</span> - For <span class="math inline">\(s_2\)</span>: <span class="math inline">\(6 / 2 = 3\)</span> The minimum ratio is 3, so <span class="math inline">\(s_2\)</span> will leave the basis. We now perform a pivot operation to update the tableau. The main idea of the pivot operation is to make the coefficient of the entering variable (<span class="math inline">\(x_1\)</span>) equal to 1 in the leaving variable’s row (<span class="math inline">\(s_2\)</span>) and 0 in all other rows by performing row additions and subtractions.</p>
+<ul>
+<li>We divide the entire row of <span class="math inline">\(s_2\)</span> by 2 to make the coefficient of <span class="math inline">\(x_1\)</span> equal to 1: <span class="math inline">\([1, 0.5, 0, 0.5, 3]\)</span>.</li>
+<li>Next, we update the row of <span class="math inline">\(s_1\)</span> by subtracting 1 times the new row of <span class="math inline">\(s_2\)</span> from it: <span class="math inline">\([0, 0.5, 1, -0.5, 1]\)</span>.</li>
+<li>Finally, we update the objective function row by adding 3 times the new row of <span class="math inline">\(s_2\)</span> to it: <span class="math inline">\([0, -0.5, 0, 1.5, 9]\)</span>.</li>
+</ul>
+<p>The updated tableau looks like this:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Basis</th>
+<th><span class="math inline">\(x_1\)</span></th>
+<th><span class="math inline">\(x_2\)</span></th>
+<th><span class="math inline">\(s_1\)</span></th>
+<th><span class="math inline">\(s_2\)</span></th>
+<th>Solution</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(s_1\)</span></td>
+<td>0</td>
+<td>0.5</td>
+<td>1</td>
+<td>-0.5</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(x_1\)</span></td>
+<td>1</td>
+<td>0.5</td>
+<td>0</td>
+<td>0.5</td>
+<td>3</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(Z\)</span></td>
+<td>0</td>
+<td>-0.5</td>
+<td>0</td>
+<td>1.5</td>
+<td>9</td>
+</tr>
+</tbody>
+</table>
+<p>Now we have moved along the <span class="math inline">\(x_1\)</span> axis to a new vertex, which is (3,0) with an objective function value of 9. To find this new vertex, we need to solve the system of equations again using the new basis variables <span class="math inline">\(x_1\)</span> and <span class="math inline">\(s_1\)</span>.</p>
+<p>Continuing with the optimality check, we see that <span class="math inline">\(x_2\)</span> still has a negative coefficient (-0.5) in the objective function row. This means we can still improve the objective function by increasing <span class="math inline">\(x_2\)</span>. We repeat the pivoting process. The minimum ratio test gives us: - For <span class="math inline">\(s_1\)</span>: <span class="math inline">\(1 / 0.5 = 2\)</span> - For <span class="math inline">\(x_1\)</span>: <span class="math inline">\(3 / 0.5 = 6\)</span> The minimum ratio is 2, so <span class="math inline">\(s_1\)</span> will leave the basis. Performing the pivot operation, we get the new tableau:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Basis</th>
+<th><span class="math inline">\(x_1\)</span></th>
+<th><span class="math inline">\(x_2\)</span></th>
+<th><span class="math inline">\(s_1\)</span></th>
+<th><span class="math inline">\(s_2\)</span></th>
+<th>Solution</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(x_2\)</span></td>
+<td>0</td>
+<td>1</td>
+<td>2</td>
+<td>-1</td>
+<td>2</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(x_1\)</span></td>
+<td>1</td>
+<td>0</td>
+<td>-1</td>
+<td>1</td>
+<td>2</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(Z\)</span></td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>10</td>
+</tr>
+</tbody>
+</table>
+<p>At this point, all coefficients in the objective function row are non-negative, indicating that we have reached the optimal solution. The optimal solution is <span class="math inline">\(x_1 = 2\)</span> and <span class="math inline">\(x_2 = 2\)</span>, with a maximum profit of 10€.</p>
+</section>
+<section id="solving-lps-using-the-simplex-method-in-python" class="level3" data-number="6.2.2">
+<h3 data-number="6.2.2" class="anchored" data-anchor-id="solving-lps-using-the-simplex-method-in-python"><span class="header-section-number">6.2.2</span> Solving LPs using the Simplex Method in Python</h3>
+<p>The Simplex method is efficient in practice and can solve large-scale linear programs quickly, although its worst-case time complexity is indeed exponential. However, it remains one of the most widely used algorithms for solving LPs due to its practical performance and simplicity. Let’s see how to solve the example using the Simplex method in Python implemented in the <code>scipy.optimize.linprog</code> function.</p>
+<div id="70d74617" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.optimize <span class="im">import</span> linprog</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Coefficients for the objective function (to be maximized)</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>c <span class="op">=</span> [<span class="op">-</span><span class="dv">5</span>, <span class="op">-</span><span class="dv">8</span>]  <span class="co"># Negated for maximization</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>c <span class="op">=</span> [<span class="op">-</span><span class="dv">3</span>, <span class="op">-</span><span class="dv">2</span>]  <span class="co"># Negated for maximization</span></span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Coefficients for the inequality constraints</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> [[<span class="dv">2</span>, <span class="dv">1</span>],</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>     [<span class="dv">1</span>, <span class="dv">3</span>]]</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> [[<span class="dv">1</span>, <span class="dv">1</span>],</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>     [<span class="dv">2</span>, <span class="dv">1</span>]]</span>
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Right-hand side of the inequality constraints</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> [<span class="dv">100</span>, <span class="dv">80</span>]</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> [<span class="dv">4</span>, <span class="dv">6</span>]</span>
 <span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Solve the linear program using the Simplex method</span></span>
 <span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>res <span class="op">=</span> linprog(c, A_ub<span class="op">=</span>A, b_ub<span class="op">=</span>b, method<span class="op">=</span><span class="st">'highs'</span>)</span>
 <span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Print the results</span></span>
 <span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Optimal value (max revenue):"</span>, <span class="op">-</span>res.fun)  <span class="co"># Negate to get the original maximized value</span></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Optimal solution (CPU Jobs, RAM Jobs):"</span>, res.x)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Optimal solution (Product A, Product B):"</span>, res.x)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Optimal value (max revenue): 316.0
-Optimal solution (CPU Jobs, RAM Jobs): [44. 12.]</code></pre>
+<pre><code>Optimal value (max revenue): 10.0
+Optimal solution (Product A, Product B): [2. 2.]</code></pre>
 </div>
 </div>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->
