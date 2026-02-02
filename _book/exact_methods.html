@@ -287,6 +287,15 @@ window.Quarto = {
   <li><a href="#a-step-by-step-example" id="toc-a-step-by-step-example" class="nav-link" data-scroll-target="#a-step-by-step-example"><span class="header-section-number">6.2.1</span> A Step-by-Step Example</a></li>
   <li><a href="#solving-lps-using-the-simplex-method-in-python" id="toc-solving-lps-using-the-simplex-method-in-python" class="nav-link" data-scroll-target="#solving-lps-using-the-simplex-method-in-python"><span class="header-section-number">6.2.2</span> Solving LPs using the Simplex Method in Python</a></li>
   </ul></li>
+  <li><a href="#integer-linear-programming" id="toc-integer-linear-programming" class="nav-link" data-scroll-target="#integer-linear-programming"><span class="header-section-number">6.3</span> Integer Linear Programming</a>
+  <ul class="collapse">
+  <li><a href="#definition-and-variants" id="toc-definition-and-variants" class="nav-link" data-scroll-target="#definition-and-variants"><span class="header-section-number">6.3.1</span> Definition and Variants</a></li>
+  <li><a href="#the-branch-and-bound-algorithm" id="toc-the-branch-and-bound-algorithm" class="nav-link" data-scroll-target="#the-branch-and-bound-algorithm"><span class="header-section-number">6.3.2</span> The Branch and Bound Algorithm</a></li>
+  <li><a href="#coding-example" id="toc-coding-example" class="nav-link" data-scroll-target="#coding-example"><span class="header-section-number">6.3.3</span> Coding Example</a></li>
+  </ul></li>
+  <li><a href="#the-limits-of-exact-methods" id="toc-the-limits-of-exact-methods" class="nav-link" data-scroll-target="#the-limits-of-exact-methods"><span class="header-section-number">6.4</span> The Limits of Exact Methods</a></li>
+  <li><a href="#summary" id="toc-summary" class="nav-link" data-scroll-target="#summary"><span class="header-section-number">6.5</span> Summary</a></li>
+  <li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises"><span class="header-section-number">6.6</span> Exercises</a></li>
   </ul>
 </nav>
     </div>
@@ -316,13 +325,13 @@ window.Quarto = {
 <h2 data-number="6.1" class="anchored" data-anchor-id="introduction"><span class="header-section-number">6.1</span> Introduction</h2>
 <p>Linear Programming (LP) is arguably the most successful algorithmic framework in history. Developed independently by Kantorovich and Dantzig in the 1940s, it remains the standard tool for allocating resources, from routing internet traffic to optimizing global supply chains. At the core of LP lies the assumption that the world behaves in a <strong>linear</strong> way. For instance, if it costs 10€ to run a server, it will costs 100€ to run 10 servers (proportionality). This also means that we discard scale effects or diminishing returns. Additionally, we assume that total costs are always the sum of individual costs. There are no second- or higher-order interactions between the variables. While these assumptions may seem restrictive, they approximate a vast number of real-world systems well enough to be useful.</p>
 <p>A linear program in standard form is normally expressed as:</p>
-<p><span class="math display">\[
+<p><span id="eq-lp-standard-form"><span class="math display">\[
 \begin{align}
 \min_x\text{ } &amp; c^T x \\
 \text{subject to  } &amp; Ax\le b \\
 &amp; x\ge 0
 \end{align}
-\]</span></p>
+\tag{6.1}\]</span></span></p>
 <p>In this model, <span class="math inline">\(x\in\mathbb{R}^n\)</span> are the decision variables, which we wish to determine. The vector <span class="math inline">\(c\in\mathbb{R}^n\)</span> is the <strong>cost vector</strong>. The matrix <span class="math inline">\(A\in\mathbb{R}^{m\times n}\)</span> contains all the linear constraints (one per row), describing how the variables interact with resources. The vector <span class="math inline">\(b\in\mathbb{R}^m\)</span> thus represents a <strong>resource limit vector</strong>, establishing an upper bound on resource usage. The non-negativity constraint <span class="math inline">\(x\ge 0\)</span> implies that we can’t produce negative units of a product.</p>
 <p>At first sight, this formulation seems somewhat restrictive. The reason is that it assumes a very specific interpretation in terms of minimimization of costs and limits on resources, and some solvers actually expect the problem to be described in this form. However, with some changes, we can express more general problems:</p>
 <ul>
@@ -530,7 +539,7 @@ s_2 &amp; = 6
 <section id="solving-lps-using-the-simplex-method-in-python" class="level3" data-number="6.2.2">
 <h3 data-number="6.2.2" class="anchored" data-anchor-id="solving-lps-using-the-simplex-method-in-python"><span class="header-section-number">6.2.2</span> Solving LPs using the Simplex Method in Python</h3>
 <p>The Simplex method is efficient in practice and can solve large-scale linear programs quickly, although its worst-case time complexity is indeed exponential. However, it remains one of the most widely used algorithms for solving LPs due to its practical performance and simplicity. Let’s see how to solve the example using the Simplex method in Python implemented in the <code>scipy.optimize.linprog</code> function.</p>
-<div id="70d74617" class="cell" data-execution_count="1">
+<div id="6ad7dedf" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.optimize <span class="im">import</span> linprog</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -551,9 +560,130 @@ s_2 &amp; = 6
 Optimal solution (Product A, Product B): [2. 2.]</code></pre>
 </div>
 </div>
-
-
 </section>
+</section>
+<section id="integer-linear-programming" class="level2" data-number="6.3">
+<h2 data-number="6.3" class="anchored" data-anchor-id="integer-linear-programming"><span class="header-section-number">6.3</span> Integer Linear Programming</h2>
+<p>In the previous example, the optimal solution happened to be integer-valued. However, this is not always the case. Linear programming allows decision variables to take on any real values, which can lead to solutions that are not practical in certain contexts. For example, you cannot produce a fraction of a product or hire half an employee. This leads us to the field of <strong>Integer Linear Programming (ILP)</strong>, where some or all decision variables are constrained to be integers.</p>
+<p>Mathematicall, we “just” need to add integrality constraints to the LP formulation <a href="#eq-lp-standard-form" class="quarto-xref">Equation&nbsp;<span>6.1</span></a>:</p>
+<p><span class="math display">\[
+\begin{align}
+\min_x\text{ } &amp; c^T x \\
+\text{subject to  } &amp; Ax\le b \\
+&amp; x\ge 0 \\
+&amp; x_i \in \mathbb{Z} \quad \text{for some or all } i
+\end{align}
+\]</span></p>
+<p>This single constraint changes . It transforms the problem from a convex, polynomial-time task (P) into a <strong>non-convex, NP-Hard</strong> challenge. The nice, smooth edges of the polytope are replaced by a discrete grid of valid points, destroying the gradient information that the Simplex and other methods for LP rely on.</p>
+<section id="definition-and-variants" class="level3" data-number="6.3.1">
+<h3 data-number="6.3.1" class="anchored" data-anchor-id="definition-and-variants"><span class="header-section-number">6.3.1</span> Definition and Variants</h3>
+<p>Depending on which variables are constrained to be integers, we have different variants of ILP:</p>
+<ol type="1">
+<li><strong>Pure Integer Linear Programming</strong>: All decision variables are required to be integers. Example: the Knapsack Problem, where items can either be included or excluded from the knapsack (see <a href="intro.html" class="quarto-xref"><span>Chapter 1</span></a>).</li>
+<li><strong>Mixed-Integer Linear Programming (MILP)</strong>: Some decision variables are constrained to be integers, while others can take on continuous values. Example: a power plant optimization problem, where the number of power units to activate is an integer, but the amount of power generated can be continuous.</li>
+<li><strong>Binary Integer Programming</strong>: A special case of ILP where decision variables are restricted to binary values (0 or 1). Example: facility location problems, where a facility is either built (1) or not built (0). Additionally, this is the language of <em>logic</em> and <em>choice</em>. We can model logical propositions using linear constraints, for instance:
+<ul>
+<li>If we select option A, we cannot select option B: <span class="math inline">\(x_A + x_B \leq 1\)</span> where <span class="math inline">\(x_A, x_B \in \{0, 1\}\)</span>.</li>
+<li>If we build a warehouse, we can ship up to <span class="math inline">\(C\)</span> units from it: <span class="math inline">\(y \leq C x\)</span> where <span class="math inline">\(y\)</span> is the number of units shipped and <span class="math inline">\(x \in \{0, 1\}\)</span> indicates if the warehouse is built.</li>
+</ul></li>
+</ol>
+<p>In principle, one could round the solution of a linear program to the nearest integers to solve an ILP. However, this naive approach often leads to suboptimal or even infeasible solutions. For instance, consider the constraint <span class="math inline">\(3x\le 10\)</span>. The LP solution might yield <span class="math inline">\(x=3.33\)</span>, which rounds to <span class="math inline">\(x=3\)</span> (which is feasible), however if the constraint would be <span class="math inline">\(3x\ge 10\)</span> instead, the rounded solution would be infeasible.</p>
+<p>We could try to enumerate all possible integer solutions and select the best one, but this approach quickly becomes computationally infeasible as the number of variables increases, due to the combinatorial explosion of possible solutions. Because we cannot rely on gradients or rounding, we need a systematic way to search the discrete space without checking every single possibility. This leads us to the <strong>Branch and Bound</strong> algorithm.</p>
+</section>
+<section id="the-branch-and-bound-algorithm" class="level3" data-number="6.3.2">
+<h3 data-number="6.3.2" class="anchored" data-anchor-id="the-branch-and-bound-algorithm"><span class="header-section-number">6.3.2</span> The Branch and Bound Algorithm</h3>
+<p>Since we cannot round LP solutions, and we cannot brute-force check every integer combination (which would take billions of years for even moderate problems), we need a middle ground. We need a smart way to enumerate solutions that allows us to discard vast sections of the search space that are guaranteed to be suboptimal. The <strong>Branch and Bound (B&amp;B)</strong> algorithm is a systematic method for solving ILPs by exploring the solution space in a tree-like structure. The main idea is to divide the problem into smaller subproblems (branching) and use bounds on the objective function to eliminate subproblems that cannot yield better solutions than the best one found so far (bounding).</p>
+<p>The main idea for doing so is to work with the LP relaxation of the ILP. The LP relaxation is obtained by removing the integrality constraints from the ILP, allowing the decision variables to take on continuous values. This relaxed problem can be solved efficiently using LP methods like the Simplex method and provides a lower bound (for minimization problems) or an upper bound (for maximization problems) on the optimal ILP solution.</p>
+<p>Imagine we are solving the LP relaxation of an ILP as a maximization problem, and we find <span class="math inline">\(x_1=3.7\)</span>. We know that the optimal integer solution must be an integer <span class="math inline">\(\le 3\)</span> or <span class="math inline">\(\ge 4\)</span>. Thus, we can create two new subproblems (branches):</p>
+<ol type="1">
+<li><strong>Branch Left</strong>: Add the constraint <span class="math inline">\(x_1 \le 3\)</span> to the original ILP.</li>
+<li><strong>Branch Right</strong>: Add the constraint <span class="math inline">\(x_1 \ge 4\)</span> to the original ILP.</li>
+</ol>
+<p>We have now effectively removed the fractional region <span class="math inline">\((3,4)\)</span> from the search space. We then solve the LP relaxation for each of these subproblems. If the solution to a subproblem is integer-valued, we compare it to the best-known integer solution and update our best solution if necessary. If the solution is fractional, we repeat the branching process on that subproblem. However, doing this blindly would lead to an explosion in the number of subproblems. This is where bounding comes into play. We use the <em>objective value</em> of the LP relaxation as a <em>bound</em>, as follows:</p>
+<p><strong>Step 1: Bounding:</strong> Let <span class="math inline">\(Z^*\)</span> be the best-known integer solution found so far (called the <em>incumbent</em> solution). If the objective value of the LP relaxation of a subproblem is less than or equal to <span class="math inline">\(Z^*\)</span> (for maximization problems), we can discard that subproblem from further consideration, as it cannot yield a better integer solution.</p>
+<p><strong>Step 2: Pruning:</strong> We stop exploring a branch when:</p>
+<ul>
+<li>The LP relaxation has no solution (infeasible).</li>
+<li>The LP relaxation is integer-valued (we have found a candidate solution). We compare it to <span class="math inline">\(Z^*\)</span> and update if it’s better. We stop because adding more constraints to this node will only make the objective worse.</li>
+<li>The objective value of the LP relaxation is worse than <span class="math inline">\(Z^*\)</span> (we can prune this branch).</li>
+</ul>
+<p><strong>Step 3: Branching:</strong> If the LP relaxation yields a fractional solution, we select a variable with a fractional value and create two new subproblems by adding constraints to force that variable to take on integer values (as described above).</p>
+<p>This process continues until all branches have been either explored or pruned. The best integer solution found during this process is the optimal solution to the original ILP.</p>
+</section>
+<section id="coding-example" class="level3" data-number="6.3.3">
+<h3 data-number="6.3.3" class="anchored" data-anchor-id="coding-example"><span class="header-section-number">6.3.3</span> Coding Example</h3>
+<p>We will now illustrate the Branch and Bound algorithm using Python’s <code>PuLP</code> library, which provides a convenient interface for defining and solving ILPs. Let’s consider a simple ILP example (Knapsack Problem): We have a knapsack which can hold 10 kg. There are four items available: A (value 15€, weight 4 kg), B (value 10€, weight 3 kg), C (value 9€, weight 2 kg) and D (value 5€, weight 1 kg). We want to maximize the total value of items in the knapsack without exceeding its weight capacity.</p>
+<div id="b6b6d46c" class="cell" data-execution_count="2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pulp</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pulp <span class="im">import</span> PULP_CBC_CMD</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. Initialize the Model (Maximization)</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> pulp.LpProblem(<span class="st">"The_Knapsack_Problem"</span>, pulp.LpMaximize)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. Define Decision Variables</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co"># cat='Binary' tells the solver these are 0 or 1 integers.</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="co"># This triggers the Branch and Bound algorithm under the hood.</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>items <span class="op">=</span> [<span class="st">'A'</span>, <span class="st">'B'</span>, <span class="st">'C'</span>, <span class="st">'D'</span>]</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>weights <span class="op">=</span> {<span class="st">'A'</span>: <span class="dv">4</span>, <span class="st">'B'</span>: <span class="dv">3</span>, <span class="st">'C'</span>: <span class="dv">2</span>, <span class="st">'D'</span>: <span class="dv">1</span>}</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>values  <span class="op">=</span> {<span class="st">'A'</span>: <span class="dv">15</span>, <span class="st">'B'</span>: <span class="dv">10</span>, <span class="st">'C'</span>: <span class="dv">9</span>, <span class="st">'D'</span>: <span class="dv">5</span>}</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> pulp.LpVariable.dicts(<span class="st">"Select"</span>, items, cat<span class="op">=</span><span class="st">'Binary'</span>)</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. Define Objective Function</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>model <span class="op">+=</span> pulp.lpSum([values[i] <span class="op">*</span> x[i] <span class="cf">for</span> i <span class="kw">in</span> items]), <span class="st">"Total Value"</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. Define Constraint (Capacity &lt;= 10)</span></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>model <span class="op">+=</span> pulp.lpSum([weights[i] <span class="op">*</span> x[i] <span class="cf">for</span> i <span class="kw">in</span> items]) <span class="op">&lt;=</span> <span class="dv">10</span>, <span class="st">"Capacity"</span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a><span class="co"># 5. Solve</span></span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>model.solve(PULP_CBC_CMD(msg<span class="op">=</span><span class="va">False</span>))</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a><span class="co"># 6. Output Results</span></span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Status: </span><span class="sc">{</span>pulp<span class="sc">.</span>LpStatus[model.status]<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Max Value: $</span><span class="sc">{</span>pulp<span class="sc">.</span>value(model.objective)<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Selected Items:"</span>)</span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> items:</span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> pulp.value(x[i]) <span class="op">==</span> <span class="dv">1</span>:</span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="ss">f" - Item </span><span class="sc">{</span>i<span class="sc">}</span><span class="ss"> (Value: </span><span class="sc">{</span>values[i]<span class="sc">}</span><span class="ss">, Weight: </span><span class="sc">{</span>weights[i]<span class="sc">}</span><span class="ss">)"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Status: Optimal
+Max Value: $39.0
+Selected Items:
+ - Item A (Value: 15, Weight: 4)
+ - Item B (Value: 10, Weight: 3)
+ - Item C (Value: 9, Weight: 2)
+ - Item D (Value: 5, Weight: 1)</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="the-limits-of-exact-methods" class="level2" data-number="6.4">
+<h2 data-number="6.4" class="anchored" data-anchor-id="the-limits-of-exact-methods"><span class="header-section-number">6.4</span> The Limits of Exact Methods</h2>
+<p>We have now seen two powerful algorithms: Simplex for Linear Programming and Branch &amp; Bound for Integer Programming. In the examples provided (allocating server resources or packing a knapsack) these methods returned the provably optimal solution in milliseconds. It is tempting thus to conclude that optimization is a solved problem: If we can model it, we can solve it. Alas, this is an illusion: as we scale up the problem size, exact methods quickly become impractical. The Simplex method, while efficient for many practical problems, can exhibit exponential time complexity in the worst case. More critically, Integer Linear Programming is NP-Hard, meaning that no known polynomial-time algorithm exists to solve all instances of ILP optimally. As the number of variables and constraints increases, the time required to solve ILPs can grow exponentially, making them infeasible for large-scale problems.</p>
+<p>In practice, the performance of B&amp;B depends on the <em>quality of the bounds</em>: the tighter the bounds, the more branches can be pruned, and the faster the algorithm runs. However, for many real-world problems, especially those with a large number of variables or complex constraints, even state-of-the-art ILP solvers can struggle to find optimal solutions within a reasonable timeframe. In the worst case, Branch and Bound degenerates into a brute force search.</p>
+<p>In modern AI applications, such as optimizing the weights of a neural network (millions of variables) or routing a fleet of 10,000 delivery drones, exact methods simply cease to function. When exact methods fail, we must change our goal. We stop asking for the <em>best</em> solution and start asking for a <em>good</em> solution found fast.</p>
+<p>This is the domain of <strong>heuristic</strong> and <strong>metaheuristic</strong> algorithms, which we will explore in the next chapter. Heuristics are meant to solve the following challenges of exact methods:</p>
+<ul>
+<li><strong>Latency:</strong> A ride-sharing app like Uber needs to match a driver to a rider in milliseconds. It cannot run a 20-minute Branch and Bound job every time a user opens the app. It accepts a slightly suboptimal match (maybe the driver is 1 minute further away than the perfect choice) to ensure the system is responsive.</li>
+<li><strong>Data Uncertainty:</strong> Why spend 100 hours computing the “perfect” supply chain schedule if the demand forecast is only 90% accurate? The noise in the data renders the precision of the exact solver meaningless.</li>
+<li><strong>Good enough Solutions:</strong> In many cases, a solution that is 95% as good as the optimal one is perfectly acceptable, especially if it can be found in a fraction of the time. For example, in logistics, a delivery route that is slightly longer than the optimal route may still meet customer expectations while significantly reducing computation time.</li>
+</ul>
+<p>In the next chapter, we will abandon the guarantee of optimality. We will explore metaheuristics: algorithms like Genetic Algorithms, Simulated Annealing, and Tabu Search. These methods do not use gradients, and they do not prove optimality. Instead, they use metaphors from nature (evolution, thermodynamics) to navigate the rugged, non-convex landscapes where Simplex and Branch &amp; Bound do not perform well.</p>
+</section>
+<section id="summary" class="level2" data-number="6.5">
+<h2 data-number="6.5" class="anchored" data-anchor-id="summary"><span class="header-section-number">6.5</span> Summary</h2>
+<p>In this chapter, we explored exact methods for solving optimization problems, focusing on Linear Programming (LP) and Integer Linear Programming (ILP). We discussed the Simplex method, which efficiently solves LPs by navigating the vertices of the feasible region, and the Branch and Bound algorithm, which systematically explores the solution space of ILPs while pruning suboptimal branches. While these methods are powerful and can provide optimal solutions for many problems, they face significant challenges as problem size increases, particularly for ILPs, which are NP-Hard. This limitation motivates the need for heuristic and metaheuristic approaches in scenarios where quick, good-enough solutions are more practical than guaranteed optimality.</p>
+</section>
+<section id="exercises" class="level2" data-number="6.6">
+<h2 data-number="6.6" class="anchored" data-anchor-id="exercises"><span class="header-section-number">6.6</span> Exercises</h2>
+<ol type="1">
+<li><p><strong>Formulating an LP</strong>: A factory produces two products, X and Y. Each unit of product X requires 2 hours of labor and 3 units of raw material, while each unit of product Y requires 4 hours of labor and 2 units of raw material. The factory has a total of 100 hours of labor and 120 units of raw material available. The profit from each unit of product X is 30€, and from each unit of product Y is 20€. Formulate this as a linear programming problem to maximize profit.</p></li>
+<li><p><strong>Solving an LP using Simplex</strong>: Using the formulation from Exercise 1, implement the Simplex method in Python using <code>scipy.optimize.linprog</code> to find the optimal production quantities of products X and Y.</p></li>
+<li><p><strong>Branch and Bound for ILP</strong>: Consider the following integer linear programming problem: Maximize <span class="math inline">\(Z = 10x_1 + 15x_2\)</span> subject to the constraints <span class="math inline">\(2x_1 + 3x_2 \leq 12\)</span>, <span class="math inline">\(x_1 + x_2 \leq 5\)</span>, and <span class="math inline">\(x_1, x_2 \geq 0\)</span>, with the additional constraint that <span class="math inline">\(x_1\)</span> and <span class="math inline">\(x_2\)</span> must be integers. Use the Branch and Bound method to solve this ILP manually, showing each step of the process.</p></li>
+<li><p><strong>Implementing Branch and Bound</strong>: Using the ILP from Exercise 3, implement the Branch and Bound algorithm in Python using the <code>PuLP</code> library to find the optimal integer solution.</p></li>
+</ol>
+
+
 </section>
 
 </main> <!-- /main -->
