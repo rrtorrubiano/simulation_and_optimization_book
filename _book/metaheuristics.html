@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>8&nbsp; Metaheuristics – Simulation and Optimization: A Model-Driven Approach</title>
+<title>7&nbsp; Metaheuristics – Simulation and Optimization: A Model-Driven Approach</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -19,6 +19,41 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -71,6 +106,35 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
@@ -83,7 +147,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./optimization_basics.html">PART II: OPTIMIZATION</a></li><li class="breadcrumb-item"><a href="./metaheuristics.html"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Metaheuristics</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./optimization_basics.html">PART II: OPTIMIZATION</a></li><li class="breadcrumb-item"><a href="./metaheuristics.html"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Metaheuristics</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -152,13 +216,7 @@ ul.task-list li input[type="checkbox"] {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./discrete_event.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Discrete events</span></span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./agent_based.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Agent-based simulation</span></span></a>
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Discrete events and Queuing Theory</span></span></a>
   </div>
 </li>
       </ul>
@@ -175,25 +233,25 @@ ul.task-list li input[type="checkbox"] {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./optimization_basics.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Optimization basics</span></span></a>
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Optimization basics</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./exact_methods.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Exact methods</span></span></a>
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Exact methods</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./metaheuristics.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Metaheuristics</span></span></a>
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Metaheuristics</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./optimization_in_ml.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Optimization in Machine Learning</span></span></a>
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Optimization in Machine Learning</span></span></a>
   </div>
 </li>
       </ul>
@@ -201,7 +259,7 @@ ul.task-list li input[type="checkbox"] {
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./summary.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Summary</span></span></a>
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Summary</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -215,15 +273,26 @@ ul.task-list li input[type="checkbox"] {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="header-section-number">7.1</span> Introduction</a></li>
+  <li><a href="#trajectory-based-metaheuristics" id="toc-trajectory-based-metaheuristics" class="nav-link" data-scroll-target="#trajectory-based-metaheuristics"><span class="header-section-number">7.2</span> Trajectory-Based Metaheuristics</a>
+  <ul class="collapse">
+  <li><a href="#simulated-annealing" id="toc-simulated-annealing" class="nav-link" data-scroll-target="#simulated-annealing"><span class="header-section-number">7.2.1</span> Simulated Annealing</a></li>
+  <li><a href="#tabu-search" id="toc-tabu-search" class="nav-link" data-scroll-target="#tabu-search"><span class="header-section-number">7.2.2</span> Tabu Search</a></li>
+  </ul></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./optimization_basics.html">PART II: OPTIMIZATION</a></li><li class="breadcrumb-item"><a href="./metaheuristics.html"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Metaheuristics</span></a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./optimization_basics.html">PART II: OPTIMIZATION</a></li><li class="breadcrumb-item"><a href="./metaheuristics.html"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Metaheuristics</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span id="sec-metaheuristics" class="quarto-section-identifier"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Metaheuristics</span></span></h1>
+<h1 class="title"><span id="sec-metaheuristics" class="quarto-section-identifier"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Metaheuristics</span></span></h1>
 </div>
 
 
@@ -240,8 +309,208 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
+<section id="introduction" class="level2" data-number="7.1">
+<h2 data-number="7.1" class="anchored" data-anchor-id="introduction"><span class="header-section-number">7.1</span> Introduction</h2>
+<p>In the previous chapters, we operated in the realm of mathematical certainty. When the Simplex method terminates, it provides a certificate of optimality. When Branch and Bound finishes a search, we know with absolute confidence that no better integer solution exists. However, not all optimization problems can be solved exactly within a reasonable timeframe. Some problems are NP-hard, meaning that the time required to solve them grows exponentially with the size of the input. In such cases, exact methods become impractical for large instances.</p>
+<p>To make progress, we must fundamentally change our goal. We shift from asking <em>What is the global minimum?</em> to asking <em>Can we find a solution that is good enough, quickly enough?</em>. Nobel laureate Herbert Simon coined the term <em>satisficing</em> (a portmanteau of satisfy and suffice) to describe this approach. In CS, this means trading optimality for efficiency. We accept a solution that might be 1% or 5% worse than the theoretical optimum if it allows us to find it in milliseconds rather than millennia.</p>
+<p>In this context, we define a <strong>heuristic</strong> as an algorithm that produces a feasible solution to an optimization problem without guaranteeing optimality. Derived from the Greek <em>heuriskein</em> (“to find”), a heuristic is a problem-specific strategy designed to find a good solution quickly. Therefore, heuristics rely on domain knowledge and intuition. For instance, in the Traveling Salesman Problem (TSP), a simple heuristic is the nearest neighbor algorithm, which constructs a tour by repeatedly visiting the nearest unvisited city. While this method is fast and often yields a reasonable solution, it does not guarantee the shortest possible tour. It often gets trapped in poor local optima because it never makes a move that looks bad in the short term, even if it is necessary for long-term success.</p>
+<p>A <strong>metaheuristic</strong> is a higher-level framework that guides the search process of heuristics, often inspired by natural processes. Metaheuristics are, in general, problem-independent. For instance, the same Genetic Algorithm logic used to design a jet engine nozzle can be used to tune the hyperparameters of a neural network. However, unlike simple heuristics, metaheuristics include mechanisms to escape local optima. They might accept a worse solution temporarily (Simulated Annealing) or maintain a population of diverse solutions (Genetic Algorithms) to avoid getting stuck.</p>
+<p><strong>The Exploration vs.&nbsp;Exploitation Dilemma</strong></p>
+<p>A central theme in metaheuristics is the balance between <strong>exploration</strong> and <strong>exploitation</strong>. Exploration involves searching new areas of the solution space to discover potentially better solutions, while exploitation focuses on refining known good solutions to find local improvements. An effective metaheuristic must strike a balance between these two strategies. Too much exploration can lead to inefficiency, while too much exploitation can cause premature convergence to suboptimal solutions.</p>
+<p>A “pure” hill-climber is 100% exploitation. A random search is 100% exploration. The algorithms in this chapter (Simulated Annealing, Tabu Search, and Genetic Algorithms) are successful specifically because they dynamically manage the balance between these two extremes, starting with exploration and gradually shifting toward exploitation.</p>
+<p>In the following, we will explore several popular metaheuristic algorithms, discussing their principles, implementations, and applications. We will divide our discussion into <strong>trajectory-based</strong> methods, which iteratively improve a single solution, and <strong>population-based</strong> methods, which evolve a set of solutions over time. In the first case, we will explore Simulated Annealing and Tabu Search as the most prominent examples. In the second case, we will study Genetic Algorithms.</p>
+</section>
+<section id="trajectory-based-metaheuristics" class="level2" data-number="7.2">
+<h2 data-number="7.2" class="anchored" data-anchor-id="trajectory-based-metaheuristics"><span class="header-section-number">7.2</span> Trajectory-Based Metaheuristics</h2>
+<p>The simplest way to explore a landscape is to send out a single hiker. In trajectory-based metaheuristics, we maintain a single candidate solution <span class="math inline">\(x\)</span> and iteratively improve it by exploring its neighbors <span class="math inline">\(x'\)</span>. The hiker evaluates nearby points and decides where to move next based on specific criteria. This approach is straightforward and often effective for many optimization problems. The sequence of solutions <span class="math inline">\(x_0, x_1, x_2, \ldots\)</span> generated by the algorithm forms a <em>trajectory</em> through the solution space.</p>
+<p>The fundamental challenge in this type of methods is to avoid getting stuck in local optima. A standard “Hill Climber” (or Greedy Descent) algorithm accepts a neighbor only if it is better than the current solution. Consequently, once the hiker reaches a small peak, they get stuck, even if a massive mountain looms just across the valley. To cross that valley, the algorithm must be willing to temporarily accept a worse solution. To address this problem, trajectory-based metaheuristics incorporate strategies to escape local minima and continue exploring the solution space.</p>
+<p>We will examine two dominant strategies for doing this: <strong>Simulated Annealing</strong> (which uses randomness) and <strong>Tabu Search</strong> (which uses memory).</p>
+<section id="simulated-annealing" class="level3" data-number="7.2.1">
+<h3 data-number="7.2.1" class="anchored" data-anchor-id="simulated-annealing"><span class="header-section-number">7.2.1</span> Simulated Annealing</h3>
+<p>Simulated Annealing (SA) is inspired by the annealing process in metallurgy, where controlled cooling of a material allows atoms to settle into a low-energy configuration. In optimization, SA mimics this process by allowing occasional uphill moves (i.e., accepting worse solutions) to escape local minima. The main idea is to perform the cooling process gradually, starting with a high “temperature” that permits more exploration and slowly lowering it to focus on exploitation.</p>
+<p>In SA, our objective function is called “Energy”, and the “Temperature” parameter controls the likelihood of accepting worse solutions. At high temperatures, the algorithm is more likely to accept uphill moves, promoting exploration. As the temperature decreases, the algorithm becomes more conservative, favoring downhill moves and refining the current solution.</p>
+<p>The algorithm proceeds as follows:</p>
+<ol type="1">
+<li>Initialize the current solution <span class="math inline">\(x\)</span> and set an initial temperature <span class="math inline">\(T\)</span>.</li>
+<li>Repeat until a stopping criterion is met (e.g., a maximum number of iterations or a minimum temperature):
+<ul>
+<li>Generate a neighbor solution <span class="math inline">\(x'\)</span> by making a small change to <span class="math inline">\(x\)</span>.</li>
+<li>Calculate the change in energy <span class="math inline">\(\Delta E = E(x') - E(x)\)</span>.</li>
+<li>If <span class="math inline">\(\Delta E &lt; 0\)</span> (i.e., <span class="math inline">\(x'\)</span> is better), accept <span class="math inline">\(x'\)</span> as the new current solution.</li>
+<li>If <span class="math inline">\(\Delta E \ge 0\)</span>, accept <span class="math inline">\(x'\)</span> with a probability of <span class="math inline">\(e^{-\Delta E / T}\)</span>.</li>
+<li>Decrease the temperature <span class="math inline">\(T\)</span> according to a cooling schedule.</li>
+</ul></li>
+</ol>
+<p>The criterion <span class="math inline">\(e^{-\Delta E / T}\)</span> is called the <strong>Metropolis criterion</strong>. It ensures that as the temperature decreases, the probability of accepting worse solutions diminishes, allowing the algorithm to focus on refining the best solutions found. Usually, the cooling schedule is geometric, e.g., <span class="math inline">\(T \leftarrow \alpha T\)</span> with <span class="math inline">\(\alpha \in (0,1)\)</span>. A high value of <span class="math inline">\(\alpha\)</span> (e.g., 0.99) results in slow cooling, promoting exploration, while a low value (e.g., 0.8) leads to rapid cooling and quicker convergence.</p>
+<p><strong>Coding Example</strong></p>
+<p>We now implement a solution to the Traveling Salesman Problem (TSP) using Simulated Annealing.</p>
+<div id="5964a88b" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> math</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> random</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> total_distance(route, dist_matrix):</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Calculates the total distance of the tour."""</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    dist <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(route) <span class="op">-</span> <span class="dv">1</span>):</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>        dist <span class="op">+=</span> dist_matrix[route[i]][route[i<span class="op">+</span><span class="dv">1</span>]]</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    dist <span class="op">+=</span> dist_matrix[route[<span class="op">-</span><span class="dv">1</span>]][route[<span class="dv">0</span>]] <span class="co"># Return to start</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> dist</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> simulated_annealing(dist_matrix, initial_temp<span class="op">=</span><span class="dv">1000</span>, cooling_rate<span class="op">=</span><span class="fl">0.995</span>):</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 1. Initialization</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    n_cities <span class="op">=</span> <span class="bu">len</span>(dist_matrix)</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    current_sol <span class="op">=</span> <span class="bu">list</span>(<span class="bu">range</span>(n_cities))</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    random.shuffle(current_sol)</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    current_cost <span class="op">=</span> total_distance(current_sol, dist_matrix)</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    best_sol <span class="op">=</span> <span class="bu">list</span>(current_sol)</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    best_cost <span class="op">=</span> current_cost</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    temp <span class="op">=</span> initial_temp</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 2. The Annealing Loop</span></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> temp <span class="op">&gt;</span> <span class="dv">1</span>:</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Create Neighbor: Swap two random cities</span></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>        new_sol <span class="op">=</span> <span class="bu">list</span>(current_sol)</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>        i, j <span class="op">=</span> random.sample(<span class="bu">range</span>(n_cities), <span class="dv">2</span>)</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>        new_sol[i], new_sol[j] <span class="op">=</span> new_sol[j], new_sol[i]</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>        new_cost <span class="op">=</span> total_distance(new_sol, dist_matrix)</span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Calculate Delta E</span></span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>        delta_E <span class="op">=</span> new_cost <span class="op">-</span> current_cost</span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>        <span class="co"># 3. Acceptance Criteria (Metropolis)</span></span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>        <span class="co"># If better, accept. If worse, accept with probability exp(-delta/T)</span></span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> delta_E <span class="op">&lt;</span> <span class="dv">0</span> <span class="kw">or</span> random.random() <span class="op">&lt;</span> math.exp(<span class="op">-</span>delta_E <span class="op">/</span> temp):</span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>            current_sol <span class="op">=</span> new_sol</span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>            current_cost <span class="op">=</span> new_cost</span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>            </span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>            <span class="co"># Update Global Best</span></span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> current_cost <span class="op">&lt;</span> best_cost:</span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a>                best_sol <span class="op">=</span> <span class="bu">list</span>(current_sol)</span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a>                best_cost <span class="op">=</span> current_cost</span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a>        <span class="co"># 4. Cooling</span></span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a>        temp <span class="op">*=</span> cooling_rate</span>
+<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> best_sol, best_cost</span>
+<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a><span class="co"># Example Usage</span></span>
+<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a random distance matrix for 10 cities</span></span>
+<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a>dist_matrix <span class="op">=</span> np.random.randint(<span class="dv">10</span>, <span class="dv">100</span>, size<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">10</span>))</span>
+<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a>np.fill_diagonal(dist_matrix, <span class="dv">0</span>)</span>
+<span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a>best_route, min_dist <span class="op">=</span> simulated_annealing(dist_matrix)</span>
+<span id="cb1-59"><a href="#cb1-59" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Final Best Distance: </span><span class="sc">{</span>min_dist<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Final Best Distance: 229</code></pre>
+</div>
+</div>
+<p>The code accepts a distance matrix representing the distances between cities and applies the Simulated Annealing algorithm to find a near-optimal tour. The algorithm starts with a random tour and iteratively improves it by exploring neighboring solutions, accepting worse solutions based on the Metropolis criterion, and gradually cooling down the temperature.</p>
+</section>
+<section id="tabu-search" class="level3" data-number="7.2.2">
+<h3 data-number="7.2.2" class="anchored" data-anchor-id="tabu-search"><span class="header-section-number">7.2.2</span> Tabu Search</h3>
+<p>While Simulated Annealing relies on rolling dice, Tabu Search (TS) relies on <strong>memory</strong>. It assumes that if we just visited a solution, we shouldn’t go back to it immediately. To accomplish this, Tabu Search uses memory structures to guide the search.</p>
+<p>The core idea of Tabu Search is to maintain a <strong>tabu list</strong>, which records recently visited solutions or moves. This list prevents the algorithm from revisiting these solutions for a certain number of iterations, thus encouraging exploration of new areas in the solution space. The tabu list can be implemented as a fixed-size queue that stores the last <span class="math inline">\(k\)</span> moves or solutions.</p>
+<p>The TS algorithm proceeds as follows:</p>
+<ol type="1">
+<li>Initialize the current solution <span class="math inline">\(x\)</span> and the tabu list.</li>
+<li>Repeat until a stopping criterion is met (e.g., a maximum number of iterations):
+<ul>
+<li>Generate a set of neighbor solutions <span class="math inline">\(N(x)\)</span>.</li>
+<li>Evaluate the neighbors and select the best one <span class="math inline">\(x'\)</span> that is not in the tabu list (or satisfies an aspiration criterion). A neighbor can be accepted even if it’s worse than the current solution, as long as it is not tabu.</li>
+<li>Update the current solution to <span class="math inline">\(x'\)</span>.</li>
+<li>Update the tabu list by adding the move or solution to it, removing the oldest entry if necessary. It stays there for a specific duration (Tabu Tenure).</li>
+</ul></li>
+</ol>
+<p><strong>Coding Example</strong></p>
+<p>We will solve a generic problem: finding a binary string of length <span class="math inline">\(n\)</span> that maximizes a value function, using Tabu Search. A “neighbor” is created by flipping exactly one bit.</p>
+<div id="87aa74c2" class="cell" data-execution_count="2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> collections <span class="im">import</span> deque</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> objective_function(x):</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Example: Maximize the number of 1s (OneMax) </span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="co"># In reality, this would be a complex cost function</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">sum</span>(x)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_neighbors(solution):</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    neighbors <span class="op">=</span> []</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(solution)):</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>        neighbor <span class="op">=</span> <span class="bu">list</span>(solution)</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>        neighbor[i] <span class="op">=</span> <span class="dv">1</span> <span class="op">-</span> neighbor[i] <span class="co"># Flip bit i</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>        neighbors.append((neighbor, i)) <span class="co"># Store solution and the index flipped</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> neighbors</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> tabu_search(n_bits, max_iter<span class="op">=</span><span class="dv">100</span>, tabu_tenure<span class="op">=</span><span class="dv">5</span>):</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 1. Initialization</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>    current_sol <span class="op">=</span> [random.randint(<span class="dv">0</span>, <span class="dv">1</span>) <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(n_bits)]</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>    best_sol <span class="op">=</span> <span class="bu">list</span>(current_sol)</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>    best_score <span class="op">=</span> objective_function(best_sol)</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Tabu List: Stores indices of bits that were recently flipped</span></span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>    tabu_list <span class="op">=</span> deque(maxlen<span class="op">=</span>tabu_tenure)</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> iteration <span class="kw">in</span> <span class="bu">range</span>(max_iter):</span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>        neighbors <span class="op">=</span> get_neighbors(current_sol)</span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Filter neighbors based on Tabu logic</span></span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>        best_neighbor <span class="op">=</span> <span class="va">None</span></span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>        best_neighbor_score <span class="op">=</span> <span class="op">-</span><span class="bu">float</span>(<span class="st">'inf'</span>)</span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>        move_index <span class="op">=</span> <span class="op">-</span><span class="dv">1</span></span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> neighbor, idx <span class="kw">in</span> neighbors:</span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>            score <span class="op">=</span> objective_function(neighbor)</span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a>            </span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a>            is_tabu <span class="op">=</span> idx <span class="kw">in</span> tabu_list</span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a>            is_aspiration <span class="op">=</span> score <span class="op">&gt;</span> best_score <span class="co"># Aspiration Criteria</span></span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a>            </span>
+<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a>            <span class="co"># 2. Selection Logic: Allow if NOT Tabu OR meets Aspiration</span></span>
+<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> (<span class="kw">not</span> is_tabu) <span class="kw">or</span> is_aspiration:</span>
+<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a>                <span class="cf">if</span> score <span class="op">&gt;</span> best_neighbor_score:</span>
+<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a>                    best_neighbor <span class="op">=</span> neighbor</span>
+<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a>                    best_neighbor_score <span class="op">=</span> score</span>
+<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a>                    move_index <span class="op">=</span> idx</span>
+<span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb3-46"><a href="#cb3-46" aria-hidden="true" tabindex="-1"></a>        <span class="co"># 3. Move and Update Memory</span></span>
+<span id="cb3-47"><a href="#cb3-47" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> best_neighbor:</span>
+<span id="cb3-48"><a href="#cb3-48" aria-hidden="true" tabindex="-1"></a>            current_sol <span class="op">=</span> best_neighbor</span>
+<span id="cb3-49"><a href="#cb3-49" aria-hidden="true" tabindex="-1"></a>            tabu_list.append(move_index) <span class="co"># Add the flipped bit to Tabu list</span></span>
+<span id="cb3-50"><a href="#cb3-50" aria-hidden="true" tabindex="-1"></a>            </span>
+<span id="cb3-51"><a href="#cb3-51" aria-hidden="true" tabindex="-1"></a>            <span class="co"># Update Global Best</span></span>
+<span id="cb3-52"><a href="#cb3-52" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> best_neighbor_score <span class="op">&gt;</span> best_score:</span>
+<span id="cb3-53"><a href="#cb3-53" aria-hidden="true" tabindex="-1"></a>                best_sol <span class="op">=</span> <span class="bu">list</span>(best_neighbor)</span>
+<span id="cb3-54"><a href="#cb3-54" aria-hidden="true" tabindex="-1"></a>                best_score <span class="op">=</span> best_neighbor_score</span>
+<span id="cb3-55"><a href="#cb3-55" aria-hidden="true" tabindex="-1"></a>                <span class="bu">print</span>(<span class="ss">f"Iter </span><span class="sc">{</span>iteration<span class="sc">}</span><span class="ss">: New Best Score = </span><span class="sc">{</span>best_score<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb3-56"><a href="#cb3-56" aria-hidden="true" tabindex="-1"></a>                </span>
+<span id="cb3-57"><a href="#cb3-57" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> best_sol, best_score</span>
+<span id="cb3-58"><a href="#cb3-58" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-59"><a href="#cb3-59" aria-hidden="true" tabindex="-1"></a><span class="co"># Example Usage</span></span>
+<span id="cb3-60"><a href="#cb3-60" aria-hidden="true" tabindex="-1"></a>final_sol, final_score <span class="op">=</span> tabu_search(n_bits<span class="op">=</span><span class="dv">20</span>, max_iter<span class="op">=</span><span class="dv">50</span>, tabu_tenure<span class="op">=</span><span class="dv">3</span>)</span>
+<span id="cb3-61"><a href="#cb3-61" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Final Solution: </span><span class="sc">{</span>final_sol<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Iter 0: New Best Score = 9
+Iter 1: New Best Score = 10
+Iter 2: New Best Score = 11
+Iter 3: New Best Score = 12
+Iter 4: New Best Score = 13
+Iter 5: New Best Score = 14
+Iter 6: New Best Score = 15
+Iter 7: New Best Score = 16
+Iter 8: New Best Score = 17
+Iter 9: New Best Score = 18
+Iter 10: New Best Score = 19
+Iter 11: New Best Score = 20
+Final Solution: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]</code></pre>
+</div>
+</div>
+<p>The algorithm explores neighboring solutions by flipping bits, while maintaining a tabu list to avoid revisiting recently changed bits. The aspiration criterion allows the algorithm to accept tabu moves if they lead to a new global best solution.</p>
+<p>In summary, SA is probabilistic and relies on randomness to escape local optima, while TS is deterministic and uses memory to guide the search. Both methods effectively balance exploration and exploitation, making them powerful tools for solving complex optimization problems. In the next section, we will explore population-based metaheuristics, which maintain a diverse set of solutions to explore the solution space more broadly.</p>
 
 
+</section>
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -647,12 +916,12 @@ ul.task-list li input[type="checkbox"] {
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
       <a href="./exact_methods.html" class="pagination-link" aria-label="Exact methods">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Exact methods</span></span>
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Exact methods</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
       <a href="./optimization_in_ml.html" class="pagination-link" aria-label="Optimization in Machine Learning">
-        <span class="nav-page-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Optimization in Machine Learning</span></span> <i class="bi bi-arrow-right-short"></i>
+        <span class="nav-page-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Optimization in Machine Learning</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
