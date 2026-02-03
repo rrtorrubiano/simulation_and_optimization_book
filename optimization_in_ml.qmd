@@ -1,1 +1,53 @@
-# Optimization in Machine Learning {#sec-opt-ml}
+# Optimization and Simulation in Machine Learning {#sec-opt-ml}
+
+## Introduction
+
+In the previous chapters, we treated optimization as a tool for decision-making, like finding the best shipping route or the optimal factory schedule. In these scenarios, the "model" was explicit. We knew the constraints, we knew the objective function, and we simply needed to find the variable values $x$ that optimized the objective function. In Machine Learning (ML) and Artificial Intelligence (AI), the change the paradigm. We are no longer optimizing a specific decision, but rather *learning a function* that makes decisions.
+
+From this perspective, ML is not magic, but simply optimization applied to function approximation. When we say a neural network "learns" to recognize a cat, we mean that an optimization algorithm has traversed a high-dimensional landscape and found a specific configuration of parameters (weights and biases) that minimizes the error between the network's output and the label "cat."
+
+In general, we use a very specific notation when applying optimization to ML problems. We denote the input data as $X$ and the output data (or labels) as $y$. The model we are trying to learn is a function $f(X; \theta)$, where $\theta$ represents the parameters of the model (e.g., weights in a neural network). The goal of training the model is to find the optimal parameters $\theta^*$ that minimize a loss function $\mathcal{L}(y, f(X; \theta))$, which quantifies the difference between the predicted outputs and the true labels.
+
+$$
+\theta^* = \arg\min_{\theta}\frac{1}{n} \sum_{i=1}^n \mathcal{L}(y_i, f(x_i; \theta))
+$$
+
+However, not all problems come with a static dataset. In Reinforcement Learning (RL) or game playing (like Go or Chess), the "data" is generated dynamically by the agent's interactions with the world. In this case, we often do not have an explicit formula for the objective function (e.g., "Win the game") and we cannot calculate the gradient of "winning" directly. Instead, we must rely on **simulation**: We run the system forward in time (simulate a game, simulate a robot arm moving), observe the outcome, and use that empirical data to estimate the gradient or value.
+
+Thus, modern AI is the marriage of **optimization** (improving parameters based on data) and **simulation** (generating data based on parameters).
+
+In this chapter, we will explore how these concepts manifest in three distinct phases of the AI lifecycle:
+
+1. **Training:** The process of optimizing model parameters using data samples. In this case, we rely on Stochastic Gradient Descent (SGD) and its adaptive variants (like Adam). These methods use the "noise" inherent in data sampling to navigate complex terrains where traditional Newton-type methods fail.
+
+2. **Planning:** The process of simulating future states of the world to make better decisions in the present. Here, we will explore techniques like Monte Carlo Tree Search (MCTS) that allow agents to evaluate potential future actions by simulating their outcomes.
+
+3. **Interaction:** The process of learning from real-time feedback as the agent interacts with its environment. This involves methods like Q-learning and Policy Gradients, which use simulations of the agent's actions to improve its decision-making policy over time.
+
+## Optimization in Deep Learning
+
+In @sec-optimization-basics, we established that convex problems are "easy" and non-convex problems are "hard." Deep Learning places us firmly in the "hard" category. A modern neural network may have billions of parameters,  and the relationship between these parameters and the loss function is highly non-linear. Despite this, we routinely train these models to near-perfect accuracy. How is this possible? The answer lies in the specific geometry of high-dimensional spaces and the specific properties of the algorithms we use.
+
+### The Loss Landscape in DL
+
+For decades, researchers and practitioners in ML feared local minima: small valleys where the algorithm might get stuck, far higher than the global minimum. However, intuition derived from 2D or 3D surfaces is misleading in high dimensions. In 2D, a local minimum is a point where all directions lead uphill. In high dimensions, however, the number of directions increases dramatically. As a result, the probability of encountering a true local minimum (where all directions are uphill) decreases significantly. Instead, we often find "saddle points" or "flat regions" where some directions lead uphill while others lead downhill.
+
+Probability theory tells us this is incredibly rare. In high-dimensional landscapes, most points where the gradient vanishes ($\nabla \mathcal{L} = 0$) are not minima, but saddle points. These are points that curve up in some directions but down in others. The main implication is that algorithms that rely solely on Newton's method (using the Hessian) struggle here because the Hessian has both positive and negative eigenvalues. Gradient-based methods, however, can usually "slide off" the saddle point along the downward-sloping dimensions.
+
+### Backpropagation and Stochastic Gradient Descent
+
+In general, to minimize the loss $\mathcal{L}(\theta)$, we need the gradient $\nabla \mathcal{L}(\theta)$. For a deep network, deriving this analytically is impossible. Instead, we use **backpropagation**. Put simply, backpropagation is simply the recursive application of the familiar chain rule of calculus on a computational graph. It involves two passes through the network: a **forward pass** to compute the output and loss, and a **backward pass** to compute the gradients of the loss with respect to each parameter. Modern Deep Learning frameworks like PyTorch utilize Automatic Differentiation (AutoDiff): only the forward pass is needed, and the software automatically constructs the graph to compute the backward pass.
+
+Standard Gradient Descent (Batch GD) computes the gradient over the entire dataset before taking a step.
+
+$$
+\theta_{k+1} = \theta_k - \eta \frac{1}{n} \sum_{i=1}^n \nabla \mathcal{L}_i(\theta_k)
+$$
+
+where $\mathcal{L}_i$ is the loss for the $i$-th data point, and $\eta$ is the learning rate. However, for large datasets, this is computationally expensive. Instead, we use **Stochastic Gradient Descent (SGD)**, which approximates the gradient using a small batch of data points.
+
+$$
+\theta_{k+1} = \theta_k - \eta \frac{1}{m} \sum_{i=1}^m \nabla \mathcal{L}_{j_i}(\theta_k)
+$$
+
+where $m$ is the batch size, and $j_i$ are randomly selected indices from the dataset. This introduces noise into the gradient estimate, which can help the optimization process escape saddle points and explore the loss landscape more effectively.

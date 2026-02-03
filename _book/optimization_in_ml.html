@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>9&nbsp; Optimization in Machine Learning – Simulation and Optimization: A Model-Driven Approach</title>
+<title>8&nbsp; Optimization and Simulation in Machine Learning – Simulation and Optimization: A Model-Driven Approach</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -71,6 +71,35 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
@@ -83,7 +112,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./optimization_basics.html">PART II: OPTIMIZATION</a></li><li class="breadcrumb-item"><a href="./optimization_in_ml.html"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Optimization in Machine Learning</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./optimization_in_ml.html"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Optimization and Simulation in Machine Learning</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -152,13 +181,7 @@ ul.task-list li input[type="checkbox"] {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./discrete_event.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Discrete events</span></span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./agent_based.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Agent-based simulation</span></span></a>
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Discrete events and Queuing Theory</span></span></a>
   </div>
 </li>
       </ul>
@@ -175,33 +198,33 @@ ul.task-list li input[type="checkbox"] {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./optimization_basics.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Optimization basics</span></span></a>
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Optimization basics</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./exact_methods.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Exact methods</span></span></a>
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Exact methods</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./metaheuristics.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Metaheuristics</span></span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./optimization_in_ml.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Optimization in Machine Learning</span></span></a>
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Metaheuristics</span></span></a>
   </div>
 </li>
       </ul>
   </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="./optimization_in_ml.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Optimization and Simulation in Machine Learning</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="./summary.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Summary</span></span></a>
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Summary</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -215,15 +238,26 @@ ul.task-list li input[type="checkbox"] {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="header-section-number">8.1</span> Introduction</a></li>
+  <li><a href="#optimization-in-deep-learning" id="toc-optimization-in-deep-learning" class="nav-link" data-scroll-target="#optimization-in-deep-learning"><span class="header-section-number">8.2</span> Optimization in Deep Learning</a>
+  <ul class="collapse">
+  <li><a href="#the-loss-landscape-in-dl" id="toc-the-loss-landscape-in-dl" class="nav-link" data-scroll-target="#the-loss-landscape-in-dl"><span class="header-section-number">8.2.1</span> The Loss Landscape in DL</a></li>
+  <li><a href="#backpropagation-and-stochastic-gradient-descent" id="toc-backpropagation-and-stochastic-gradient-descent" class="nav-link" data-scroll-target="#backpropagation-and-stochastic-gradient-descent"><span class="header-section-number">8.2.2</span> Backpropagation and Stochastic Gradient Descent</a></li>
+  </ul></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./optimization_basics.html">PART II: OPTIMIZATION</a></li><li class="breadcrumb-item"><a href="./optimization_in_ml.html"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Optimization in Machine Learning</span></a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title"><span id="sec-opt-ml" class="quarto-section-identifier"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Optimization in Machine Learning</span></span></h1>
+<h1 class="title"><span id="sec-opt-ml" class="quarto-section-identifier"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Optimization and Simulation in Machine Learning</span></span></h1>
 </div>
 
 
@@ -240,8 +274,47 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
+<section id="introduction" class="level2" data-number="8.1">
+<h2 data-number="8.1" class="anchored" data-anchor-id="introduction"><span class="header-section-number">8.1</span> Introduction</h2>
+<p>In the previous chapters, we treated optimization as a tool for decision-making, like finding the best shipping route or the optimal factory schedule. In these scenarios, the “model” was explicit. We knew the constraints, we knew the objective function, and we simply needed to find the variable values <span class="math inline">\(x\)</span> that optimized the objective function. In Machine Learning (ML) and Artificial Intelligence (AI), the change the paradigm. We are no longer optimizing a specific decision, but rather <em>learning a function</em> that makes decisions.</p>
+<p>From this perspective, ML is not magic, but simply optimization applied to function approximation. When we say a neural network “learns” to recognize a cat, we mean that an optimization algorithm has traversed a high-dimensional landscape and found a specific configuration of parameters (weights and biases) that minimizes the error between the network’s output and the label “cat.”</p>
+<p>In general, we use a very specific notation when applying optimization to ML problems. We denote the input data as <span class="math inline">\(X\)</span> and the output data (or labels) as <span class="math inline">\(y\)</span>. The model we are trying to learn is a function <span class="math inline">\(f(X; \theta)\)</span>, where <span class="math inline">\(\theta\)</span> represents the parameters of the model (e.g., weights in a neural network). The goal of training the model is to find the optimal parameters <span class="math inline">\(\theta^*\)</span> that minimize a loss function <span class="math inline">\(\mathcal{L}(y, f(X; \theta))\)</span>, which quantifies the difference between the predicted outputs and the true labels.</p>
+<p><span class="math display">\[
+\theta^* = \arg\min_{\theta}\frac{1}{n} \sum_{i=1}^n \mathcal{L}(y_i, f(x_i; \theta))
+\]</span></p>
+<p>However, not all problems come with a static dataset. In Reinforcement Learning (RL) or game playing (like Go or Chess), the “data” is generated dynamically by the agent’s interactions with the world. In this case, we often do not have an explicit formula for the objective function (e.g., “Win the game”) and we cannot calculate the gradient of “winning” directly. Instead, we must rely on <strong>simulation</strong>: We run the system forward in time (simulate a game, simulate a robot arm moving), observe the outcome, and use that empirical data to estimate the gradient or value.</p>
+<p>Thus, modern AI is the marriage of <strong>optimization</strong> (improving parameters based on data) and <strong>simulation</strong> (generating data based on parameters).</p>
+<p>In this chapter, we will explore how these concepts manifest in three distinct phases of the AI lifecycle:</p>
+<ol type="1">
+<li><p><strong>Training:</strong> The process of optimizing model parameters using data samples. In this case, we rely on Stochastic Gradient Descent (SGD) and its adaptive variants (like Adam). These methods use the “noise” inherent in data sampling to navigate complex terrains where traditional Newton-type methods fail.</p></li>
+<li><p><strong>Planning:</strong> The process of simulating future states of the world to make better decisions in the present. Here, we will explore techniques like Monte Carlo Tree Search (MCTS) that allow agents to evaluate potential future actions by simulating their outcomes.</p></li>
+<li><p><strong>Interaction:</strong> The process of learning from real-time feedback as the agent interacts with its environment. This involves methods like Q-learning and Policy Gradients, which use simulations of the agent’s actions to improve its decision-making policy over time.</p></li>
+</ol>
+</section>
+<section id="optimization-in-deep-learning" class="level2" data-number="8.2">
+<h2 data-number="8.2" class="anchored" data-anchor-id="optimization-in-deep-learning"><span class="header-section-number">8.2</span> Optimization in Deep Learning</h2>
+<p>In <a href="optimization_basics.html" class="quarto-xref"><span>Chapter 5</span></a>, we established that convex problems are “easy” and non-convex problems are “hard.” Deep Learning places us firmly in the “hard” category. A modern neural network may have billions of parameters, and the relationship between these parameters and the loss function is highly non-linear. Despite this, we routinely train these models to near-perfect accuracy. How is this possible? The answer lies in the specific geometry of high-dimensional spaces and the specific properties of the algorithms we use.</p>
+<section id="the-loss-landscape-in-dl" class="level3" data-number="8.2.1">
+<h3 data-number="8.2.1" class="anchored" data-anchor-id="the-loss-landscape-in-dl"><span class="header-section-number">8.2.1</span> The Loss Landscape in DL</h3>
+<p>For decades, researchers and practitioners in ML feared local minima: small valleys where the algorithm might get stuck, far higher than the global minimum. However, intuition derived from 2D or 3D surfaces is misleading in high dimensions. In 2D, a local minimum is a point where all directions lead uphill. In high dimensions, however, the number of directions increases dramatically. As a result, the probability of encountering a true local minimum (where all directions are uphill) decreases significantly. Instead, we often find “saddle points” or “flat regions” where some directions lead uphill while others lead downhill.</p>
+<p>Probability theory tells us this is incredibly rare. In high-dimensional landscapes, most points where the gradient vanishes (<span class="math inline">\(\nabla \mathcal{L} = 0\)</span>) are not minima, but saddle points. These are points that curve up in some directions but down in others. The main implication is that algorithms that rely solely on Newton’s method (using the Hessian) struggle here because the Hessian has both positive and negative eigenvalues. Gradient-based methods, however, can usually “slide off” the saddle point along the downward-sloping dimensions.</p>
+</section>
+<section id="backpropagation-and-stochastic-gradient-descent" class="level3" data-number="8.2.2">
+<h3 data-number="8.2.2" class="anchored" data-anchor-id="backpropagation-and-stochastic-gradient-descent"><span class="header-section-number">8.2.2</span> Backpropagation and Stochastic Gradient Descent</h3>
+<p>In general, to minimize the loss <span class="math inline">\(\mathcal{L}(\theta)\)</span>, we need the gradient <span class="math inline">\(\nabla \mathcal{L}(\theta)\)</span>. For a deep network, deriving this analytically is impossible. Instead, we use <strong>backpropagation</strong>. Put simply, backpropagation is simply the recursive application of the familiar chain rule of calculus on a computational graph. It involves two passes through the network: a <strong>forward pass</strong> to compute the output and loss, and a <strong>backward pass</strong> to compute the gradients of the loss with respect to each parameter. Modern Deep Learning frameworks like PyTorch utilize Automatic Differentiation (AutoDiff): only the forward pass is needed, and the software automatically constructs the graph to compute the backward pass.</p>
+<p>Standard Gradient Descent (Batch GD) computes the gradient over the entire dataset before taking a step.</p>
+<p><span class="math display">\[
+\theta_{k+1} = \theta_k - \eta \frac{1}{n} \sum_{i=1}^n \nabla \mathcal{L}_i(\theta_k)
+\]</span></p>
+<p>where <span class="math inline">\(\mathcal{L}_i\)</span> is the loss for the <span class="math inline">\(i\)</span>-th data point, and <span class="math inline">\(\eta\)</span> is the learning rate. However, for large datasets, this is computationally expensive. Instead, we use <strong>Stochastic Gradient Descent (SGD)</strong>, which approximates the gradient using a small batch of data points.</p>
+<p><span class="math display">\[
+\theta_{k+1} = \theta_k - \eta \frac{1}{m} \sum_{i=1}^m \nabla \mathcal{L}_{j_i}(\theta_k)
+\]</span></p>
+<p>where <span class="math inline">\(m\)</span> is the batch size, and <span class="math inline">\(j_i\)</span> are randomly selected indices from the dataset. This introduces noise into the gradient estimate, which can help the optimization process escape saddle points and explore the loss landscape more effectively.</p>
 
 
+</section>
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -647,12 +720,12 @@ ul.task-list li input[type="checkbox"] {
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
       <a href="./metaheuristics.html" class="pagination-link" aria-label="Metaheuristics">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Metaheuristics</span></span>
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Metaheuristics</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
       <a href="./summary.html" class="pagination-link" aria-label="Summary">
-        <span class="nav-page-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Summary</span></span> <i class="bi bi-arrow-right-short"></i>
+        <span class="nav-page-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Summary</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

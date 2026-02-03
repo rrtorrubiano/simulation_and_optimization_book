@@ -20,7 +20,7 @@ book:
         - optimization_basics.qmd
         - exact_methods.qmd
         - metaheuristics.qmd
-        - optimization_in_ml.qmd
+    - optimization_in_ml.qmd
     - summary.qmd
     - references.qmd
 
