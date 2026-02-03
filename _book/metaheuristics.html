@@ -288,6 +288,13 @@ window.Quarto = {
   <ul class="collapse">
   <li><a href="#genetic-algorithms" id="toc-genetic-algorithms" class="nav-link" data-scroll-target="#genetic-algorithms"><span class="header-section-number">7.3.1</span> Genetic Algorithms</a></li>
   </ul></li>
+  <li><a href="#theoretical-considerations" id="toc-theoretical-considerations" class="nav-link" data-scroll-target="#theoretical-considerations"><span class="header-section-number">7.4</span> Theoretical Considerations</a>
+  <ul class="collapse">
+  <li><a href="#the-no-free-lunch-theorems" id="toc-the-no-free-lunch-theorems" class="nav-link" data-scroll-target="#the-no-free-lunch-theorems"><span class="header-section-number">7.4.1</span> The No Free Lunch Theorems</a></li>
+  <li><a href="#hyperparameters-and-tuning" id="toc-hyperparameters-and-tuning" class="nav-link" data-scroll-target="#hyperparameters-and-tuning"><span class="header-section-number">7.4.2</span> Hyperparameters and Tuning</a></li>
+  </ul></li>
+  <li><a href="#summary" id="toc-summary" class="nav-link" data-scroll-target="#summary"><span class="header-section-number">7.5</span> Summary</a></li>
+  <li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises"><span class="header-section-number">7.6</span> Exercises</a></li>
   </ul>
 </nav>
     </div>
@@ -348,7 +355,7 @@ window.Quarto = {
 <p>The criterion <span class="math inline">\(e^{-\Delta E / T}\)</span> is called the <strong>Metropolis criterion</strong>. It ensures that as the temperature decreases, the probability of accepting worse solutions diminishes, allowing the algorithm to focus on refining the best solutions found. Usually, the cooling schedule is geometric, e.g., <span class="math inline">\(T \leftarrow \alpha T\)</span> with <span class="math inline">\(\alpha \in (0,1)\)</span>. A high value of <span class="math inline">\(\alpha\)</span> (e.g., 0.99) results in slow cooling, promoting exploration, while a low value (e.g., 0.8) leads to rapid cooling and quicker convergence.</p>
 <p><strong>Coding Example</strong></p>
 <p>We now implement a solution to the Traveling Salesman Problem (TSP) using Simulated Annealing.</p>
-<div id="2f4ddcb6" class="cell" data-execution_count="1">
+<div id="53f4eee2" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> math</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> random</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -409,7 +416,7 @@ window.Quarto = {
 <span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a>best_route, min_dist <span class="op">=</span> simulated_annealing(dist_matrix)</span>
 <span id="cb1-59"><a href="#cb1-59" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Final Best Distance: </span><span class="sc">{</span>min_dist<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Final Best Distance: 280</code></pre>
+<pre><code>Final Best Distance: 303</code></pre>
 </div>
 </div>
 <p>The code accepts a distance matrix representing the distances between cities and applies the Simulated Annealing algorithm to find a near-optimal tour. The algorithm starts with a random tour and iteratively improves it by exploring neighboring solutions, accepting worse solutions based on the Metropolis criterion, and gradually cooling down the temperature.</p>
@@ -431,7 +438,7 @@ window.Quarto = {
 </ol>
 <p><strong>Coding Example</strong></p>
 <p>We will solve a generic problem: finding a binary string of length <span class="math inline">\(n\)</span> that maximizes a value function, using Tabu Search. A “neighbor” is created by flipping exactly one bit.</p>
-<div id="2ee4cc86" class="cell" data-execution_count="2">
+<div id="d2c9188f" class="cell" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> collections <span class="im">import</span> deque</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> objective_function(x):</span>
@@ -494,18 +501,17 @@ window.Quarto = {
 <span id="cb3-60"><a href="#cb3-60" aria-hidden="true" tabindex="-1"></a>final_sol, final_score <span class="op">=</span> tabu_search(n_bits<span class="op">=</span><span class="dv">20</span>, max_iter<span class="op">=</span><span class="dv">50</span>, tabu_tenure<span class="op">=</span><span class="dv">3</span>)</span>
 <span id="cb3-61"><a href="#cb3-61" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Final Solution: </span><span class="sc">{</span>final_sol<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Iter 0: New Best Score = 9
-Iter 1: New Best Score = 10
-Iter 2: New Best Score = 11
-Iter 3: New Best Score = 12
-Iter 4: New Best Score = 13
-Iter 5: New Best Score = 14
-Iter 6: New Best Score = 15
-Iter 7: New Best Score = 16
-Iter 8: New Best Score = 17
-Iter 9: New Best Score = 18
-Iter 10: New Best Score = 19
-Iter 11: New Best Score = 20
+<pre><code>Iter 0: New Best Score = 10
+Iter 1: New Best Score = 11
+Iter 2: New Best Score = 12
+Iter 3: New Best Score = 13
+Iter 4: New Best Score = 14
+Iter 5: New Best Score = 15
+Iter 6: New Best Score = 16
+Iter 7: New Best Score = 17
+Iter 8: New Best Score = 18
+Iter 9: New Best Score = 19
+Iter 10: New Best Score = 20
 Final Solution: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]</code></pre>
 </div>
 </div>
@@ -543,7 +549,7 @@ Final Solution: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]</co
 <li><strong>Rank Selection:</strong> Individuals are ranked based on fitness, and selection probabilities are assigned based on rank rather than absolute fitness. This helps to prevent premature convergence.</li>
 </ul>
 <p>The following example shows an implementation of tournament selection.</p>
-<div id="bfe66ec7" class="cell" data-execution_count="3">
+<div id="a8989c04" class="cell" data-execution_count="3">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> select_parents(population, fitnesses):</span>
@@ -565,7 +571,7 @@ Final Solution: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]</co
 <li><strong>Uniform Crossover:</strong> Each gene is independently swapped with a certain probability.</li>
 </ul>
 <p>The following example demonstrates one-point crossover.</p>
-<div id="6dc56b38" class="cell" data-execution_count="4">
+<div id="a680524b" class="cell" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> crossover(parent1, parent2):</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Single-Point Crossover."""</span></span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> np.random.rand() <span class="op">&lt;</span> <span class="fl">0.8</span>: <span class="co"># 80% chance to mate</span></span>
@@ -578,7 +584,7 @@ Final Solution: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]</co
 <p><strong>Mutation Methods</strong></p>
 <p>Mutation introduces random changes to the offspring’s chromosomes to maintain diversity. Common mutation methods include: - <strong>Bit Flip Mutation:</strong> For binary strings, randomly flip bits with a certain probability. - <strong>Gaussian Mutation:</strong> For real-valued representations, add a small random value drawn from a Gaussian distribution to the genes.</p>
 <p>The following example shows bit flip mutation.</p>
-<div id="eb68c7bf" class="cell" data-execution_count="5">
+<div id="64ead492" class="cell" data-execution_count="5">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> mutate(individual):</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Gaussian Mutation: Add small noise."""</span></span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(individual)):</span>
@@ -589,7 +595,7 @@ Final Solution: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]</co
 </div>
 <p><strong>Putting It All Together</strong></p>
 <p>Now we can implement a simple Genetic Algorithm that combines these components to optimize a function. For demonstration purposes, we will implement a GA to minimize the Sphere Function defined as <span class="math inline">\(f(x) = \sum_{i=1}^{n} x_i^2\)</span>, which has a global minimum at <span class="math inline">\(x = 0\)</span>. While GAs were originally designed for binary strings, they are heavily used today for continuous optimization (e.g., tuning hyperparameters).</p>
-<div id="0f11c2ed" class="cell" data-execution_count="6">
+<div id="c76a29e3" class="cell" data-execution_count="6">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Configuration ---</span></span>
@@ -648,25 +654,64 @@ Final Solution: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]</co
 <span id="cb8-56"><a href="#cb8-56" aria-hidden="true" tabindex="-1"></a>best_sol <span class="op">=</span> population[np.argmax(final_fitnesses)]</span>
 <span id="cb8-57"><a href="#cb8-57" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Final Solution: </span><span class="sc">{</span>best_sol<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Gen 0: Best Fitness = -43.94630
-Gen 10: Best Fitness = -5.13569
-Gen 20: Best Fitness = -0.67111
-Gen 30: Best Fitness = -0.07477
-Gen 40: Best Fitness = -0.04131
-Gen 50: Best Fitness = -0.02455
-Gen 60: Best Fitness = -0.01836
-Gen 70: Best Fitness = -0.01187
-Gen 80: Best Fitness = -0.00588
-Gen 90: Best Fitness = -0.00435
-Final Solution: [-0.00594836 -0.0096187  -0.02091151  0.00187755  0.0263977   0.01234599
- -0.00770573  0.00720149  0.02567704  0.00571133]</code></pre>
+<pre><code>Gen 0: Best Fitness = -25.46933
+Gen 10: Best Fitness = -3.61729
+Gen 20: Best Fitness = -0.67557
+Gen 30: Best Fitness = -0.09982
+Gen 40: Best Fitness = -0.04541
+Gen 50: Best Fitness = -0.01987
+Gen 60: Best Fitness = -0.01316
+Gen 70: Best Fitness = -0.00672
+Gen 80: Best Fitness = -0.00597
+Gen 90: Best Fitness = -0.00577
+Final Solution: [-0.00884146 -0.00748089  0.00325704 -0.01864807  0.00741852 -0.01334655
+  0.04991671  0.01923023 -0.04132009  0.00878723]</code></pre>
 </div>
 </div>
 <p>In this implementation, we initialize a population of random solutions and iteratively apply selection, crossover, and mutation to evolve the population towards better solutions. We also use elitism to ensure that the best solutions are preserved across generations. The algorithm optimizes the Sphere function, and we track the best fitness at regular intervals.</p>
 <p>The power of GA lies in its ability to explore a large and complex solution space effectively, making it suitable for a wide range of optimization problems, from engineering design to machine learning hyperparameter tuning. In general, GAs are easily parallelizable, as the evaluation of fitness for different individuals can be done independently, making them well-suited for modern computational architectures. Additionally, they do not require gradients, making them applicable to non-differentiable or noisy optimization problems. Finally, the combination of crossover and mutation allows GAs to maintain diversity in the population, helping to avoid premature convergence to local optima.</p>
-
-
 </section>
+</section>
+<section id="theoretical-considerations" class="level2" data-number="7.4">
+<h2 data-number="7.4" class="anchored" data-anchor-id="theoretical-considerations"><span class="header-section-number">7.4</span> Theoretical Considerations</h2>
+<p>We have now explored different metaheuristic algorithms, each with its own strengths and weaknesses. While these methods are powerful, it is important to understand their theoretical underpinnings and limitations. If we are building a routing system for a logistics company, should we default to a Genetic Algorithm because it sounds the most sophisticated? Or stick to Simulated Annealing because it is easier to code?</p>
+<section id="the-no-free-lunch-theorems" class="level3" data-number="7.4.1">
+<h3 data-number="7.4.1" class="anchored" data-anchor-id="the-no-free-lunch-theorems"><span class="header-section-number">7.4.1</span> The No Free Lunch Theorems</h3>
+<p>While answering this question is complex, part of the answer lies in the <strong>No Free Lunch Theorems</strong> for optimization. These theorems state that no optimization algorithm is universally superior to others when averaged over all possible problems. In other words, an algorithm that performs well on one class of problems may perform poorly on another. Therefore, the choice of metaheuristic should be informed by the specific characteristics of the problem at hand.</p>
+<p>We can derive the following implications from the No Free Lunch Theorems:</p>
+<ul>
+<li>There is no “super algorithm” that is best for all optimization problems. The effectiveness of an algorithm depends on the structure of the problem.</li>
+<li>Performance comes from specialization: An algorithm that is tailored to exploit the specific features of a problem will outperform a general-purpose algorithm on that problem.</li>
+<li>Domain knowledge is crucial: Understanding the problem domain can guide the design of heuristics and metaheuristics that are more effective for that particular problem.</li>
+</ul>
+<p>Specifically, the job of the computer scientist is not just to pick an algorithm from a library, but to understand the <em>geometry</em> of their specific problem. For instance, if the problem has a “smooth” landscape, we can use a trajectory method like SA. However, if it has a “modular” structure instead (where combining parts of solution A and B makes sense), probably using a Genetic Algorithm would be the best choice.</p>
+</section>
+<section id="hyperparameters-and-tuning" class="level3" data-number="7.4.2">
+<h3 data-number="7.4.2" class="anchored" data-anchor-id="hyperparameters-and-tuning"><span class="header-section-number">7.4.2</span> Hyperparameters and Tuning</h3>
+<p>The second theoretical hurdle is the issue of configuration. Exact algorithms like Simplex have very few parameters. Metaheuristics, however, are full of “knobs” that must be tuned. For instance, in SA we have the initial temperature, cooling rate, and stopping criteria. In GAs, we have population size, mutation rate, crossover rate, selection method, and more. The performance of these algorithms can be highly sensitive to the choice of these hyperparameters.</p>
+<p>So how do we choose e.g.&nbsp;the correct mutation rate? Ideally, we want the mutation rate that minimizes our loss function. But finding that rate is itself an optimization problem. We are effectively trying to “optimize the optimizer”. This meta-optimization can be computationally expensive and may require specialized techniques.</p>
+<p>For instance, one of the most common methods for hyperparameter tuning is <strong>Grid Search</strong>, where we define a discrete set of values for each hyperparameter and evaluate the performance of the algorithm for every combination. While this method is straightforward, it can be computationally expensive, especially when the number of hyperparameters and their possible values increases.</p>
+<p>Additionally, there are more sophisticated methods like <strong>Random Search</strong>, which samples hyperparameter combinations randomly, and <strong>Bayesian Optimization</strong>, which builds a probabilistic model of the objective function and uses it to select promising hyperparameter values. These methods can be more efficient than Grid Search, especially in high-dimensional hyperparameter spaces.</p>
+</section>
+</section>
+<section id="summary" class="level2" data-number="7.5">
+<h2 data-number="7.5" class="anchored" data-anchor-id="summary"><span class="header-section-number">7.5</span> Summary</h2>
+<p>In this chapter, we explored the world of metaheuristics, which are powerful tools for solving complex optimization problems that are intractable for exact methods. We discussed the fundamental concepts of heuristics and metaheuristics, and how they differ from traditional optimization algorithms. We delved into trajectory-based methods like Simulated Annealing and Tabu Search, which use randomness and memory to escape local optima. We also examined population-based methods like Genetic Algorithms, which maintain a diverse set of solutions to explore the solution space more effectively.</p>
+<p>Finally, we discussed theoretical considerations such as the No Free Lunch Theorems, which highlight the importance of problem-specific algorithm design, and the challenges of hyperparameter tuning in metaheuristics. Understanding these concepts is crucial for effectively applying metaheuristic algorithms to real-world optimization problems.</p>
+</section>
+<section id="exercises" class="level2" data-number="7.6">
+<h2 data-number="7.6" class="anchored" data-anchor-id="exercises"><span class="header-section-number">7.6</span> Exercises</h2>
+<ol type="1">
+<li><p>Implement a Simulated Annealing algorithm to solve the Knapsack Problem. Compare its performance with a simple greedy heuristic.</p></li>
+<li><p>Implement a Tabu Search algorithm for the Job Scheduling Problem. In the Job Scheduling Problem, we have a set of jobs, each with a processing time and a deadline. The goal is to schedule the jobs in a way that minimizes the total tardiness (the amount of time by which jobs miss their deadlines). Experiment with different tabu tenures and aspiration criteria to see how they affect the performance of the algorithm.</p></li>
+<li><p>Implement a Genetic Algorithm to optimize the Rastrigin function, which is a non-convex function used as a performance test problem for optimization algorithms. The Rastrigin function is defined as: <span class="math display">\[
+f(x) = 10n + \sum_{i=1}^{n} [x_i^2 - 10\cos(2\pi x_i)]
+\]</span></p>
+<p>where <span class="math inline">\(n\)</span> is the number of dimensions and <span class="math inline">\(x_i\)</span> are the input variables. Experiment with different selection methods, crossover rates, and mutation rates to find the best configuration for optimizing this function.</p></li>
+<li><p>Explore the No Free Lunch Theorems by implementing a simple optimization problem (e.g., maximizing a function) and comparing the performance of different metaheuristic algorithms (e.g., Simulated Annealing, Tabu Search, Genetic Algorithm) on this problem. Analyze how the structure of the problem affects the performance of each algorithm.</p></li>
+</ol>
+
+
 </section>
 
 </main> <!-- /main -->
