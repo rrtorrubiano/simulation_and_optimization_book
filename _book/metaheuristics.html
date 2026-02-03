@@ -284,6 +284,10 @@ window.Quarto = {
   <li><a href="#simulated-annealing" id="toc-simulated-annealing" class="nav-link" data-scroll-target="#simulated-annealing"><span class="header-section-number">7.2.1</span> Simulated Annealing</a></li>
   <li><a href="#tabu-search" id="toc-tabu-search" class="nav-link" data-scroll-target="#tabu-search"><span class="header-section-number">7.2.2</span> Tabu Search</a></li>
   </ul></li>
+  <li><a href="#population-based-metaheuristics" id="toc-population-based-metaheuristics" class="nav-link" data-scroll-target="#population-based-metaheuristics"><span class="header-section-number">7.3</span> Population-Based Metaheuristics</a>
+  <ul class="collapse">
+  <li><a href="#genetic-algorithms" id="toc-genetic-algorithms" class="nav-link" data-scroll-target="#genetic-algorithms"><span class="header-section-number">7.3.1</span> Genetic Algorithms</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -344,7 +348,7 @@ window.Quarto = {
 <p>The criterion <span class="math inline">\(e^{-\Delta E / T}\)</span> is called the <strong>Metropolis criterion</strong>. It ensures that as the temperature decreases, the probability of accepting worse solutions diminishes, allowing the algorithm to focus on refining the best solutions found. Usually, the cooling schedule is geometric, e.g., <span class="math inline">\(T \leftarrow \alpha T\)</span> with <span class="math inline">\(\alpha \in (0,1)\)</span>. A high value of <span class="math inline">\(\alpha\)</span> (e.g., 0.99) results in slow cooling, promoting exploration, while a low value (e.g., 0.8) leads to rapid cooling and quicker convergence.</p>
 <p><strong>Coding Example</strong></p>
 <p>We now implement a solution to the Traveling Salesman Problem (TSP) using Simulated Annealing.</p>
-<div id="5964a88b" class="cell" data-execution_count="1">
+<div id="2f4ddcb6" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> math</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> random</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -405,7 +409,7 @@ window.Quarto = {
 <span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a>best_route, min_dist <span class="op">=</span> simulated_annealing(dist_matrix)</span>
 <span id="cb1-59"><a href="#cb1-59" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Final Best Distance: </span><span class="sc">{</span>min_dist<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Final Best Distance: 229</code></pre>
+<pre><code>Final Best Distance: 280</code></pre>
 </div>
 </div>
 <p>The code accepts a distance matrix representing the distances between cities and applies the Simulated Annealing algorithm to find a near-optimal tour. The algorithm starts with a random tour and iteratively improves it by exploring neighboring solutions, accepting worse solutions based on the Metropolis criterion, and gradually cooling down the temperature.</p>
@@ -427,7 +431,7 @@ window.Quarto = {
 </ol>
 <p><strong>Coding Example</strong></p>
 <p>We will solve a generic problem: finding a binary string of length <span class="math inline">\(n\)</span> that maximizes a value function, using Tabu Search. A “neighbor” is created by flipping exactly one bit.</p>
-<div id="87aa74c2" class="cell" data-execution_count="2">
+<div id="2ee4cc86" class="cell" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> collections <span class="im">import</span> deque</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> objective_function(x):</span>
@@ -507,6 +511,159 @@ Final Solution: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]</co
 </div>
 <p>The algorithm explores neighboring solutions by flipping bits, while maintaining a tabu list to avoid revisiting recently changed bits. The aspiration criterion allows the algorithm to accept tabu moves if they lead to a new global best solution.</p>
 <p>In summary, SA is probabilistic and relies on randomness to escape local optima, while TS is deterministic and uses memory to guide the search. Both methods effectively balance exploration and exploitation, making them powerful tools for solving complex optimization problems. In the next section, we will explore population-based metaheuristics, which maintain a diverse set of solutions to explore the solution space more broadly.</p>
+</section>
+</section>
+<section id="population-based-metaheuristics" class="level2" data-number="7.3">
+<h2 data-number="7.3" class="anchored" data-anchor-id="population-based-metaheuristics"><span class="header-section-number">7.3</span> Population-Based Metaheuristics</h2>
+<p>In trajectory-based methods (SA, TS), we send a single agent moving through the solution space. While effective, this approach has a limitation: the agent is lonely. It cannot learn from the successes or failures of other agents. Population-based metaheuristics address this limitation by maintaining a <strong>population</strong> of candidate solutions. Multiple agents explore the solution space simultaneously, sharing information and learning from each other. For instance, if Solution A has a good parameter for the first half of the problem, and Solution B has a good parameter for the second half, population methods attempt to combine them to create a superior Solution C. This collective behavior often leads to more robust exploration and better overall solutions. The most famous family of these algorithms is <strong>Evolutionary Computation</strong>, of which <strong>Genetic Algorithms</strong> (GAs) are the most well-known example.</p>
+<section id="genetic-algorithms" class="level3" data-number="7.3.1">
+<h3 data-number="7.3.1" class="anchored" data-anchor-id="genetic-algorithms"><span class="header-section-number">7.3.1</span> Genetic Algorithms</h3>
+<p>Genetic Algorithms (GAs) are inspired by the principles of natural selection and genetics. They simulate the process of evolution by maintaining a population of candidate solutions (individuals) that evolve over generations. Each individual is typically represented as a chromosome, often encoded as a binary string, but other representations are also possible.</p>
+<p>In any GA, we find the following key components:</p>
+<ul>
+<li><strong>Individuals:</strong> Candidate solutions (e.g.&nbsp;a vector of weights). This would correspond to the <em>phenotype</em> in biology.</li>
+<li><strong>Chromosomes:</strong> The genetic representation of individuals (e.g.&nbsp;binary strings). This corresponds to the <em>genotype</em> of the individual.</li>
+<li><strong>Gene:</strong> A single unit of information in a chromosome (e.g.&nbsp;a bit in a binary string).</li>
+<li><strong>Fitness Function:</strong> A function that evaluates how good an individual is with respect to the optimization objective.</li>
+<li><strong>Generation:</strong> A single iteration of the algorithm, where the population is updated.</li>
+</ul>
+<p>The GA algorithm proceeds in a loop where four biological-inspired operations are performed:</p>
+<ol type="1">
+<li><strong>Selection:</strong> Individuals are selected from the current population to serve as parents for the next generation. Selection is typically based on fitness, with fitter individuals having a higher probability of being chosen.</li>
+<li><strong>Crossover (Recombination):</strong> Pairs of parents are combined to produce offspring. This is done by exchanging segments of their chromosomes, simulating genetic recombination.</li>
+<li><strong>Mutation:</strong> Random changes are introduced to the offspring’s chromosomes to maintain genetic diversity and explore new areas of the solution space.</li>
+<li><strong>Replacement:</strong> The new generation of individuals replaces the old population, often keeping some of the best individuals (elitism) to ensure that good solutions are not lost.</li>
+</ol>
+<p>In the following, we will dive deeper into each of these components and provide a coding example of a Genetic Algorithm applied to a simple optimization problem.</p>
+<p><strong>Selection Methods</strong></p>
+<p>Several selection methods exist, each with its own advantages and disadvantages:</p>
+<ul>
+<li><strong>Roulette Wheel Selection:</strong> Individuals are selected with a probability proportional to their fitness. This method can be biased towards very fit individuals, potentially reducing diversity.</li>
+<li><strong>Tournament Selection:</strong> A subset of individuals is randomly chosen, and the fittest among them is selected as a parent. This method maintains diversity while still favoring fitter individuals.</li>
+<li><strong>Rank Selection:</strong> Individuals are ranked based on fitness, and selection probabilities are assigned based on rank rather than absolute fitness. This helps to prevent premature convergence.</li>
+</ul>
+<p>The following example shows an implementation of tournament selection.</p>
+<div id="bfe66ec7" class="cell" data-execution_count="3">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> select_parents(population, fitnesses):</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Tournament Selection: Pick 3, return the best."""</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    parents <span class="op">=</span> []</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(population)):</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Randomly sample 3 indices</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>        indices <span class="op">=</span> np.random.randint(<span class="dv">0</span>, <span class="bu">len</span>(population), <span class="dv">3</span>)</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Find the one with the highest fitness</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>        best_idx <span class="op">=</span> indices[np.argmax(fitnesses[indices])]</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>        parents.append(population[best_idx])</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.array(parents)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p><strong>Crossover Methods</strong></p>
+<p>Crossover methods vary in how they combine the genetic material of the parents. Common methods include:</p>
+<ul>
+<li><strong>One-point Crossover:</strong> A single crossover point is selected, and the offspring are created by exchanging the segments after this point.</li>
+<li><strong>Two-point Crossover:</strong> Two crossover points are selected, and the segments between these points are exchanged.</li>
+<li><strong>Uniform Crossover:</strong> Each gene is independently swapped with a certain probability.</li>
+</ul>
+<p>The following example demonstrates one-point crossover.</p>
+<div id="6dc56b38" class="cell" data-execution_count="4">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> crossover(parent1, parent2):</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Single-Point Crossover."""</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> np.random.rand() <span class="op">&lt;</span> <span class="fl">0.8</span>: <span class="co"># 80% chance to mate</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>        point <span class="op">=</span> np.random.randint(<span class="dv">1</span>, <span class="bu">len</span>(parent1))</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>        child1 <span class="op">=</span> np.concatenate((parent1[:point], parent2[point:]))</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>        child2 <span class="op">=</span> np.concatenate((parent2[:point], parent1[point:]))</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> child1, child2</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> parent1.copy(), parent2.copy()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p><strong>Mutation Methods</strong></p>
+<p>Mutation introduces random changes to the offspring’s chromosomes to maintain diversity. Common mutation methods include: - <strong>Bit Flip Mutation:</strong> For binary strings, randomly flip bits with a certain probability. - <strong>Gaussian Mutation:</strong> For real-valued representations, add a small random value drawn from a Gaussian distribution to the genes.</p>
+<p>The following example shows bit flip mutation.</p>
+<div id="eb68c7bf" class="cell" data-execution_count="5">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> mutate(individual):</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Gaussian Mutation: Add small noise."""</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(individual)):</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> np.random.rand() <span class="op">&lt;</span> MUTATION_RATE:</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>            <span class="co"># Add random noise</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>            individual[i] <span class="op">+=</span> np.random.normal(<span class="dv">0</span>, <span class="fl">0.5</span>)</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> individual</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p><strong>Putting It All Together</strong></p>
+<p>Now we can implement a simple Genetic Algorithm that combines these components to optimize a function. For demonstration purposes, we will implement a GA to minimize the Sphere Function defined as <span class="math inline">\(f(x) = \sum_{i=1}^{n} x_i^2\)</span>, which has a global minimum at <span class="math inline">\(x = 0\)</span>. While GAs were originally designed for binary strings, they are heavily used today for continuous optimization (e.g., tuning hyperparameters).</p>
+<div id="0f11c2ed" class="cell" data-execution_count="6">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Configuration ---</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>POP_SIZE <span class="op">=</span> <span class="dv">50</span>        <span class="co"># Number of individuals</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>GENES <span class="op">=</span> <span class="dv">10</span>           <span class="co"># Number of variables (dimensions)</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>GENERATIONS <span class="op">=</span> <span class="dv">100</span>    <span class="co"># How long to run</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>MUTATION_RATE <span class="op">=</span> <span class="fl">0.1</span>  <span class="co"># Probability of mutation per gene</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>ELITISM_COUNT <span class="op">=</span> <span class="dv">2</span>    <span class="co"># Number of top solutions to keep</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> fitness_function(individual):</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Objective: Minimize sum of squares (Sphere function)."""</span></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>    <span class="co"># We negate because GAs typically maximize fitness</span></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="op">-</span>np.<span class="bu">sum</span>(individual<span class="op">**</span><span class="dv">2</span>)</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> create_population(size, n_genes):</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Initialize random real-valued population between -5.12 and 5.12"""</span></span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.random.uniform(<span class="op">-</span><span class="fl">5.12</span>, <span class="fl">5.12</span>, (size, n_genes))</span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Main GA Loop ---</span></span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>population <span class="op">=</span> create_population(POP_SIZE, GENES)</span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> gen <span class="kw">in</span> <span class="bu">range</span>(GENERATIONS):</span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 1. Evaluate Fitness</span></span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>    fitnesses <span class="op">=</span> np.array([fitness_function(ind) <span class="cf">for</span> ind <span class="kw">in</span> population])</span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Track stats</span></span>
+<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a>    best_idx <span class="op">=</span> np.argmax(fitnesses)</span>
+<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> gen <span class="op">%</span> <span class="dv">10</span> <span class="op">==</span> <span class="dv">0</span>:</span>
+<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="ss">f"Gen </span><span class="sc">{</span>gen<span class="sc">}</span><span class="ss">: Best Fitness = </span><span class="sc">{</span>fitnesses[best_idx]<span class="sc">:.5f}</span><span class="ss">"</span>)</span>
+<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 2. Elitism: Keep the best</span></span>
+<span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Sort indices by fitness (descending)</span></span>
+<span id="cb8-33"><a href="#cb8-33" aria-hidden="true" tabindex="-1"></a>    sorted_indices <span class="op">=</span> np.argsort(fitnesses)[::<span class="op">-</span><span class="dv">1</span>]</span>
+<span id="cb8-34"><a href="#cb8-34" aria-hidden="true" tabindex="-1"></a>    elites <span class="op">=</span> population[sorted_indices[:ELITISM_COUNT]]</span>
+<span id="cb8-35"><a href="#cb8-35" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb8-36"><a href="#cb8-36" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 3. Selection</span></span>
+<span id="cb8-37"><a href="#cb8-37" aria-hidden="true" tabindex="-1"></a>    parents <span class="op">=</span> select_parents(population, fitnesses)</span>
+<span id="cb8-38"><a href="#cb8-38" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb8-39"><a href="#cb8-39" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 4. Crossover &amp; Mutation</span></span>
+<span id="cb8-40"><a href="#cb8-40" aria-hidden="true" tabindex="-1"></a>    next_population <span class="op">=</span> []</span>
+<span id="cb8-41"><a href="#cb8-41" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Add elites first</span></span>
+<span id="cb8-42"><a href="#cb8-42" aria-hidden="true" tabindex="-1"></a>    next_population.extend(elites)</span>
+<span id="cb8-43"><a href="#cb8-43" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb8-44"><a href="#cb8-44" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Fill the rest</span></span>
+<span id="cb8-45"><a href="#cb8-45" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">0</span>, POP_SIZE <span class="op">-</span> ELITISM_COUNT, <span class="dv">2</span>):</span>
+<span id="cb8-46"><a href="#cb8-46" aria-hidden="true" tabindex="-1"></a>        p1, p2 <span class="op">=</span> parents[i], parents[i<span class="op">+</span><span class="dv">1</span>]</span>
+<span id="cb8-47"><a href="#cb8-47" aria-hidden="true" tabindex="-1"></a>        c1, c2 <span class="op">=</span> crossover(p1, p2)</span>
+<span id="cb8-48"><a href="#cb8-48" aria-hidden="true" tabindex="-1"></a>        next_population.append(mutate(c1))</span>
+<span id="cb8-49"><a href="#cb8-49" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="bu">len</span>(next_population) <span class="op">&lt;</span> POP_SIZE:</span>
+<span id="cb8-50"><a href="#cb8-50" aria-hidden="true" tabindex="-1"></a>            next_population.append(mutate(c2))</span>
+<span id="cb8-51"><a href="#cb8-51" aria-hidden="true" tabindex="-1"></a>            </span>
+<span id="cb8-52"><a href="#cb8-52" aria-hidden="true" tabindex="-1"></a>    population <span class="op">=</span> np.array(next_population)</span>
+<span id="cb8-53"><a href="#cb8-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-54"><a href="#cb8-54" aria-hidden="true" tabindex="-1"></a><span class="co"># Final Result</span></span>
+<span id="cb8-55"><a href="#cb8-55" aria-hidden="true" tabindex="-1"></a>final_fitnesses <span class="op">=</span> np.array([fitness_function(ind) <span class="cf">for</span> ind <span class="kw">in</span> population])</span>
+<span id="cb8-56"><a href="#cb8-56" aria-hidden="true" tabindex="-1"></a>best_sol <span class="op">=</span> population[np.argmax(final_fitnesses)]</span>
+<span id="cb8-57"><a href="#cb8-57" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Final Solution: </span><span class="sc">{</span>best_sol<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Gen 0: Best Fitness = -43.94630
+Gen 10: Best Fitness = -5.13569
+Gen 20: Best Fitness = -0.67111
+Gen 30: Best Fitness = -0.07477
+Gen 40: Best Fitness = -0.04131
+Gen 50: Best Fitness = -0.02455
+Gen 60: Best Fitness = -0.01836
+Gen 70: Best Fitness = -0.01187
+Gen 80: Best Fitness = -0.00588
+Gen 90: Best Fitness = -0.00435
+Final Solution: [-0.00594836 -0.0096187  -0.02091151  0.00187755  0.0263977   0.01234599
+ -0.00770573  0.00720149  0.02567704  0.00571133]</code></pre>
+</div>
+</div>
+<p>In this implementation, we initialize a population of random solutions and iteratively apply selection, crossover, and mutation to evolve the population towards better solutions. We also use elitism to ensure that the best solutions are preserved across generations. The algorithm optimizes the Sphere function, and we track the best fitness at regular intervals.</p>
+<p>The power of GA lies in its ability to explore a large and complex solution space effectively, making it suitable for a wide range of optimization problems, from engineering design to machine learning hyperparameter tuning. In general, GAs are easily parallelizable, as the evaluation of fitness for different individuals can be done independently, making them well-suited for modern computational architectures. Additionally, they do not require gradients, making them applicable to non-differentiable or noisy optimization problems. Finally, the combination of crossover and mutation allows GAs to maintain diversity in the population, helping to avoid premature convergence to local optima.</p>
 
 
 </section>
