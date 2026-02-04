@@ -358,3 +358,87 @@ where:
 
 In other words, if $G_t$ is positive (good outcome), we move $\theta$ to *increase* the probability of the action. Otherwise, if $G_t$ is negative (bad outcome), we move $\theta$ to *decrease* that probability. This is known as the **REINFORCE** algorithm, and it's another instance of model-free RL.
 
+### Model-Based Reinforcement Learning
+
+The methods mentioned above are model-free: they learn purely from experience without having any knowledge about how those experiences are formed. By contrast, in **model-based RL** our goal is to learn a model of the world, i.e. the transition function $P(s'|s,a)$. Once that the agent has learnt this model, we can use techniques like DQL more efficiently by, for instance, simulating training data and using real and synthetic data to train the agent.
+
+## Case Study: AlphaZero
+
+In 2017, DeepMind introduced AlphaZero, a system that mastered the games of Chess, Shogi, and Go. Unlike its predecessor AlphaGo (which learned from human games) or Deep Blue (which relied on handcrafted heuristics), AlphaZero started from scratch. It knew only the rules of the game. As we will see next, AlphaZero as a case study unifies the themes outlined in this chapter: simulation, function approximation, and optimization.
+
+At the heart of AlphaZero is a single Deep Residual Network (ResNet), parameterized by weights $\theta$, which takes board data $s$ as input. Unlike traditional engines that have separate modules for strategy and evaluation, AlphaZero uses a single network with two output "heads":
+
+1. **The Policy Head:** Outputs a probability distribution $p(a|s)$ over all legal moves. This represents the "intuition" of the agent.
+2. **The Value Head:** Outputs a single scalar $v(s)\in[-1,1]$ as the expected outcome from state $s$ (+1 for win, -1 for loss). This represents the "judgement" of the agent.
+
+Now the critical insight of AlphaZero is how it uses MCTS. In traditional AI, search is used only at runtime to play the game. In AlphaZero, search is used during *training* to *generate* the data. AlphaZero uses a neural network to guide the MCTS selection process. For this, we need a modified UCT formula to include the network's prior probability $P(s,a)$:
+
+$$
+UCT(s,a)=Q(s,a)+c\cdot P(s,a)\cdot\frac{\sqrt{N(s)}}{1+N(s,a)}
+$$ {#eq-uct-alphazero}
+
+where:
+
+- $Q(s,a)$ is the average value of all simulations that passed through this specific state-action pair. It is calculated as the average of the Value Head outputs $v$ of the leaf nodes reached by this branch. Its role is *exploitation* by representing the empirical evidence gathered so far: "Does this move actually lead to a win?".
+- $P(s,a)$ is the probability assigned to action $a$ by the Policy Head when it first evaluated state $s$. It represents the agent's intuition: "Does this move look like a good move?".
+- $N(s)$ is the parent visit count, or total number of times the parent node (state $s$) has been visited.
+- $N(s,a)$ is the child visit count, or number of times a specific action $a$ has been selected from state $s$. Since this appears in the denominator, as we visit a specific move more often, this term grows, reducing the influence of the exploration bonus.
+- $c$ is an exploration constant, a hyperparameter that determines how much we rely on the prior $P(s,a)$ versus the empirical value $Q(s,a)$.
+
+After running a large number of simulations for a single move, the MCTS produces a visit count distribution. We normalize these visit counts to create a new probability distribution $\pi$. This distribution represents a stronger policy than the raw network output $p_\theta(s)$, since the search process has "purified" the intuition (the prior).
+
+### The Training Process
+
+The training process is a continuous loop of self-improvement.
+
+1. **Self-Play (Simulation):** The agent plays games against itself. At every step, it runs MCTS to generate the improved policy $\pi$ and selects a move. It plays until the game ends, producing a final outcome $z\in\{-1,+1\}$.
+2. **Data Generation:** For every position in the game, we store a training example $(s,\pi,z)$, where $s$ represents the board state, $\pi$ is what MCTS said was the best action and $z$ represents the actual result (who won the game).
+3. **Optimization:** We optimize the network parameters $\theta$ to minimize the error between its predictions and the MCTS data.
+
+$$
+\mathcal{L}(\theta)=\underbrace{(z-v_\theta(s))^2}_{\text{Value loss}}
+- \underbrace{\pi^T\log p_\theta(s)}_{\text{Policy loss}}
++ \underbrace{c\lVert \theta \rVert^2}_{\text{Regularization}}
+$$
+
+where the *value loss* is the MSE of the network predictions regarding the actual winner $z$ and the *policy loss* is the cross-entropy of the network trying to mimic the MCTS search probabilities ($\pi$).
+
+### Simulation becomes Intuition
+
+AlphaZero then learns the following way: Initially, the network is random and MCTS relies heavily on random rollouts. However, over time MCTS starts discovering winning strategies and the optimization steps forces the neural network to learn those strategies. As the neural network improves, its predictions ($p$ and $v$) become more accurate, which improves MCTS (since $p$ guides the search) to look deeper and find more subtle strategies.
+
+This is the essence of optimization and simulation in ML: We use computationally expensive simulation (MCTS) to generate high-quality ground truth data, and then use optimization (SGD) to distill that complex simulation into a fast, efficient function approximator (the neural network). The result is an agent that possesses the "instinct" of a grandmaster.
+
+## Summary 
+
+In this chapter, we crossed the threshold from classical optimization—where the goal is to find the best value for a variable—to Machine Learning, where the goal is to find the best function to approximate reality.
+
+We began by framing Deep Learning as a high-dimensional, non-convex optimization problem. We saw that the primary obstacles in training neural networks are not local minima, but saddle points and ill-conditioned curvature (ravines). We explored how Stochastic Gradient Descent (SGD) utilizes the noise of mini-batches to escape these traps, and how adaptive methods like Adam approximate the diagonal of the Hessian to normalize step sizes, allowing for efficient training on rugged landscapes.
+
+Next, we moved from static functions to dynamic planning using Monte Carlo Tree Search (MCTS). We learned that when an objective function is too complex to define analytically (like the strategy of Go), we can estimate it through Simulation. By balancing exploration and exploitation via the UCT formula, MCTS builds an asymmetric search tree that focuses computational resources on the most promising futures.
+
+Finally, we unified these concepts under Reinforcement Learning (RL). We framed sequential decision-making as an optimization problem over time, solving it either by approximating the value function (Deep Q-Learning) or by optimizing the policy directly (REINFORCE). We concluded with the case study of AlphaZero, which demonstrated that state-of-the-art AI is not magic, but a virtuous cycle: Simulation (MCTS) generates data to train a Function Approximator (Neural Network), which in turn guides the simulation to be more efficient.
+
+## Exercises
+
+1. Consider the 2D "Rosenbrock-like" function, which features a narrow, curved valley:
+    $$
+    f(x,y)=(1-x)^2+100(y-x^2)^2
+    $$
+    Implement the gradient $\nabla f(x,y)$ as a Python function and then Vanilla SGD with a fixed learning rate of $\eta=0.001$. Implement the Adam optimizer with $\eta=0.1$, $\beta_1=0.9$ and $\beta_2=0.999$. Start both optimizers at $(-1.5, -1.0)$ and run for 200 steps. Visualize the trajectory of both optimizers on a contour plot and explain why SGD oscillates or gets stuck, while Adam follows the valley floor.
+
+2. Consider a node $S$ in a MCTS game tree. The node has been visited $N=50$ times and has two child nodes $A$ and $B$. The statistics for the child nodes are as follows:
+    - Child $A$: Wins = 12, Visits = 20.
+    - Child $B$: Wins = 18, Visits = 30.
+
+    The exploration constant is $c=\sqrt{2}$. Calculate the UCT value for the child nodes $A$ and $B$ and select the next node according to the result. Suppose we visit the parent $S$ an additional 50 times ($N=100$), but we never visit child $A$ again. Calculate the new UCT value for $A$.
+
+3. Assume an agent in a Gridworld at state $s=(1,1)$. When it takes the action "Right", moving to state $s'=(1,2)$, it receives a reward $r=-1$. Let the discount factor be $\gamma=0.9$ and the learning rate $\alpha=0.1$. The $Q$-values for the next state are:
+    - $Q(s', \text{Up})=-2.0$.
+    - $Q(s', \text{Right})=-1.0$.
+    - $Q(s', \text{Down})=-4.0$.
+    - $Q(s', \text{Left})=-3.0$.
+
+    Calculate the temporal differences error and update the $Q$-value $Q((1,1), \text{Right})$ using the standard Q-Learning update rule.
+    
+4. In the context of AlphaZero, let $(s,a)$ be state-move pair with a low probability $P(s,a)$. Imagine that this move is a forced checkmate sequence (win). Taking @eq-uct-alphazero into account, explain how MCTS can eventually discover and select this move despite the network's initial bias against it. Which term in the formula drives this correction?     

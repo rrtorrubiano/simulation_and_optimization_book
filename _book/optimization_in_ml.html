@@ -290,7 +290,15 @@ window.Quarto = {
   <li><a href="#markov-decision-processes" id="toc-markov-decision-processes" class="nav-link" data-scroll-target="#markov-decision-processes"><span class="header-section-number">8.4.1</span> Markov Decision Processes</a></li>
   <li><a href="#value-based-methods" id="toc-value-based-methods" class="nav-link" data-scroll-target="#value-based-methods"><span class="header-section-number">8.4.2</span> Value-based Methods</a></li>
   <li><a href="#policy-based-methods" id="toc-policy-based-methods" class="nav-link" data-scroll-target="#policy-based-methods"><span class="header-section-number">8.4.3</span> Policy-Based Methods</a></li>
+  <li><a href="#model-based-reinforcement-learning" id="toc-model-based-reinforcement-learning" class="nav-link" data-scroll-target="#model-based-reinforcement-learning"><span class="header-section-number">8.4.4</span> Model-Based Reinforcement Learning</a></li>
   </ul></li>
+  <li><a href="#case-study-alphazero" id="toc-case-study-alphazero" class="nav-link" data-scroll-target="#case-study-alphazero"><span class="header-section-number">8.5</span> Case Study: AlphaZero</a>
+  <ul class="collapse">
+  <li><a href="#the-training-process" id="toc-the-training-process" class="nav-link" data-scroll-target="#the-training-process"><span class="header-section-number">8.5.1</span> The Training Process</a></li>
+  <li><a href="#simulation-becomes-intuition" id="toc-simulation-becomes-intuition" class="nav-link" data-scroll-target="#simulation-becomes-intuition"><span class="header-section-number">8.5.2</span> Simulation becomes Intuition</a></li>
+  </ul></li>
+  <li><a href="#summary" id="toc-summary" class="nav-link" data-scroll-target="#summary"><span class="header-section-number">8.6</span> Summary</a></li>
+  <li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises"><span class="header-section-number">8.7</span> Exercises</a></li>
   </ul>
 </nav>
     </div>
@@ -373,7 +381,7 @@ v_{k+1} = \beta_2 v_k + (1 - \beta_2) (\nabla \mathcal{L}(\theta_k))^2
 \]</span></p>
 <p>Where <span class="math inline">\(\beta_1\)</span> and <span class="math inline">\(\beta_2\)</span> are hyperparameters that control the decay rates of these moving averages, typically set to 0.9 and 0.999, respectively. The small constant <span class="math inline">\(\epsilon\)</span> is added to prevent division by zero.</p>
 <p>Let’s take a look at a scratch implementation of Vanilla SGD and Adam in Python:</p>
-<div id="283b30a1" class="cell" data-execution_count="1">
+<div id="f54f011f" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -396,7 +404,7 @@ v_{k+1} = \beta_2 v_k + (1 - \beta_2) (\nabla \mathcal{L}(\theta_k))^2
 <span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.array(path)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Now we implement Adam:</p>
-<div id="ac4d9872" class="cell" data-execution_count="2">
+<div id="ea26f6cf" class="cell" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. Adam Implementation (Simplified)</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> run_adam(start_pos, lr, steps, beta1<span class="op">=</span><span class="fl">0.9</span>, beta2<span class="op">=</span><span class="fl">0.999</span>, epsilon<span class="op">=</span><span class="fl">1e-8</span>):</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    path <span class="op">=</span> [start_pos]</span>
@@ -421,7 +429,7 @@ v_{k+1} = \beta_2 v_k + (1 - \beta_2) (\nabla \mathcal{L}(\theta_k))^2
 <span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.array(path)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>In this implementation, we have added a <em>bias correction</em> step to the moment estimates. This is crucial, especially in the early stages of training, to ensure that the estimates are unbiased. Now we visualize the results:</p>
-<div id="714777b4" class="cell" data-execution_count="3">
+<div id="8a9f3447" class="cell" data-execution_count="3">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>start <span class="op">=</span> [<span class="op">-</span><span class="fl">10.0</span>, <span class="op">-</span><span class="fl">2.0</span>] <span class="co"># Start far away</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>steps <span class="op">=</span> <span class="dv">50</span></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>lr <span class="op">=</span> <span class="fl">0.1</span></span>
@@ -481,7 +489,7 @@ UCT_i = \frac{w_i}{n_i}+c\sqrt{\frac{\ln N}{n_i}}
 <p>We can interpret <span class="math inline">\(w_i/n_i\)</span> as the average win rate, which encourages exploitation. The other term (<span class="math inline">\(\sqrt{\dots}\)</span>) is an uncertainty “bonus”: if a node is rarely visited (<span class="math inline">\(n_i\)</span> is small), this term becomes larger, which encourages exploration. As we proceed and visit more nodes, <span class="math inline">\(n_i\)</span> becomes larger and the search concentrates more on the exploitation term.</p>
 <p>MCTS allows an agent to plan in environments where it has no prior knowledge. It does not need to know strategy; it discovers strategy by simulating thousands of futures. E.g. in <em>AlphaZero</em>, this simulation data is used to train a Neural Network, which in turn guides the MCTS Selection phase, creating a cycle of self-improvement.</p>
 <p>We now take a look at a sample generic implementation of MCTS. We start by defining a node in the search tree.</p>
-<div id="23ac6578" class="cell" data-execution_count="4">
+<div id="042744f2" class="cell" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> math</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> random</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> copy</span>
@@ -503,7 +511,7 @@ UCT_i = \frac{w_i}{n_i}+c\sqrt{\frac{\ln N}{n_i}}
 </div>
 <p>An MCTS node tracks the number of wins, visits, the problem-dependent state, and the number of untried moves. Additionally, is provides a method for selectin the best child according to <a href="#eq-ucb" class="quarto-xref">Equation&nbsp;<span>8.1</span></a>.</p>
 <p>The main MCTS algorithm with the four phases mentioned before can be implemented as follows:</p>
-<div id="4e6a2b8c" class="cell" data-execution_count="5">
+<div id="a28bdca2" class="cell" data-execution_count="5">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> run_mcts(root_state, iterations<span class="op">=</span><span class="dv">1000</span>):</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    root_node <span class="op">=</span> MCTSNode(root_state)</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    </span>
@@ -610,9 +618,85 @@ y=r+\gamma\max_{a'}Q(s',a';\theta_{target})
 <li><span class="math inline">\(\nabla \ln \pi(a|s)\)</span> tells us how to change <span class="math inline">\(\theta\)</span> to make action <span class="math inline">\(a\)</span> more or less probable.</li>
 </ul>
 <p>In other words, if <span class="math inline">\(G_t\)</span> is positive (good outcome), we move <span class="math inline">\(\theta\)</span> to <em>increase</em> the probability of the action. Otherwise, if <span class="math inline">\(G_t\)</span> is negative (bad outcome), we move <span class="math inline">\(\theta\)</span> to <em>decrease</em> that probability. This is known as the <strong>REINFORCE</strong> algorithm, and it’s another instance of model-free RL.</p>
-
-
 </section>
+<section id="model-based-reinforcement-learning" class="level3" data-number="8.4.4">
+<h3 data-number="8.4.4" class="anchored" data-anchor-id="model-based-reinforcement-learning"><span class="header-section-number">8.4.4</span> Model-Based Reinforcement Learning</h3>
+<p>The methods mentioned above are model-free: they learn purely from experience without having any knowledge about how those experiences are formed. By contrast, in <strong>model-based RL</strong> our goal is to learn a model of the world, i.e.&nbsp;the transition function <span class="math inline">\(P(s'|s,a)\)</span>. Once that the agent has learnt this model, we can use techniques like DQL more efficiently by, for instance, simulating training data and using real and synthetic data to train the agent.</p>
+</section>
+</section>
+<section id="case-study-alphazero" class="level2" data-number="8.5">
+<h2 data-number="8.5" class="anchored" data-anchor-id="case-study-alphazero"><span class="header-section-number">8.5</span> Case Study: AlphaZero</h2>
+<p>In 2017, DeepMind introduced AlphaZero, a system that mastered the games of Chess, Shogi, and Go. Unlike its predecessor AlphaGo (which learned from human games) or Deep Blue (which relied on handcrafted heuristics), AlphaZero started from scratch. It knew only the rules of the game. As we will see next, AlphaZero as a case study unifies the themes outlined in this chapter: simulation, function approximation, and optimization.</p>
+<p>At the heart of AlphaZero is a single Deep Residual Network (ResNet), parameterized by weights <span class="math inline">\(\theta\)</span>, which takes board data <span class="math inline">\(s\)</span> as input. Unlike traditional engines that have separate modules for strategy and evaluation, AlphaZero uses a single network with two output “heads”:</p>
+<ol type="1">
+<li><strong>The Policy Head:</strong> Outputs a probability distribution <span class="math inline">\(p(a|s)\)</span> over all legal moves. This represents the “intuition” of the agent.</li>
+<li><strong>The Value Head:</strong> Outputs a single scalar <span class="math inline">\(v(s)\in[-1,1]\)</span> as the expected outcome from state <span class="math inline">\(s\)</span> (+1 for win, -1 for loss). This represents the “judgement” of the agent.</li>
+</ol>
+<p>Now the critical insight of AlphaZero is how it uses MCTS. In traditional AI, search is used only at runtime to play the game. In AlphaZero, search is used during <em>training</em> to <em>generate</em> the data. AlphaZero uses a neural network to guide the MCTS selection process. For this, we need a modified UCT formula to include the network’s prior probability <span class="math inline">\(P(s,a)\)</span>:</p>
+<p><span id="eq-uct-alphazero"><span class="math display">\[
+UCT(s,a)=Q(s,a)+c\cdot P(s,a)\cdot\frac{\sqrt{N(s)}}{1+N(s,a)}
+\tag{8.3}\]</span></span></p>
+<p>where:</p>
+<ul>
+<li><span class="math inline">\(Q(s,a)\)</span> is the average value of all simulations that passed through this specific state-action pair. It is calculated as the average of the Value Head outputs <span class="math inline">\(v\)</span> of the leaf nodes reached by this branch. Its role is <em>exploitation</em> by representing the empirical evidence gathered so far: “Does this move actually lead to a win?”.</li>
+<li><span class="math inline">\(P(s,a)\)</span> is the probability assigned to action <span class="math inline">\(a\)</span> by the Policy Head when it first evaluated state <span class="math inline">\(s\)</span>. It represents the agent’s intuition: “Does this move look like a good move?”.</li>
+<li><span class="math inline">\(N(s)\)</span> is the parent visit count, or total number of times the parent node (state <span class="math inline">\(s\)</span>) has been visited.</li>
+<li><span class="math inline">\(N(s,a)\)</span> is the child visit count, or number of times a specific action <span class="math inline">\(a\)</span> has been selected from state <span class="math inline">\(s\)</span>. Since this appears in the denominator, as we visit a specific move more often, this term grows, reducing the influence of the exploration bonus.</li>
+<li><span class="math inline">\(c\)</span> is an exploration constant, a hyperparameter that determines how much we rely on the prior <span class="math inline">\(P(s,a)\)</span> versus the empirical value <span class="math inline">\(Q(s,a)\)</span>.</li>
+</ul>
+<p>After running a large number of simulations for a single move, the MCTS produces a visit count distribution. We normalize these visit counts to create a new probability distribution <span class="math inline">\(\pi\)</span>. This distribution represents a stronger policy than the raw network output <span class="math inline">\(p_\theta(s)\)</span>, since the search process has “purified” the intuition (the prior).</p>
+<section id="the-training-process" class="level3" data-number="8.5.1">
+<h3 data-number="8.5.1" class="anchored" data-anchor-id="the-training-process"><span class="header-section-number">8.5.1</span> The Training Process</h3>
+<p>The training process is a continuous loop of self-improvement.</p>
+<ol type="1">
+<li><strong>Self-Play (Simulation):</strong> The agent plays games against itself. At every step, it runs MCTS to generate the improved policy <span class="math inline">\(\pi\)</span> and selects a move. It plays until the game ends, producing a final outcome <span class="math inline">\(z\in\{-1,+1\}\)</span>.</li>
+<li><strong>Data Generation:</strong> For every position in the game, we store a training example <span class="math inline">\((s,\pi,z)\)</span>, where <span class="math inline">\(s\)</span> represents the board state, <span class="math inline">\(\pi\)</span> is what MCTS said was the best action and <span class="math inline">\(z\)</span> represents the actual result (who won the game).</li>
+<li><strong>Optimization:</strong> We optimize the network parameters <span class="math inline">\(\theta\)</span> to minimize the error between its predictions and the MCTS data.</li>
+</ol>
+<p><span class="math display">\[
+\mathcal{L}(\theta)=\underbrace{(z-v_\theta(s))^2}_{\text{Value loss}}
+- \underbrace{\pi^T\log p_\theta(s)}_{\text{Policy loss}}
++ \underbrace{c\lVert \theta \rVert^2}_{\text{Regularization}}
+\]</span></p>
+<p>where the <em>value loss</em> is the MSE of the network predictions regarding the actual winner <span class="math inline">\(z\)</span> and the <em>policy loss</em> is the cross-entropy of the network trying to mimic the MCTS search probabilities (<span class="math inline">\(\pi\)</span>).</p>
+</section>
+<section id="simulation-becomes-intuition" class="level3" data-number="8.5.2">
+<h3 data-number="8.5.2" class="anchored" data-anchor-id="simulation-becomes-intuition"><span class="header-section-number">8.5.2</span> Simulation becomes Intuition</h3>
+<p>AlphaZero then learns the following way: Initially, the network is random and MCTS relies heavily on random rollouts. However, over time MCTS starts discovering winning strategies and the optimization steps forces the neural network to learn those strategies. As the neural network improves, its predictions (<span class="math inline">\(p\)</span> and <span class="math inline">\(v\)</span>) become more accurate, which improves MCTS (since <span class="math inline">\(p\)</span> guides the search) to look deeper and find more subtle strategies.</p>
+<p>This is the essence of optimization and simulation in ML: We use computationally expensive simulation (MCTS) to generate high-quality ground truth data, and then use optimization (SGD) to distill that complex simulation into a fast, efficient function approximator (the neural network). The result is an agent that possesses the “instinct” of a grandmaster.</p>
+</section>
+</section>
+<section id="summary" class="level2" data-number="8.6">
+<h2 data-number="8.6" class="anchored" data-anchor-id="summary"><span class="header-section-number">8.6</span> Summary</h2>
+<p>In this chapter, we crossed the threshold from classical optimization—where the goal is to find the best value for a variable—to Machine Learning, where the goal is to find the best function to approximate reality.</p>
+<p>We began by framing Deep Learning as a high-dimensional, non-convex optimization problem. We saw that the primary obstacles in training neural networks are not local minima, but saddle points and ill-conditioned curvature (ravines). We explored how Stochastic Gradient Descent (SGD) utilizes the noise of mini-batches to escape these traps, and how adaptive methods like Adam approximate the diagonal of the Hessian to normalize step sizes, allowing for efficient training on rugged landscapes.</p>
+<p>Next, we moved from static functions to dynamic planning using Monte Carlo Tree Search (MCTS). We learned that when an objective function is too complex to define analytically (like the strategy of Go), we can estimate it through Simulation. By balancing exploration and exploitation via the UCT formula, MCTS builds an asymmetric search tree that focuses computational resources on the most promising futures.</p>
+<p>Finally, we unified these concepts under Reinforcement Learning (RL). We framed sequential decision-making as an optimization problem over time, solving it either by approximating the value function (Deep Q-Learning) or by optimizing the policy directly (REINFORCE). We concluded with the case study of AlphaZero, which demonstrated that state-of-the-art AI is not magic, but a virtuous cycle: Simulation (MCTS) generates data to train a Function Approximator (Neural Network), which in turn guides the simulation to be more efficient.</p>
+</section>
+<section id="exercises" class="level2" data-number="8.7">
+<h2 data-number="8.7" class="anchored" data-anchor-id="exercises"><span class="header-section-number">8.7</span> Exercises</h2>
+<ol type="1">
+<li><p>Consider the 2D “Rosenbrock-like” function, which features a narrow, curved valley: <span class="math display">\[
+f(x,y)=(1-x)^2+100(y-x^2)^2
+\]</span> Implement the gradient <span class="math inline">\(\nabla f(x,y)\)</span> as a Python function and then Vanilla SGD with a fixed learning rate of <span class="math inline">\(\eta=0.001\)</span>. Implement the Adam optimizer with <span class="math inline">\(\eta=0.1\)</span>, <span class="math inline">\(\beta_1=0.9\)</span> and <span class="math inline">\(\beta_2=0.999\)</span>. Start both optimizers at <span class="math inline">\((-1.5, -1.0)\)</span> and run for 200 steps. Visualize the trajectory of both optimizers on a contour plot and explain why SGD oscillates or gets stuck, while Adam follows the valley floor.</p></li>
+<li><p>Consider a node <span class="math inline">\(S\)</span> in a MCTS game tree. The node has been visited <span class="math inline">\(N=50\)</span> times and has two child nodes <span class="math inline">\(A\)</span> and <span class="math inline">\(B\)</span>. The statistics for the child nodes are as follows:</p>
+<ul>
+<li>Child <span class="math inline">\(A\)</span>: Wins = 12, Visits = 20.</li>
+<li>Child <span class="math inline">\(B\)</span>: Wins = 18, Visits = 30.</li>
+</ul>
+<p>The exploration constant is <span class="math inline">\(c=\sqrt{2}\)</span>. Calculate the UCT value for the child nodes <span class="math inline">\(A\)</span> and <span class="math inline">\(B\)</span> and select the next node according to the result. Suppose we visit the parent <span class="math inline">\(S\)</span> an additional 50 times (<span class="math inline">\(N=100\)</span>), but we never visit child <span class="math inline">\(A\)</span> again. Calculate the new UCT value for <span class="math inline">\(A\)</span>.</p></li>
+<li><p>Assume an agent in a Gridworld at state <span class="math inline">\(s=(1,1)\)</span>. When it takes the action “Right”, moving to state <span class="math inline">\(s'=(1,2)\)</span>, it receives a reward <span class="math inline">\(r=-1\)</span>. Let the discount factor be <span class="math inline">\(\gamma=0.9\)</span> and the learning rate <span class="math inline">\(\alpha=0.1\)</span>. The <span class="math inline">\(Q\)</span>-values for the next state are:</p>
+<ul>
+<li><span class="math inline">\(Q(s', \text{Up})=-2.0\)</span>.</li>
+<li><span class="math inline">\(Q(s', \text{Right})=-1.0\)</span>.</li>
+<li><span class="math inline">\(Q(s', \text{Down})=-4.0\)</span>.</li>
+<li><span class="math inline">\(Q(s', \text{Left})=-3.0\)</span>.</li>
+</ul>
+<p>Calculate the temporal differences error and update the <span class="math inline">\(Q\)</span>-value <span class="math inline">\(Q((1,1), \text{Right})\)</span> using the standard Q-Learning update rule.</p></li>
+<li><p>In the context of AlphaZero, let <span class="math inline">\((s,a)\)</span> be state-move pair with a low probability <span class="math inline">\(P(s,a)\)</span>. Imagine that this move is a forced checkmate sequence (win). Taking <a href="#eq-uct-alphazero" class="quarto-xref">Equation&nbsp;<span>8.3</span></a> into account, explain how MCTS can eventually discover and select this move despite the network’s initial bias against it. Which term in the formula drives this correction?</p></li>
+</ol>
+
+
 </section>
 
 </main> <!-- /main -->
