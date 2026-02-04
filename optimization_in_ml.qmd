@@ -196,3 +196,76 @@ where $w_i$ denotes the number of wins for child node $i$, $n_i$ is the number o
 
 We can interpret $w_i/n_i$ as the average win rate, which encourages exploitation. The other term ($\sqrt{\dots}$) is an uncertainty "bonus": if a node is rarely visited ($n_i$ is small), this term becomes larger, which encourages exploration. As we proceed and visit more nodes, $n_i$ becomes larger and the search concentrates more on the exploitation term.
 
+MCTS allows an agent to plan in environments where it has no prior knowledge. It does not need to know strategy; it discovers strategy by simulating thousands of futures. E.g. in *AlphaZero*, this simulation data is used to train a Neural Network, which in turn guides the MCTS Selection phase, creating a cycle of self-improvement.
+
+We now take a look at a sample generic implementation of MCTS. We start by defining a node in the search tree.
+
+```{python}
+import math
+import random
+import copy
+
+class MCTSNode:
+    def __init__(self, state, parent=None):
+        self.state = state
+        self.parent = parent
+        self.children = []
+        self.wins = 0
+        self.visits = 0
+        self.untried_moves = state.get_legal_moves()
+
+    def uct_select_child(self, c=1.41):
+        # Sort children by UCT formula
+        s = sorted(self.children, key=lambda child: 
+            (child.wins / child.visits) + c * math.sqrt(math.log(self.visits) / child.visits))
+        return s[-1] # Return the best
+
+```
+
+An MCTS node tracks the number of wins, visits, the problem-dependent state, and the number of untried moves. Additionally, is provides a method for selectin the best child according to @eq-ucb.
+
+The main MCTS algorithm with the four phases mentioned before can be implemented as follows:
+
+```{python}
+def run_mcts(root_state, iterations=1000):
+    root_node = MCTSNode(root_state)
+    
+    for _ in range(iterations):
+        node = root_node
+        state = copy.deepcopy(root_state)
+        
+        # Phase 1: Selection
+        # Go down the tree until we hit a node with untried moves or a terminal state
+        while node.untried_moves == [] and node.children != []:
+            node = node.uct_select_child()
+            state = state.make_move(node.move_from_parent) # Need to track moves in real impl
+            
+        # Phase 2: Expansion
+        # If we can expand, add one child
+        if node.untried_moves != []:
+            m = random.choice(node.untried_moves) 
+            state = state.make_move(m)
+            node = node.add_child(m, state) # Pseudo-code: create child logic
+            
+        # Phase 3: Simulation (Rollout)
+        # Play randomly until end
+        while state.check_winner() is None:
+            state = state.make_move(random.choice(state.get_legal_moves()))
+            
+        # Phase 4: Backpropagation
+        # Update stats up the tree
+        winner = state.check_winner()
+        while node is not None:
+            node.visits += 1
+            # If the player at this node won, increment wins
+            # (Note: In real MCTS, we must be careful about whose turn it is)
+            if winner == node.state.player_who_just_moved: 
+                node.wins += 1
+            node = node.parent
+            
+    # Return the move with the most visits (most robust)
+    return sorted(root_node.children, key=lambda c: c.visits)[-1].move_from_parent
+
+```
+
+The ``make_move`` and ``check_winner`` methods would need to be implemented for the specific problem at hand.
