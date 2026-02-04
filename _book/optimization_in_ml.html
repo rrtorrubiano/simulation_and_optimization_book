@@ -285,6 +285,12 @@ window.Quarto = {
   <li><a href="#backpropagation-and-stochastic-gradient-descent" id="toc-backpropagation-and-stochastic-gradient-descent" class="nav-link" data-scroll-target="#backpropagation-and-stochastic-gradient-descent"><span class="header-section-number">8.2.2</span> Backpropagation and Stochastic Gradient Descent</a></li>
   </ul></li>
   <li><a href="#monte-carlo-tree-search" id="toc-monte-carlo-tree-search" class="nav-link" data-scroll-target="#monte-carlo-tree-search"><span class="header-section-number">8.3</span> Monte Carlo Tree Search</a></li>
+  <li><a href="#reinforcement-learning" id="toc-reinforcement-learning" class="nav-link" data-scroll-target="#reinforcement-learning"><span class="header-section-number">8.4</span> Reinforcement Learning</a>
+  <ul class="collapse">
+  <li><a href="#markov-decision-processes" id="toc-markov-decision-processes" class="nav-link" data-scroll-target="#markov-decision-processes"><span class="header-section-number">8.4.1</span> Markov Decision Processes</a></li>
+  <li><a href="#value-based-methods" id="toc-value-based-methods" class="nav-link" data-scroll-target="#value-based-methods"><span class="header-section-number">8.4.2</span> Value-based Methods</a></li>
+  <li><a href="#policy-based-methods" id="toc-policy-based-methods" class="nav-link" data-scroll-target="#policy-based-methods"><span class="header-section-number">8.4.3</span> Policy-Based Methods</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -367,7 +373,7 @@ v_{k+1} = \beta_2 v_k + (1 - \beta_2) (\nabla \mathcal{L}(\theta_k))^2
 \]</span></p>
 <p>Where <span class="math inline">\(\beta_1\)</span> and <span class="math inline">\(\beta_2\)</span> are hyperparameters that control the decay rates of these moving averages, typically set to 0.9 and 0.999, respectively. The small constant <span class="math inline">\(\epsilon\)</span> is added to prevent division by zero.</p>
 <p>Let’s take a look at a scratch implementation of Vanilla SGD and Adam in Python:</p>
-<div id="fc4af590" class="cell" data-execution_count="1">
+<div id="283b30a1" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -390,7 +396,7 @@ v_{k+1} = \beta_2 v_k + (1 - \beta_2) (\nabla \mathcal{L}(\theta_k))^2
 <span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.array(path)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Now we implement Adam:</p>
-<div id="74e88eba" class="cell" data-execution_count="2">
+<div id="ac4d9872" class="cell" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. Adam Implementation (Simplified)</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> run_adam(start_pos, lr, steps, beta1<span class="op">=</span><span class="fl">0.9</span>, beta2<span class="op">=</span><span class="fl">0.999</span>, epsilon<span class="op">=</span><span class="fl">1e-8</span>):</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    path <span class="op">=</span> [start_pos]</span>
@@ -415,7 +421,7 @@ v_{k+1} = \beta_2 v_k + (1 - \beta_2) (\nabla \mathcal{L}(\theta_k))^2
 <span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.array(path)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>In this implementation, we have added a <em>bias correction</em> step to the moment estimates. This is crucial, especially in the early stages of training, to ensure that the estimates are unbiased. Now we visualize the results:</p>
-<div id="3125ab1b" class="cell" data-execution_count="3">
+<div id="714777b4" class="cell" data-execution_count="3">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>start <span class="op">=</span> [<span class="op">-</span><span class="fl">10.0</span>, <span class="op">-</span><span class="fl">2.0</span>] <span class="co"># Start far away</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>steps <span class="op">=</span> <span class="dv">50</span></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>lr <span class="op">=</span> <span class="fl">0.1</span></span>
@@ -475,7 +481,7 @@ UCT_i = \frac{w_i}{n_i}+c\sqrt{\frac{\ln N}{n_i}}
 <p>We can interpret <span class="math inline">\(w_i/n_i\)</span> as the average win rate, which encourages exploitation. The other term (<span class="math inline">\(\sqrt{\dots}\)</span>) is an uncertainty “bonus”: if a node is rarely visited (<span class="math inline">\(n_i\)</span> is small), this term becomes larger, which encourages exploration. As we proceed and visit more nodes, <span class="math inline">\(n_i\)</span> becomes larger and the search concentrates more on the exploitation term.</p>
 <p>MCTS allows an agent to plan in environments where it has no prior knowledge. It does not need to know strategy; it discovers strategy by simulating thousands of futures. E.g. in <em>AlphaZero</em>, this simulation data is used to train a Neural Network, which in turn guides the MCTS Selection phase, creating a cycle of self-improvement.</p>
 <p>We now take a look at a sample generic implementation of MCTS. We start by defining a node in the search tree.</p>
-<div id="cf4f8971" class="cell" data-execution_count="4">
+<div id="23ac6578" class="cell" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> math</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> random</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> copy</span>
@@ -497,7 +503,7 @@ UCT_i = \frac{w_i}{n_i}+c\sqrt{\frac{\ln N}{n_i}}
 </div>
 <p>An MCTS node tracks the number of wins, visits, the problem-dependent state, and the number of untried moves. Additionally, is provides a method for selectin the best child according to <a href="#eq-ucb" class="quarto-xref">Equation&nbsp;<span>8.1</span></a>.</p>
 <p>The main MCTS algorithm with the four phases mentioned before can be implemented as follows:</p>
-<div id="55f67e1f" class="cell" data-execution_count="5">
+<div id="4e6a2b8c" class="cell" data-execution_count="5">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> run_mcts(root_state, iterations<span class="op">=</span><span class="dv">1000</span>):</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    root_node <span class="op">=</span> MCTSNode(root_state)</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    </span>
@@ -538,8 +544,75 @@ UCT_i = \frac{w_i}{n_i}+c\sqrt{\frac{\ln N}{n_i}}
 <span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">sorted</span>(root_node.children, key<span class="op">=</span><span class="kw">lambda</span> c: c.visits)[<span class="op">-</span><span class="dv">1</span>].move_from_parent</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>The <code>make_move</code> and <code>check_winner</code> methods would need to be implemented for the specific problem at hand.</p>
+</section>
+<section id="reinforcement-learning" class="level2" data-number="8.4">
+<h2 data-number="8.4" class="anchored" data-anchor-id="reinforcement-learning"><span class="header-section-number">8.4</span> Reinforcement Learning</h2>
+<p>We now very briefly introduce Reinforcement Learning and frame it as an optimization method. In Supervised Learning, the optimization target is static (minimize the training error on a fixed dataset). In constrast, in <strong>Reinforcement Learning (RL)</strong>, the target is dynamic. We are optimizing a sequence of decisions over time, where a decision made now determines the data we see later. The mathematical foundation of RL is based on the concept of a <em>Markov Decision Process (MDP)</em>, as we will see next.</p>
+<section id="markov-decision-processes" class="level3" data-number="8.4.1">
+<h3 data-number="8.4.1" class="anchored" data-anchor-id="markov-decision-processes"><span class="header-section-number">8.4.1</span> Markov Decision Processes</h3>
+<p>The mathematical formalism of Markov Decision Processes underpins how optimization in RL is framed. We start with the following elements:</p>
+<ul>
+<li><strong>State Space <span class="math inline">\(S\)</span>:</strong> The set of all possible configurations (e.g.&nbsp;in chess, the set of all legal chess board states).</li>
+<li><strong>Action Space <span class="math inline">\(A:\)</span></strong> The set of all possible actions that an agent can take (e.g.&nbsp;the set of all legal moves in a game).</li>
+<li><strong>Transition Probabilities <span class="math inline">\(P\)</span>:</strong> The rules for transitioning from one state to another. In general, this is represented by a probability distribution <span class="math inline">\(P(s'|s,a)\)</span> of states conditional on the previous state <span class="math inline">\(s\)</span> and the action taken <span class="math inline">\(a\)</span>.</li>
+<li><strong>Reward Function <span class="math inline">\(R\)</span>:</strong> The immediate reward <span class="math inline">\(R(s,a)\)</span> the agent collects on state <span class="math inline">\(s\)</span> after performing action <span class="math inline">\(a\)</span>.</li>
+<li><strong>Discount Factor <span class="math inline">\(\gamma\)</span>:</strong> A number between 0 and 1 that weighs immediate rewards against future rewards.</li>
+</ul>
+<p>Our goal is to find a <strong>policy</strong> <span class="math inline">\(\pi(a|s)\)</span> that maps states to actions that maximizes the expected discounted return:</p>
+<p><span class="math display">\[
+J(\pi)=E\left[\sum_{t=0}^\infty \gamma^t r_t\right]
+\]</span></p>
+<p>This can be framed as a constrained optimization problem: maximize <span class="math inline">\(J\)</span> subject to the constraints of the environment dynamics.</p>
+</section>
+<section id="value-based-methods" class="level3" data-number="8.4.2">
+<h3 data-number="8.4.2" class="anchored" data-anchor-id="value-based-methods"><span class="header-section-number">8.4.2</span> Value-based Methods</h3>
+<p>One approach to solving this is to ignore the policy initially and focus on maximizing a notion of <em>value</em>. If we knew exactly how good every state was (the “Value Function”), the optimal policy would simply be “move to the state with the highest value”. We can define the value of a state-action pair <span class="math inline">\(Q(s,a)\)</span> recursively as follows (<strong>Bellman equation</strong>):</p>
+<p><span class="math display">\[
+Q(s,a)=R(s,a)+\gamma \max_{a'} Q(s',a')
+\]</span></p>
+<p>which means that the value of an action is the <em>immediate reward</em> plus the <em>best possible future value</em>.</p>
+<p>We can approximate the true <span class="math inline">\(Q(s,a)\)</span> using a deep neural network <span class="math inline">\(Q(s,a;\theta)\)</span>, in what we call <strong>Deep Q-Learning (DQN)</strong>. We can train this network by minimizing the mean squared error (also called Bellman error, or Temporal Differences error):</p>
+<p><span id="eq-value-based"><span class="math display">\[
+\mathcal{L}(\theta)=E\left[ \left( r+\gamma\max_{a'}Q(s',a';\theta_{target})-Q(s,a;\theta) \right)^2\right]
+\tag{8.2}\]</span></span></p>
+<p>In this function, we measure the difference between the prediction from the neural network <span class="math inline">\(Q(s,a;\theta)\)</span> and the current estimate of the target term:</p>
+<p><span class="math display">\[
+y=r+\gamma\max_{a'}Q(s',a';\theta_{target})
+\]</span></p>
+<p>In this target, <span class="math inline">\(r\)</span> is the reward which was <em>actually experienced</em> by the agent. However, the second term is just the current best estimate on how much reward it is expected in the future. In summary, we are using the network’s own prediction of the future to train its prediction of the present. This is sometimes referred to as <strong>bootstrapping</strong>.</p>
+<p>This method is also referred to as an instance of <strong>model-free</strong> RL. In this case, we do not have a model of how the physical world works, but we can simulate several actions of the agent to obtain tuples <span class="math inline">\((s,a,r,s',\text{done})\)</span> that we store in a so-called <em>replay buffer</em>. Once we have this buffer, we can feed these data on a training episode and use <a href="#eq-value-based" class="quarto-xref">Equation&nbsp;<span>8.2</span></a> to update the weights <span class="math inline">\(\theta\)</span> of the neural network. Note that in this equation, we have two sets of weights <span class="math inline">\(\theta_{target}\)</span> and <span class="math inline">\(\theta\)</span>. The weights which are currently being optimized are <span class="math inline">\(\theta\)</span>, while <span class="math inline">\(\theta_{target}\)</span> is a frozen copy used for calculating the <span class="math inline">\(\max\)</span> term. This is done in order to prevent the training process from “chasing its own tail”, as otherwise the network predictions would change with each gradient update.</p>
+</section>
+<section id="policy-based-methods" class="level3" data-number="8.4.3">
+<h3 data-number="8.4.3" class="anchored" data-anchor-id="policy-based-methods"><span class="header-section-number">8.4.3</span> Policy-Based Methods</h3>
+<p>Alternatively, we can try to optimize the policy <span class="math inline">\(\pi_{\theta}(a|s)\)</span> directly instead of the value function <span class="math inline">\(Q(s,a)\)</span>. However, because the environment is usually a “black-box” or a discrete simulation, we cannot calculate the gradient <span class="math inline">\(\nabla_\theta J(\theta)\)</span> directly.</p>
+<p><span class="math display">\[
+\nabla_\theta J(\theta)=\nabla_\theta E_{\tau\sim\pi}\left[ R(\tau) \right]=\nabla_\theta \int P(\tau|\theta)R(\tau)d\tau
+\]</span></p>
+<p>The main difficulty with this calculation is that we cannot differentiate this integral to obtain the gradient. However, we can use a property of the derivative of a logarithm (the <em>log-derivative trick</em>) to transform it into the integral of a derivative instead.</p>
+<p><span class="math display">\[
+\frac{d}{dx}\ln f(x)=\frac{f'(x)}{f(x)} \Rightarrow f'(x)=f(x)\frac{d}{dx}\ln f(x)
+\]</span> <span class="math display">\[
+\nabla_\theta P(\tau|\theta)=P(\tau|\theta)\cdot\nabla_\theta \ln P(\tau|\theta)
+\]</span></p>
+<p>which converts the previous integral in:</p>
+<p><span class="math display">\[
+\nabla_\theta J(\theta)=\int P(\tau|\theta)\nabla_\theta \ln P(\tau|\theta)\cdot R(\tau)d\tau=E_{\tau\sim\pi}\left[ \nabla_\theta\ln P(\theta|\phi)\cdot R(\theta) \right]
+\]</span></p>
+<p>Using the estimates that we have, we can approximate the gradient of the expected reward as follows:</p>
+<p><span class="math display">\[
+\nabla_\theta J(\theta)\approx E\left[ \sum_{t=0}^T \nabla_\theta \ln \pi_\theta(a_t|s_t)\cdot G_t \right]
+\]</span></p>
+<p>where:</p>
+<ul>
+<li><span class="math inline">\(G_t\)</span> is the total return obtained from time <span class="math inline">\(t\)</span> onwards. <span class="math display">\[
+  G_t=r_t+\gamma r_{t+1}+\gamma^2 r_{t+2}+\dots
+  \]</span></li>
+<li><span class="math inline">\(\nabla \ln \pi(a|s)\)</span> tells us how to change <span class="math inline">\(\theta\)</span> to make action <span class="math inline">\(a\)</span> more or less probable.</li>
+</ul>
+<p>In other words, if <span class="math inline">\(G_t\)</span> is positive (good outcome), we move <span class="math inline">\(\theta\)</span> to <em>increase</em> the probability of the action. Otherwise, if <span class="math inline">\(G_t\)</span> is negative (bad outcome), we move <span class="math inline">\(\theta\)</span> to <em>decrease</em> that probability. This is known as the <strong>REINFORCE</strong> algorithm, and it’s another instance of model-free RL.</p>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->

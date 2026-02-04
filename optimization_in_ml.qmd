@@ -269,3 +269,92 @@ def run_mcts(root_state, iterations=1000):
 ```
 
 The ``make_move`` and ``check_winner`` methods would need to be implemented for the specific problem at hand.
+
+## Reinforcement Learning
+
+We now very briefly introduce Reinforcement Learning and frame it as an optimization method. In Supervised Learning, the optimization target is static (minimize the training error on a fixed dataset). In constrast, in **Reinforcement Learning (RL)**, the target is dynamic. We are optimizing a sequence of decisions over time, where a decision made now determines the data we see later. The mathematical foundation of RL is based on the concept of a *Markov Decision Process (MDP)*, as we will see next.
+
+### Markov Decision Processes
+
+The mathematical formalism of Markov Decision Processes underpins how optimization in RL is framed. We start with the following elements:
+
+- **State Space $S$:** The set of all possible configurations (e.g. in chess, the set of all legal chess board states).
+- **Action Space $A:$** The set of all possible actions that an agent can take (e.g. the set of all legal moves in a game). 
+- **Transition Probabilities $P$:** The rules for transitioning from one state to another. In general, this is represented by a probability distribution $P(s'|s,a)$ of states conditional on the previous state $s$ and the action taken $a$.
+- **Reward Function $R$:** The immediate reward $R(s,a)$ the agent collects on state $s$ after performing action $a$.
+- **Discount Factor $\gamma$:** A number between 0 and 1 that weighs immediate rewards against future rewards. 
+
+Our goal is to find a **policy** $\pi(a|s)$ that maps states to actions that maximizes the expected discounted return:
+
+$$
+J(\pi)=E\left[\sum_{t=0}^\infty \gamma^t r_t\right]
+$$
+
+This can be framed as a constrained optimization problem: maximize $J$ subject to the constraints of the environment dynamics.
+
+### Value-based Methods
+
+One approach to solving this is to ignore the policy initially and focus on maximizing a notion of *value*. If we knew exactly how good every state was (the "Value Function"), the optimal policy would simply be "move to the state with the highest value". We can define the value of a state-action pair $Q(s,a)$ recursively as follows (**Bellman equation**):
+
+$$
+Q(s,a)=R(s,a)+\gamma \max_{a'} Q(s',a')
+$$
+
+which means that the value of an action is the *immediate reward* plus the *best possible future value*.
+
+We can approximate the true $Q(s,a)$ using a deep neural network $Q(s,a;\theta)$, in what we call **Deep Q-Learning (DQN)**. We can train this network by minimizing the mean squared error (also called Bellman error, or Temporal Differences error):
+
+$$
+\mathcal{L}(\theta)=E\left[ \left( r+\gamma\max_{a'}Q(s',a';\theta_{target})-Q(s,a;\theta) \right)^2\right]
+$$ {#eq-value-based}
+
+In this function, we measure the difference between the prediction from the neural network $Q(s,a;\theta)$ and the current estimate of the target term:
+
+$$
+y=r+\gamma\max_{a'}Q(s',a';\theta_{target})
+$$
+
+In this target, $r$ is the reward which was *actually experienced* by the agent. However, the second term is just the current best estimate on how much reward it is expected in the future. In summary, we are using the network's own prediction of the future to train its prediction of the present. This is sometimes referred to as **bootstrapping**.
+
+This method is also referred to as an instance of **model-free** RL. In this case, we do not have a model of how the physical world works, but we can simulate several actions of the agent to obtain tuples $(s,a,r,s',\text{done})$ that we store in a so-called *replay buffer*. Once we have this buffer, we can feed these data on a training episode and use @eq-value-based to update the weights $\theta$ of the neural network. Note that in this equation, we have two sets of weights $\theta_{target}$ and $\theta$. The weights which are currently being optimized are $\theta$, while $\theta_{target}$ is a frozen copy used for calculating the $\max$ term. This is done in order to prevent the training process from "chasing its own tail", as otherwise the network predictions would change with each gradient update.
+
+### Policy-Based Methods
+
+Alternatively, we can try to optimize the policy $\pi_{\theta}(a|s)$ directly instead of the value function $Q(s,a)$. However, because the environment is usually a "black-box" or a discrete simulation, we cannot calculate the gradient 
+$\nabla_\theta J(\theta)$ directly. 
+
+$$
+\nabla_\theta J(\theta)=\nabla_\theta E_{\tau\sim\pi}\left[ R(\tau) \right]=\nabla_\theta \int P(\tau|\theta)R(\tau)d\tau
+$$
+
+The main difficulty with this calculation is that we cannot differentiate this integral to obtain the gradient. However, we can use a property of the derivative of a logarithm (the *log-derivative trick*) to transform it into the integral of a derivative instead.
+
+$$
+\frac{d}{dx}\ln f(x)=\frac{f'(x)}{f(x)} \Rightarrow f'(x)=f(x)\frac{d}{dx}\ln f(x)
+$$
+$$
+\nabla_\theta P(\tau|\theta)=P(\tau|\theta)\cdot\nabla_\theta \ln P(\tau|\theta)
+$$
+
+which converts the previous integral in:
+
+$$
+\nabla_\theta J(\theta)=\int P(\tau|\theta)\nabla_\theta \ln P(\tau|\theta)\cdot R(\tau)d\tau=E_{\tau\sim\pi}\left[ \nabla_\theta\ln P(\theta|\phi)\cdot R(\theta) \right]
+$$
+
+Using the estimates that we have, we can approximate the gradient of the expected reward as follows:
+
+$$
+\nabla_\theta J(\theta)\approx E\left[ \sum_{t=0}^T \nabla_\theta \ln \pi_\theta(a_t|s_t)\cdot G_t \right]
+$$
+
+where:
+
+- $G_t$ is the total return obtained from time $t$ onwards.
+    $$
+    G_t=r_t+\gamma r_{t+1}+\gamma^2 r_{t+2}+\dots
+    $$
+- $\nabla \ln \pi(a|s)$ tells us how to change $\theta$ to make action $a$ more or less probable.
+
+In other words, if $G_t$ is positive (good outcome), we move $\theta$ to *increase* the probability of the action. Otherwise, if $G_t$ is negative (bad outcome), we move $\theta$ to *decrease* that probability. This is known as the **REINFORCE** algorithm, and it's another instance of model-free RL.
+
