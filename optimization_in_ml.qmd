@@ -51,3 +51,148 @@ $$
 $$
 
 where $m$ is the batch size, and $j_i$ are randomly selected indices from the dataset. This introduces noise into the gradient estimate, which can help the optimization process escape saddle points and explore the loss landscape more effectively.
+
+The landscape of a neural network often features *ravines*: areas that are steep in one dimension but flat in another. Standard SGD tends to oscillate wildly across the steep slopes while making slow progress along the flat bottom. To fix this, we use algorithms that adapt the update step for each parameter individually. 
+
+**Momentum**
+
+Momentum is a technique that helps accelerate SGD in the relevant direction and dampens oscillations. It does this by maintaining a velocity vector that accumulates the gradients over time.
+$$
+v_{k+1} = \beta v_k + (1 - \beta) \nabla \mathcal{L}(\theta_k)
+$$
+$$
+\theta_{k+1} = \theta_k - \eta v_{k+1}
+$$  
+
+Where $\beta$ is a new hyperparameter that we call momentum and takes values between 0 and 1. In practice, this parameter is usually set to around 0.9.
+
+**Adam**
+
+The other idea is called *Adaptive Moment Estimation* (Adam). Adam maintains two moving averages: one for the gradients (first moment) and one for the squared gradients (second moment).
+
+$$
+m_{k+1} = \beta_1 m_k + (1 - \beta_1) \nabla \mathcal{L}(\theta_k)
+$$
+$$
+v_{k+1} = \beta_2 v_k + (1 - \beta_2) (\nabla \mathcal{L}(\theta_k))^2
+$$
+
+$$
+\theta_{k+1} = \theta_k - \eta \frac{m_{k+1}}{\sqrt{v_{k+1}} + \epsilon}
+$$
+
+Where $\beta_1$ and $\beta_2$ are hyperparameters that control the decay rates of these moving averages, typically set to 0.9 and 0.999, respectively. The small constant $\epsilon$ is added to prevent division by zero.
+
+Let's take a look at a scratch implementation of Vanilla SGD and Adam in Python:
+
+```{python}
+import numpy as np
+import matplotlib.pyplot as plt
+
+# 1. Define a "Ravine" Function: f(x,y) = 0.1x^2 + 2y^2
+# It is much steeper in Y than in X.
+def loss_function(x, y):
+    return 0.1 * x**2 + 2 * y**2
+
+def gradient(x, y):
+    return np.array([0.2 * x, 4 * y])
+
+# 2. Vanilla SGD Implementation
+def run_sgd(start_pos, lr, steps):
+    path = [start_pos]
+    curr = np.array(start_pos)
+    for _ in range(steps):
+        grad = gradient(curr[0], curr[1])
+        curr = curr - lr * grad
+        path.append(curr)
+    return np.array(path)
+```
+
+Now we implement Adam:
+
+```{python}
+# 3. Adam Implementation (Simplified)
+def run_adam(start_pos, lr, steps, beta1=0.9, beta2=0.999, epsilon=1e-8):
+    path = [start_pos]
+    curr = np.array(start_pos)
+    m = np.zeros(2) # First moment (Momentum)
+    v = np.zeros(2) # Second moment (Variance)
+    
+    for t in range(1, steps + 1):
+        grad = gradient(curr[0], curr[1])
+        
+        # Update moments
+        m = beta1 * m + (1 - beta1) * grad
+        v = beta2 * v + (1 - beta2) * (grad**2)
+        
+        # Bias correction (important for early steps)
+        m_hat = m / (1 - beta1**t)
+        v_hat = v / (1 - beta2**t)
+        
+        # Update parameters
+        curr = curr - lr * m_hat / (np.sqrt(v_hat) + epsilon)
+        path.append(curr)
+    return np.array(path)
+```
+
+In this implementation, we have added a *bias correction* step to the moment estimates. This is crucial, especially in the early stages of training, to ensure that the estimates are unbiased. Now we visualize the results:
+
+```{python}
+start = [-10.0, -2.0] # Start far away
+steps = 50
+lr = 0.1
+
+path_sgd = run_sgd(start, lr, steps)
+path_adam = run_adam(start, lr, steps)
+
+# Create contour map
+X, Y = np.meshgrid(np.linspace(-12, 2, 100), np.linspace(-4, 4, 100))
+Z = loss_function(X, Y)
+plt.contour(X, Y, Z, levels=20, cmap='gray', alpha=0.4)
+
+plt.plot(path_sgd[:,0], path_sgd[:,1], 'o-', label='SGD', color='red')
+plt.plot(path_adam[:,0], path_adam[:,1], 'o-', label='Adam', color='blue')
+
+plt.title("Optimization Trajectories: Ravine Problem")
+plt.legend()
+plt.grid(True)
+plt.show()
+```
+
+In this graph, SGD oscillates vertically (along the steep $Y$-axis) while making very slow progress horizontally (along the flat $X$-axis). It struggles to find the right step size for both dimensions simultaneously. In contrast, Adam quickly adapts. It dampens the step size in $Y$ (high gradient) and boosts the step size in $X$ (low gradient), shooting directly toward the center minimum. This behavior is why Adam is the standard for training deep networks.
+
+## Monte Carlo Tree Search
+
+In the previous section, we discussed optimizing a static function (the loss of a neural network). Now, we turn to planning: deciding what action to take in a complex, sequential environment, such as playing chess, routing a fleet of drones, or folding a protein. Historically, AI planning relied on Minimax search with heuristic evaluation functions. To know if a chess board state was "good," a human expert had to write a scoring function (e.g. $10\times$ if queens are on the board + $5\times$ number of rooks, etc). However, for complex situations like playing a game of Go or folding proteins, writing a good evaluation function gets too challenging.
+
+This is where Monte Carlo simulation comes in. Instead of asking an expert "Is this state good?", we ask the computer to play it out. We simulate thousands of random games starting from the current state. If we win 80% of those random games, the state is likely "good". If we win only 10%, it is likely "bad".
+
+In the planning context, we call this a **rollout**:
+
+1. Start at initial state $S_t$.
+2. Select actions $a_t, a_{t+1}, \dots$ until a terminal state (Win/Loss) is reached.
+3. Record the result: +1 if win, 0 if loss.
+4. Repeat $N$ times.
+5. Estimate the value of $S_t$ as $\text{Total Wins}/N$.
+
+However, classical Monte Carlo Simulation has a flaw: it wastes computational resources exploring obviously bad moves. If you hang your queen in chess, you don't need 1,000 simulations to know it's a bad idea; you need 1.
+
+**Monte Carlo Tree Search (MCTS)** solves this by building a search tree *asymmetrically*. It uses the results of previous simulations to guide future simulations toward more promising parts of the tree, trying to balance exploitation (by focusing on moves with a high win rate) and exploration (by simulting moves that have few visits, just in case they turn out to be good).
+
+MCTS runs a loop of four steps as many times as the computing budget allows:
+
+1. **Selection:** We start at the root and traverse down the tree by selecting child nodes. At each step, we choose the child that maximizes the **Upper Confidence Bound (UCT)** formula (see @eq-ucb), stopping when a node that has not been fully expanded is reached.
+2. **Expansion:** Add one or more child nodes to the tree (representing available moves from that state).
+3. **Simulation:** From the new child node, play a random game to the end (rollout). 
+4. **Backpropagation:** Take the result of the simulation (Win/Loss) and walk back up the tree to the root, updating the statistics (wins and visits) for every node on the path.
+
+The UCB formula is given by:
+
+$$
+UCT_i = \frac{w_i}{n_i}+c\sqrt{\frac{\ln N}{n_i}}
+$$ {#eq-ucb}
+
+where $w_i$ denotes the number of wins for child node $i$, $n_i$ is the number of times that node $i$ has been visited, $N$ is the total number of visits to the parent node, and $c$ is an exploration constant (typically $c=\sqrt{2}$).
+
+We can interpret $w_i/n_i$ as the average win rate, which encourages exploitation. The other term ($\sqrt{\dots}$) is an uncertainty "bonus": if a node is rarely visited ($n_i$ is small), this term becomes larger, which encourages exploration. As we proceed and visit more nodes, $n_i$ becomes larger and the search concentrates more on the exploitation term.
+

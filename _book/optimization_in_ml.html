@@ -20,6 +20,41 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -249,6 +284,7 @@ window.Quarto = {
   <li><a href="#the-loss-landscape-in-dl" id="toc-the-loss-landscape-in-dl" class="nav-link" data-scroll-target="#the-loss-landscape-in-dl"><span class="header-section-number">8.2.1</span> The Loss Landscape in DL</a></li>
   <li><a href="#backpropagation-and-stochastic-gradient-descent" id="toc-backpropagation-and-stochastic-gradient-descent" class="nav-link" data-scroll-target="#backpropagation-and-stochastic-gradient-descent"><span class="header-section-number">8.2.2</span> Backpropagation and Stochastic Gradient Descent</a></li>
   </ul></li>
+  <li><a href="#monte-carlo-tree-search" id="toc-monte-carlo-tree-search" class="nav-link" data-scroll-target="#monte-carlo-tree-search"><span class="header-section-number">8.3</span> Monte Carlo Tree Search</a></li>
   </ul>
 </nav>
     </div>
@@ -311,9 +347,134 @@ window.Quarto = {
 \theta_{k+1} = \theta_k - \eta \frac{1}{m} \sum_{i=1}^m \nabla \mathcal{L}_{j_i}(\theta_k)
 \]</span></p>
 <p>where <span class="math inline">\(m\)</span> is the batch size, and <span class="math inline">\(j_i\)</span> are randomly selected indices from the dataset. This introduces noise into the gradient estimate, which can help the optimization process escape saddle points and explore the loss landscape more effectively.</p>
-
-
+<p>The landscape of a neural network often features <em>ravines</em>: areas that are steep in one dimension but flat in another. Standard SGD tends to oscillate wildly across the steep slopes while making slow progress along the flat bottom. To fix this, we use algorithms that adapt the update step for each parameter individually.</p>
+<p><strong>Momentum</strong></p>
+<p>Momentum is a technique that helps accelerate SGD in the relevant direction and dampens oscillations. It does this by maintaining a velocity vector that accumulates the gradients over time. <span class="math display">\[
+v_{k+1} = \beta v_k + (1 - \beta) \nabla \mathcal{L}(\theta_k)
+\]</span> <span class="math display">\[
+\theta_{k+1} = \theta_k - \eta v_{k+1}
+\]</span></p>
+<p>Where <span class="math inline">\(\beta\)</span> is a new hyperparameter that we call momentum and takes values between 0 and 1. In practice, this parameter is usually set to around 0.9.</p>
+<p><strong>Adam</strong></p>
+<p>The other idea is called <em>Adaptive Moment Estimation</em> (Adam). Adam maintains two moving averages: one for the gradients (first moment) and one for the squared gradients (second moment).</p>
+<p><span class="math display">\[
+m_{k+1} = \beta_1 m_k + (1 - \beta_1) \nabla \mathcal{L}(\theta_k)
+\]</span> <span class="math display">\[
+v_{k+1} = \beta_2 v_k + (1 - \beta_2) (\nabla \mathcal{L}(\theta_k))^2
+\]</span></p>
+<p><span class="math display">\[
+\theta_{k+1} = \theta_k - \eta \frac{m_{k+1}}{\sqrt{v_{k+1}} + \epsilon}
+\]</span></p>
+<p>Where <span class="math inline">\(\beta_1\)</span> and <span class="math inline">\(\beta_2\)</span> are hyperparameters that control the decay rates of these moving averages, typically set to 0.9 and 0.999, respectively. The small constant <span class="math inline">\(\epsilon\)</span> is added to prevent division by zero.</p>
+<p>Let’s take a look at a scratch implementation of Vanilla SGD and Adam in Python:</p>
+<div id="9108f852" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. Define a "Ravine" Function: f(x,y) = 0.1x^2 + 2y^2</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># It is much steeper in Y than in X.</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> loss_function(x, y):</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="fl">0.1</span> <span class="op">*</span> x<span class="op">**</span><span class="dv">2</span> <span class="op">+</span> <span class="dv">2</span> <span class="op">*</span> y<span class="op">**</span><span class="dv">2</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> gradient(x, y):</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.array([<span class="fl">0.2</span> <span class="op">*</span> x, <span class="dv">4</span> <span class="op">*</span> y])</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. Vanilla SGD Implementation</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> run_sgd(start_pos, lr, steps):</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    path <span class="op">=</span> [start_pos]</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    curr <span class="op">=</span> np.array(start_pos)</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(steps):</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>        grad <span class="op">=</span> gradient(curr[<span class="dv">0</span>], curr[<span class="dv">1</span>])</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>        curr <span class="op">=</span> curr <span class="op">-</span> lr <span class="op">*</span> grad</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>        path.append(curr)</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.array(path)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Now we implement Adam:</p>
+<div id="b5f750a8" class="cell" data-execution_count="2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. Adam Implementation (Simplified)</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> run_adam(start_pos, lr, steps, beta1<span class="op">=</span><span class="fl">0.9</span>, beta2<span class="op">=</span><span class="fl">0.999</span>, epsilon<span class="op">=</span><span class="fl">1e-8</span>):</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    path <span class="op">=</span> [start_pos]</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    curr <span class="op">=</span> np.array(start_pos)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    m <span class="op">=</span> np.zeros(<span class="dv">2</span>) <span class="co"># First moment (Momentum)</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    v <span class="op">=</span> np.zeros(<span class="dv">2</span>) <span class="co"># Second moment (Variance)</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> t <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, steps <span class="op">+</span> <span class="dv">1</span>):</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>        grad <span class="op">=</span> gradient(curr[<span class="dv">0</span>], curr[<span class="dv">1</span>])</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Update moments</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>        m <span class="op">=</span> beta1 <span class="op">*</span> m <span class="op">+</span> (<span class="dv">1</span> <span class="op">-</span> beta1) <span class="op">*</span> grad</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>        v <span class="op">=</span> beta2 <span class="op">*</span> v <span class="op">+</span> (<span class="dv">1</span> <span class="op">-</span> beta2) <span class="op">*</span> (grad<span class="op">**</span><span class="dv">2</span>)</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Bias correction (important for early steps)</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>        m_hat <span class="op">=</span> m <span class="op">/</span> (<span class="dv">1</span> <span class="op">-</span> beta1<span class="op">**</span>t)</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>        v_hat <span class="op">=</span> v <span class="op">/</span> (<span class="dv">1</span> <span class="op">-</span> beta2<span class="op">**</span>t)</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Update parameters</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>        curr <span class="op">=</span> curr <span class="op">-</span> lr <span class="op">*</span> m_hat <span class="op">/</span> (np.sqrt(v_hat) <span class="op">+</span> epsilon)</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>        path.append(curr)</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.array(path)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>In this implementation, we have added a <em>bias correction</em> step to the moment estimates. This is crucial, especially in the early stages of training, to ensure that the estimates are unbiased. Now we visualize the results:</p>
+<div id="abe4761b" class="cell" data-execution_count="3">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>start <span class="op">=</span> [<span class="op">-</span><span class="fl">10.0</span>, <span class="op">-</span><span class="fl">2.0</span>] <span class="co"># Start far away</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>steps <span class="op">=</span> <span class="dv">50</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>lr <span class="op">=</span> <span class="fl">0.1</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>path_sgd <span class="op">=</span> run_sgd(start, lr, steps)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>path_adam <span class="op">=</span> run_adam(start, lr, steps)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Create contour map</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>X, Y <span class="op">=</span> np.meshgrid(np.linspace(<span class="op">-</span><span class="dv">12</span>, <span class="dv">2</span>, <span class="dv">100</span>), np.linspace(<span class="op">-</span><span class="dv">4</span>, <span class="dv">4</span>, <span class="dv">100</span>))</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>Z <span class="op">=</span> loss_function(X, Y)</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>plt.contour(X, Y, Z, levels<span class="op">=</span><span class="dv">20</span>, cmap<span class="op">=</span><span class="st">'gray'</span>, alpha<span class="op">=</span><span class="fl">0.4</span>)</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>plt.plot(path_sgd[:,<span class="dv">0</span>], path_sgd[:,<span class="dv">1</span>], <span class="st">'o-'</span>, label<span class="op">=</span><span class="st">'SGD'</span>, color<span class="op">=</span><span class="st">'red'</span>)</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>plt.plot(path_adam[:,<span class="dv">0</span>], path_adam[:,<span class="dv">1</span>], <span class="st">'o-'</span>, label<span class="op">=</span><span class="st">'Adam'</span>, color<span class="op">=</span><span class="st">'blue'</span>)</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Optimization Trajectories: Ravine Problem"</span>)</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>plt.grid(<span class="va">True</span>)</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="optimization_in_ml_files/figure-html/cell-4-output-1.png" width="573" height="431" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>In this graph, SGD oscillates vertically (along the steep <span class="math inline">\(Y\)</span>-axis) while making very slow progress horizontally (along the flat <span class="math inline">\(X\)</span>-axis). It struggles to find the right step size for both dimensions simultaneously. In contrast, Adam quickly adapts. It dampens the step size in <span class="math inline">\(Y\)</span> (high gradient) and boosts the step size in <span class="math inline">\(X\)</span> (low gradient), shooting directly toward the center minimum. This behavior is why Adam is the standard for training deep networks.</p>
 </section>
+</section>
+<section id="monte-carlo-tree-search" class="level2" data-number="8.3">
+<h2 data-number="8.3" class="anchored" data-anchor-id="monte-carlo-tree-search"><span class="header-section-number">8.3</span> Monte Carlo Tree Search</h2>
+<p>In the previous section, we discussed optimizing a static function (the loss of a neural network). Now, we turn to planning: deciding what action to take in a complex, sequential environment, such as playing chess, routing a fleet of drones, or folding a protein. Historically, AI planning relied on Minimax search with heuristic evaluation functions. To know if a chess board state was “good,” a human expert had to write a scoring function (e.g.&nbsp;<span class="math inline">\(10\times\)</span> if queens are on the board + <span class="math inline">\(5\times\)</span> number of rooks, etc). However, for complex situations like playing a game of Go or folding proteins, writing a good evaluation function gets too challenging.</p>
+<p>This is where Monte Carlo simulation comes in. Instead of asking an expert “Is this state good?”, we ask the computer to play it out. We simulate thousands of random games starting from the current state. If we win 80% of those random games, the state is likely “good”. If we win only 10%, it is likely “bad”.</p>
+<p>In the planning context, we call this a <strong>rollout</strong>:</p>
+<ol type="1">
+<li>Start at initial state <span class="math inline">\(S_t\)</span>.</li>
+<li>Select actions <span class="math inline">\(a_t, a_{t+1}, \dots\)</span> until a terminal state (Win/Loss) is reached.</li>
+<li>Record the result: +1 if win, 0 if loss.</li>
+<li>Repeat <span class="math inline">\(N\)</span> times.</li>
+<li>Estimate the value of <span class="math inline">\(S_t\)</span> as <span class="math inline">\(\text{Total Wins}/N\)</span>.</li>
+</ol>
+<p>However, classical Monte Carlo Simulation has a flaw: it wastes computational resources exploring obviously bad moves. If you hang your queen in chess, you don’t need 1,000 simulations to know it’s a bad idea; you need 1.</p>
+<p><strong>Monte Carlo Tree Search (MCTS)</strong> solves this by building a search tree <em>asymmetrically</em>. It uses the results of previous simulations to guide future simulations toward more promising parts of the tree, trying to balance exploitation (by focusing on moves with a high win rate) and exploration (by simulting moves that have few visits, just in case they turn out to be good).</p>
+<p>MCTS runs a loop of four steps as many times as the computing budget allows:</p>
+<ol type="1">
+<li><strong>Selection:</strong> We start at the root and traverse down the tree by selecting child nodes. At each step, we choose the child that maximizes the <strong>Upper Confidence Bound (UCT)</strong> formula (see <a href="#eq-ucb" class="quarto-xref">Equation&nbsp;<span>8.1</span></a>), stopping when a node that has not been fully expanded is reached.</li>
+<li><strong>Expansion:</strong> Add one or more child nodes to the tree (representing available moves from that state).</li>
+<li><strong>Simulation:</strong> From the new child node, play a random game to the end (rollout).</li>
+<li><strong>Backpropagation:</strong> Take the result of the simulation (Win/Loss) and walk back up the tree to the root, updating the statistics (wins and visits) for every node on the path.</li>
+</ol>
+<p>The UCB formula is given by:</p>
+<p><span id="eq-ucb"><span class="math display">\[
+UCT_i = \frac{w_i}{n_i}+c\sqrt{\frac{\ln N}{n_i}}
+\tag{8.1}\]</span></span></p>
+<p>where <span class="math inline">\(w_i\)</span> denotes the number of wins for child node <span class="math inline">\(i\)</span>, <span class="math inline">\(n_i\)</span> is the number of times that node <span class="math inline">\(i\)</span> has been visited, <span class="math inline">\(N\)</span> is the total number of visits to the parent node, and <span class="math inline">\(c\)</span> is an exploration constant (typically <span class="math inline">\(c=\sqrt{2}\)</span>).</p>
+<p>We can interpret <span class="math inline">\(w_i/n_i\)</span> as the average win rate, which encourages exploitation. The other term (<span class="math inline">\(\sqrt{\dots}\)</span>) is an uncertainty “bonus”: if a node is rarely visited (<span class="math inline">\(n_i\)</span> is small), this term becomes larger, which encourages exploration. As we proceed and visit more nodes, <span class="math inline">\(n_i\)</span> becomes larger and the search concentrates more on the exploitation term.</p>
+
+
 </section>
 
 </main> <!-- /main -->
